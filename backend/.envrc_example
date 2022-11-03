@@ -1,0 +1,5 @@
+#!/bin/bash
+
+#CDK Stack Specifics
+export AWS_ACCOUNT_ID=""
+#FYI: Region retrieve from AWS CLI session

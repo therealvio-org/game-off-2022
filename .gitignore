@@ -1,3 +1,9 @@
+#Toolings#
+############
+#direnv
+.envrc
+.env
+
 # CDK, and CDK asset staging directory
 .cdk.staging
 cdk.out
