@@ -40,5 +40,12 @@ export class BackendStack extends cdk.Stack {
     const v1 = api.root.addResource("v1")
     const formation = v1.addResource("formationId")
     formation.addMethod("POST")
+
+    const plan = api.addUsagePlan("legalBattleUsagePlan", {
+      throttle: {
+        rateLimit: 10,
+        burstLimit: 2,
+      },
+    })
   }
 }
