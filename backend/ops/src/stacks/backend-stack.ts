@@ -22,14 +22,14 @@ export class BackendStack extends cdk.Stack {
 
     //The Lambda to handle requests coming through the API Gateway
     //Lambda would be written in golang
-    const lambdafn = new lambda.Function(this, "lambda", {
+    const lambdafn = new lambda.Function(this, "legalBattleApiHandler", {
       architecture: lambda.Architecture.ARM_64,
       runtime: lambda.Runtime.PROVIDED_AL2,
       handler: "bootstrap",
       code: lambda.Code.fromAsset(path.join(__dirname, "../../../src/dist")),
     })
 
-    const api = new apigateway.LambdaRestApi(this, "api", {
+    const api = new apigateway.LambdaRestApi(this, "legalBattleApi", {
       handler: lambdafn,
       //Setting proxy to `true` will forward *all* requests to Lambda
       //TODO: Figure out what resources, and what methods we are looking to implement
@@ -37,7 +37,8 @@ export class BackendStack extends cdk.Stack {
     })
 
     //b.s. example of API paths
-    const formation = api.root.addResource("formationId")
+    const v1 = api.root.addResource("v1")
+    const formation = v1.addResource("formationId")
     formation.addMethod("POST")
   }
 }
