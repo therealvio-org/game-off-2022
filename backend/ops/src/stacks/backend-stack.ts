@@ -26,9 +26,7 @@ export class BackendStack extends cdk.Stack {
       architecture: lambda.Architecture.ARM_64,
       runtime: lambda.Runtime.PROVIDED_AL2,
       handler: "bootstrap",
-      code: lambda.Code.fromAsset(
-        path.join(__dirname, "../../lambda-code/dist")
-      ),
+      code: lambda.Code.fromAsset(path.join(__dirname, "../../../src/dist")),
     })
 
     const api = new apigateway.LambdaRestApi(this, "api", {

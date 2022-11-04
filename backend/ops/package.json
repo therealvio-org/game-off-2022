@@ -7,7 +7,7 @@
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
-    "mock-dist-package": "mkdir -p lambda-code/dist 2> /dev/null || touch ./lambda-code/dist/bootstrap",
+    "mock-dist-package": "mkdir -p ../src/dist 2> /dev/null && touch ../src/dist/bootstrap",
     "test": "jest",
     "cdk": "cdk",
     "clean": "yarn build --build --clean",

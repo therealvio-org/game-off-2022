@@ -7,19 +7,19 @@
 # CDK, and CDK asset staging directory
 .cdk.staging
 cdk.out
-backend/node_modules
+backend/ops/node_modules
 cdk.context.json
 
 # TS
 *.d.ts
-backend/src/**/*.js
-backend/__tests__/**/*.js
+backend/ops/src/**/*.js
+backend/ops/__tests__/**/*.js
 
 # yarn
 yarn-error.log
 
 # GO
-backend/lambda-code/dist
+backend/src/dist
 
 # Packages #
 ############
