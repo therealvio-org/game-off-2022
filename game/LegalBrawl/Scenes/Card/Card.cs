@@ -26,14 +26,14 @@ public class Card : Control
         _cardBody.GetNode<Control>("HoverBox").Connect("mouse_exited", this, "OnMouseExit");
         _cardBody.GetNode<Control>("HoverBox").Connect("gui_input", this, "OnGuiInput");
 
-        _audioPlayer = GetNode<AudioStreamPlayer>("AudioPlayer");
+        //_audioPlayer = GetNode<AudioStreamPlayer>("AudioPlayer");
     }
 
     public void OnMouseEnter()
     {
         GD.Print("Entered", Name);
         _isHover = true;
-        _audioPlayer.Play();
+        //_audioPlayer.Play();
     }
 
     public void OnMouseExit()
@@ -70,7 +70,7 @@ public class Card : Control
     public Vector2 GetAnchorOffset()
     {
 
-        return _fixedAnchor.RectPosition + (Vector2.Down * 100).Rotated(Mathf.Deg2Rad(_cardBody.RectRotation)); ;
+        return _fixedAnchor.RectPosition + (Vector2.Up * 200).Rotated(Mathf.Deg2Rad(_cardBody.RectRotation)); ;
     }
 
     public void MoveCardToAnchor(float delta)
