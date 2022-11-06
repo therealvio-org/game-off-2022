@@ -12,7 +12,7 @@ public class CardHand : Control
     public float CardRotation;
     [Export]
     public float LiftRatio;
-    List<Card> _cards;
+    CardList _cards;
     Control _cardAnchor;
     bool keyPress = false;
 
@@ -20,12 +20,14 @@ public class CardHand : Control
     public override void _Ready()
     {
         _cardAnchor = GetNode<Control>("Anchor");
-        _cards = new List<Card>();
+        _cards = new CardList();
     }
 
     // Called every frame. 'delta' is the elapsed time since the previous frame.
     public override void _Process(float delta)
     {
+        bool assignPositions = false;
+
         if (Input.IsPhysicalKeyPressed((int)Godot.KeyList.A))
         {
             if (!keyPress)
@@ -33,7 +35,7 @@ public class CardHand : Control
                 keyPress = true;
                 Card card = SceneManager.Create<Card>(SceneManager.Scenes.Card, this);
                 _cards.Add(card);
-                AssignCardPositions();
+                assignPositions = true;
             }
         }
         else if (Input.IsPhysicalKeyPressed((int)Godot.KeyList.D))
@@ -41,18 +43,34 @@ public class CardHand : Control
             if (!keyPress)
             {
                 keyPress = true;
-                _cards[_cards.Count - 1].Free();
+                _cards.Get(_cards.Count - 1).Free();
                 _cards.RemoveAt(_cards.Count - 1);
-                AssignCardPositions();
+                assignPositions = true;
             }
         }
         else
             keyPress = false;
+
+        if (_cards.IsHeld && _cards.IsHovered)
+        {
+            if (_cards.LastHeld != _cards.LastHovered && !_cards.LastHovered.IsMoving)
+            {
+                _cards.MoveHeldToHover();
+            }
+        }
+
+        // if (_cards.IsHeld)
+        //     assignPositions = true;
+
+
+        // if (assignPositions)
+        AssignCardPositions();
+
     }
 
     public CardPosition[] CalculateCardPositions()
     {
-        float cardShift = CardWidth * ShiftRatio;
+        float cardShift = CardWidth * ShiftRatio * (_cards.IsHeld ? 2 : 1);
         float cardLift = CardWidth * LiftRatio;
         int cardCount = _cards.Count;
         CardPosition[] cardPositions = new CardPosition[cardCount];
@@ -80,7 +98,7 @@ public class CardHand : Control
         var positions = CalculateCardPositions();
         for (int i = 0; i < _cards.Count; i++)
         {
-            _cards[i].SetFixedPosition(positions[i]);
+            _cards.Get(i).SetFixedPosition(positions[i]);
         }
     }
 }
