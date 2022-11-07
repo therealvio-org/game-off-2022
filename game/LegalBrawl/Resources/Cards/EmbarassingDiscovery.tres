@@ -1,0 +1,11 @@
+[gd_resource type="Resource" load_steps=2 format=2]
+
+[ext_resource path="res://Resources/Definitions/DamageCredibility.cs" type="Script" id=1]
+
+[resource]
+script = ExtResource( 1 )
+Id = 2
+Name = "Embarassing Discovery"
+Cost = 15
+Description = "Opponent loses 7 {C}"
+Value = 7

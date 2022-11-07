@@ -1,0 +1,127 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://Scenes/CardDisplay/CardDisplay.tscn" type="PackedScene" id=1]
+[ext_resource path="res://Scenes/CardPool/CardPool.cs" type="Script" id=2]
+
+[node name="CardPool" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource( 2 )
+
+[node name="Column" type="VBoxContainer" parent="."]
+anchor_right = 1.0
+margin_bottom = 564.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="TopRow" type="HBoxContainer" parent="Column"]
+margin_right = 1280.0
+margin_bottom = 280.0
+size_flags_horizontal = 3
+alignment = 1
+
+[node name="CardDisplay" parent="Column/TopRow" instance=ExtResource( 1 )]
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 132.0
+margin_top = 0.0
+margin_right = 332.0
+margin_bottom = 280.0
+
+[node name="CardDisplay2" parent="Column/TopRow" instance=ExtResource( 1 )]
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 336.0
+margin_top = 0.0
+margin_right = 536.0
+margin_bottom = 280.0
+
+[node name="CardDisplay3" parent="Column/TopRow" instance=ExtResource( 1 )]
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 540.0
+margin_top = 0.0
+margin_right = 740.0
+margin_bottom = 280.0
+
+[node name="CardDisplay4" parent="Column/TopRow" instance=ExtResource( 1 )]
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 744.0
+margin_top = 0.0
+margin_right = 944.0
+margin_bottom = 280.0
+
+[node name="CardDisplay5" parent="Column/TopRow" instance=ExtResource( 1 )]
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 948.0
+margin_top = 0.0
+margin_right = 1148.0
+margin_bottom = 280.0
+
+[node name="BottomRow" type="HBoxContainer" parent="Column"]
+margin_top = 284.0
+margin_right = 1280.0
+margin_bottom = 564.0
+alignment = 1
+
+[node name="CardDisplay6" parent="Column/BottomRow" instance=ExtResource( 1 )]
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 132.0
+margin_top = 0.0
+margin_right = 332.0
+margin_bottom = 280.0
+
+[node name="CardDisplay7" parent="Column/BottomRow" instance=ExtResource( 1 )]
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 336.0
+margin_top = 0.0
+margin_right = 536.0
+margin_bottom = 280.0
+
+[node name="CardDisplay8" parent="Column/BottomRow" instance=ExtResource( 1 )]
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 540.0
+margin_top = 0.0
+margin_right = 740.0
+margin_bottom = 280.0
+
+[node name="CardDisplay9" parent="Column/BottomRow" instance=ExtResource( 1 )]
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 744.0
+margin_top = 0.0
+margin_right = 944.0
+margin_bottom = 280.0
+
+[node name="CardDisplay10" parent="Column/BottomRow" instance=ExtResource( 1 )]
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 948.0
+margin_top = 0.0
+margin_right = 1148.0
+margin_bottom = 280.0

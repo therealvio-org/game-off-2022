@@ -53,12 +53,15 @@ public class CardHand : Control
 
         if (_cards.IsHeld && _cards.IsHovered)
         {
+            // GD.Print("Held: ", _cards.IsHeld ? _cards.LastHeld.Name : "None");
+            // GD.Print("Hover: ", _cards.IsHovered ? _cards.LastHovered.Name : "None");
             if (_cards.LastHeld != _cards.LastHovered && !_cards.LastHovered.IsMoving)
             {
                 _cards.MoveHeldToHover();
             }
         }
 
+        // @TODO Make this only assign when necessary
         // if (_cards.IsHeld)
         //     assignPositions = true;
 
@@ -70,7 +73,7 @@ public class CardHand : Control
 
     public CardPosition[] CalculateCardPositions()
     {
-        float cardShift = CardWidth * ShiftRatio * (_cards.IsHeld ? 2 : 1);
+        float cardShift = CardWidth * ShiftRatio * (_cards.IsHeld ? 1.5f : 1);
         float cardLift = CardWidth * LiftRatio;
         int cardCount = _cards.Count;
         CardPosition[] cardPositions = new CardPosition[cardCount];
