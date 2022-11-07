@@ -28,7 +28,7 @@ func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 		fmt.Printf("    %s: %s\n", key, value)
 	}
 
-	content := fmt.Sprintf("Hello, World!\n%v", request.Body)
+	content := "Hello, World!\n"
 
 	return events.APIGatewayProxyResponse{Body: content, StatusCode: 200}, nil
 }
