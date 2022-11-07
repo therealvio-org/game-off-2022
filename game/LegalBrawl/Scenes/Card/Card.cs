@@ -14,7 +14,7 @@ public class Card : Control
     public bool IsHovered { get => _isHover; }
     private bool _isMoving;
     public bool IsMoving { get => _isMoving; }
-    private bool _isHighlight { get => _isHeld || (_isHover && !List.IsHeld); }
+    private bool _isHighlight { get => !List.IsHeld && _isHover && List.LastHovered == this; }
     private AudioStreamPlayer _audioPlayer;
     public CardList List;
 
@@ -25,30 +25,15 @@ public class Card : Control
 
         _fixedAnchor = _layer.GetNode<Control>("FixedAnchor");
         _cardAnchor = _layer.GetNode<Control>("CardAnchor");
-        _cardBody = _cardAnchor.GetNode<Control>("Card");
+        _cardBody = _cardAnchor.GetNode<Control>("CardDisplay");
         _isHeld = false;
         _isHover = false;
         _isMoving = false;
 
         _cardHover = _cardBody.GetNode<Control>("HoverBox");
-        _cardHover.Connect("mouse_entered", this, "OnMouseEnter");
-        _cardHover.Connect("mouse_exited", this, "OnMouseExit");
         _cardHover.Connect("gui_input", this, "OnGuiInput");
 
         //_audioPlayer = GetNode<AudioStreamPlayer>("AudioPlayer");
-    }
-
-    public void OnMouseEnter()
-    {
-        GD.Print("Entered", Name);
-        //_isHover = true;
-        //_audioPlayer.Play();
-    }
-
-    public void OnMouseExit()
-    {
-        GD.Print("Exited", Name);
-        //_isHover = false;
     }
 
     public override void _Input(InputEvent inputEvent)
@@ -57,10 +42,9 @@ public class Card : Control
         {
             if (_cardHover.GetGlobalRect().HasPoint(mouseEvent.GlobalPosition))
             {
-                if (!_isHeld && !List.IsHovered)
+                if (!_isHeld)
                 {
                     _isHover = true;
-                    List.LastHovered = this;
                 }
             }
             else if (_isHover)
@@ -92,8 +76,6 @@ public class Card : Control
     {
         _isHeld = pressed;
         _cardHover.MouseFilter = _isHeld ? MouseFilterEnum.Ignore : MouseFilterEnum.Pass;
-        GD.Print(_cardHover.MouseFilter);
-        List.LastHeld = this;
     }
 
     public override void _Process(float delta)
@@ -103,8 +85,19 @@ public class Card : Control
         else
             MoveCardToAnchor(delta);
 
-        ScaleTowardsDesired(_isHighlight, delta);
-        UpdateLayer(_isHighlight);
+        ScaleTowardsDesired(_isHeld || _isHighlight, delta);
+        UpdateLayer(_isHeld || _isHighlight);
+
+        if (_isHeld)
+        {
+            List.LastHeld = this;
+            _isHover = false;
+        }
+
+        if (_isHover && !List.IsHovered)
+        {
+            List.LastHovered = this;
+        }
     }
 
     public void SetFixedPosition(CardPosition cardPosition)
@@ -115,7 +108,7 @@ public class Card : Control
 
     public Vector2 GetAnchorOffset()
     {
-        if (_isHover && !List.IsHeld)
+        if (_isHighlight)
             return (Vector2.Up * 200).Rotated(Mathf.Deg2Rad(_cardBody.RectRotation));
         return Vector2.Zero;
     }
@@ -135,7 +128,7 @@ public class Card : Control
     public void MoveTowardsDesired(Vector2 desiredPosition, float weight)
     {
         _cardAnchor.RectPosition = _cardAnchor.RectPosition.LinearInterpolate(desiredPosition, weight);
-        _isMoving = _cardAnchor.RectPosition.DistanceSquaredTo(desiredPosition) > 5;
+        _isMoving = _cardAnchor.RectPosition.DistanceSquaredTo(desiredPosition) > 20;
     }
 
     public void RotateTowardsDesired(float desiredRotation, float delta)
