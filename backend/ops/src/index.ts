@@ -11,4 +11,8 @@ new BackendStack(app, "legalBrawlBackendStack", {
     account: accountId,
     region: region,
   },
+  tags: {
+    asset: "game-off-2022",
+    environment: "prod", //No real `development` environment yet
+  },
 })
