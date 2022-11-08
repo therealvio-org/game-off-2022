@@ -19,6 +19,22 @@ public class CardPool : Control
         }
 
         Owner.Connect("DisplayCards", this, "OnDisplay");
+        Owner.Connect("Enter", this, "OnEnter");
+        Owner.Connect("Exit", this, "OnExit");
+    }
+
+    public void OnEnter()
+    {
+
+    }
+
+    public void OnExit()
+    {
+        foreach (CardDisplay c in _displayCards)
+        {
+            c.FlipDown();
+            c.Unselect();
+        }
     }
 
     public void OnDisplay(int[] cardIds, int handSize)

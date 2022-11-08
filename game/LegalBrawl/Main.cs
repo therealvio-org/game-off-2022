@@ -3,42 +3,27 @@ using System;
 
 public class Main : Control
 {
-    [Signal] delegate void BeginSelection();
-    [Signal] delegate void BeginBattle();
+    [Signal] delegate void PhaseChange();
     public Phase currentPhase;
     private GameUI _ui;
     public override void _Ready()
     {
         _ui = FindNode("GameUI") as GameUI;
 
-        Connect("BeginSelection", this, "OnSelection");
-        Connect("BeginBattle", this, "OnBattle");
+        Connect("PhaseChange", this, "OnPhaseChange");
 
-        Debugger.Add("OnSelection", this);
+        Debugger.Add("GoToSelection", this);
     }
 
-    public void OnSelection()
+    public void GoToSelection()
     {
-        Phase selectionPhase = new Selection();
-        _ui.ExitCurrent();
-        BeginPhase(selectionPhase);
-        _ui.Show(selectionPhase);
+        EmitSignal("PhaseChange", new Selection());
     }
 
-    public void OnBattle()
+    public void OnPhaseChange(Phase phase)
     {
-        Phase battlePhase = new Battle();
-        _ui.ExitCurrent();
-        BeginPhase(battlePhase);
-        _ui.Show(battlePhase);
-    }
-
-    public void BeginPhase(Phase phase)
-    {
-        if (currentPhase != null)
-            currentPhase.Cleanup();
-
         AddChild(phase);
         currentPhase = phase;
+        _ui.Transition(phase);
     }
 }

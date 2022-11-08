@@ -60,4 +60,9 @@ public class Selection : Phase
         GD.Print("Removing ", CardLibrary.Get(id).Name);
         _handCards.Remove(id);
     }
+
+    public int[] GetHand()
+    {
+        return _handCards.ToArray();
+    }
 }
