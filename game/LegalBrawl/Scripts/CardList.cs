@@ -48,4 +48,14 @@ public class CardList
     public Card Get(int index) => _cards[index];
     public int Count => _cards.Count;
     public List<Card> List => _cards;
+
+    public void Dispose()
+    {
+        foreach (Card c in _cards)
+        {
+            c.List = null;
+            c.QueueFree();
+        }
+        _cards.RemoveAll((Card c) => true);
+    }
 }

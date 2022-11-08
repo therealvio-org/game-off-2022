@@ -26,6 +26,8 @@ public class Card : Control
         _fixedAnchor = _layer.GetNode<Control>("FixedAnchor");
         _cardAnchor = _layer.GetNode<Control>("CardAnchor");
         _cardBody = _cardAnchor.GetNode<CardDisplay>("CardDisplay");
+        _cardBody.SuppressClick();
+
         _isHeld = false;
         _isHover = false;
         _isMoving = false;
@@ -75,7 +77,7 @@ public class Card : Control
     private void HoldCard(bool pressed)
     {
         _isHeld = pressed;
-        _cardHover.MouseFilter = _isHeld ? MouseFilterEnum.Ignore : MouseFilterEnum.Pass;
+        _cardHover.MouseFilter = _isHeld ? MouseFilterEnum.Ignore : MouseFilterEnum.Stop;
     }
 
     public override void _Process(float delta)

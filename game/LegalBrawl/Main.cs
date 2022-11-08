@@ -20,6 +20,7 @@ public class Main : Control
     public void OnSelection()
     {
         Phase selectionPhase = new Selection();
+        _ui.ExitCurrent();
         BeginPhase(selectionPhase);
         _ui.Show(selectionPhase);
     }
@@ -27,6 +28,7 @@ public class Main : Control
     public void OnBattle()
     {
         Phase battlePhase = new Battle();
+        _ui.ExitCurrent();
         BeginPhase(battlePhase);
         _ui.Show(battlePhase);
     }
