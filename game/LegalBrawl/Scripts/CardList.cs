@@ -29,11 +29,22 @@ public class CardList
         card.List = this;
         _cards.Add(card);
     }
+    public void RemoveId(int id)
+    {
+        Card card = _cards.FindLast((Card c) => c.GetId() == id);
+        if (card == null)
+            throw new System.Exception("Trying to remove a card that isn't present");
+
+        _cards.Remove(card);
+        card.Free();
+    }
+
     public void RemoveAt(int index)
     {
         _cards[index].List = null;
         _cards.RemoveAt(index);
     }
+
     public Card Get(int index) => _cards[index];
     public int Count => _cards.Count;
     public List<Card> List => _cards;

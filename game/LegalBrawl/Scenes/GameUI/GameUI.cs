@@ -18,7 +18,7 @@ public class GameUI : Node
 
     public void ShowSelection(Selection selection)
     {
-        GD.Print("Test");
+
         selection.ConnectTo(_selectionUI);
     }
 

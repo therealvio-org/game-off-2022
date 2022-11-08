@@ -21,6 +21,8 @@ public class CardHand : Control
     {
         _cardAnchor = GetNode<Control>("Anchor");
         _cards = new CardList();
+        Owner.Connect("AddCard", this, "OnAdd");
+        Owner.Connect("RemoveCard", this, "OnRemove");
     }
 
     // Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -103,5 +105,17 @@ public class CardHand : Control
         {
             _cards.Get(i).SetFixedPosition(positions[i]);
         }
+    }
+
+    public void OnAdd(int id)
+    {
+        Card card = SceneManager.Create<Card>(SceneManager.Scenes.Card, this);
+        card.SetId(id);
+        _cards.Add(card);
+    }
+
+    public void OnRemove(int id)
+    {
+        _cards.RemoveId(id);
     }
 }

@@ -5,6 +5,7 @@ public class Selection : Phase
 {
     const int MAX_HAND = 7;
     const int MAX_POOL = 10;
+    private int _handSize { get => _handCards.Count; }
     private List<int> _poolCards;
     private List<int> _handCards;
     private SelectionUI _ui;
@@ -19,6 +20,8 @@ public class Selection : Phase
     {
         _ui = ui;
         ui.RerollButton.Connect("pressed", this, "OnReroll");
+        ui.Connect("AddCard", this, "AddToHand");
+        ui.Connect("RemoveCard", this, "RemoveFromHand");
     }
 
     public void OnReroll()
@@ -32,7 +35,7 @@ public class Selection : Phase
         foreach (int i in _handCards)
             _poolCards.Add(i);
         RefillPool();
-        DisplayPool();
+        _ui.EmitSignal("DisplayCards", _poolCards, _handSize);
     }
 
     public void ClearPoolCards()
@@ -46,8 +49,15 @@ public class Selection : Phase
             _poolCards.Add(CardLibrary.DrawRandomId());
     }
 
-    public void DisplayPool()
+    public void AddToHand(int id)
     {
-        _ui.CardPool.Display(_poolCards.ToArray());
+        GD.Print("Adding ", CardLibrary.Get(id).Name);
+        _handCards.Add(id);
+    }
+
+    public void RemoveFromHand(int id)
+    {
+        GD.Print("Removing ", CardLibrary.Get(id).Name);
+        _handCards.Remove(id);
     }
 }
