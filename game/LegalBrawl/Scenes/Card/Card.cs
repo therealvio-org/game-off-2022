@@ -6,7 +6,7 @@ public class Card : Control
     private Control _fixedAnchor;
     private Control _cardAnchor;
     private CanvasLayer _layer;
-    private Control _cardBody;
+    private CardDisplay _cardBody;
     private Control _cardHover;
     private bool _isHeld;
     public bool IsHeld { get => _isHeld; }
@@ -25,7 +25,7 @@ public class Card : Control
 
         _fixedAnchor = _layer.GetNode<Control>("FixedAnchor");
         _cardAnchor = _layer.GetNode<Control>("CardAnchor");
-        _cardBody = _cardAnchor.GetNode<Control>("CardDisplay");
+        _cardBody = _cardAnchor.GetNode<CardDisplay>("CardDisplay");
         _isHeld = false;
         _isHover = false;
         _isMoving = false;
@@ -144,5 +144,15 @@ public class Card : Control
     public void UpdateLayer(bool above)
     {
         _layer.Layer = above ? Layers.CARD_ABOVE : Layers.CARD;
+    }
+
+    public int GetId()
+    {
+        return _cardBody.Resource.Id;
+    }
+
+    public void SetId(int id)
+    {
+        _cardBody.Display(CardLibrary.Get(id));
     }
 }
