@@ -8,7 +8,7 @@ public class Selection : Phase
     private int _handSize { get => _handCards.Count; }
     private List<int> _poolCards;
     private List<int> _handCards;
-    private SelectionUI _ui;
+    private SelectionView _view;
 
     public override void _Ready()
     {
@@ -16,12 +16,12 @@ public class Selection : Phase
         _handCards = new List<int>();
     }
 
-    public void ConnectTo(SelectionUI ui)
+    public void ConnectTo(SelectionView view)
     {
-        _ui = ui;
-        ui.RerollButton.Connect("pressed", this, "OnReroll");
-        ui.Connect("AddCard", this, "AddToHand");
-        ui.Connect("RemoveCard", this, "RemoveFromHand");
+        _view = view;
+        view.RerollButton.Connect("pressed", this, "OnReroll");
+        view.Connect("AddCard", this, "AddToHand");
+        view.Connect("RemoveCard", this, "RemoveFromHand");
     }
 
     public void OnReroll()
@@ -35,7 +35,7 @@ public class Selection : Phase
         foreach (int i in _handCards)
             _poolCards.Add(i);
         RefillPool();
-        _ui.EmitSignal("DisplayCards", _poolCards, _handSize);
+        _view.EmitSignal("DisplayCards", _poolCards, _handSize);
     }
 
     public void ClearPoolCards()

@@ -1,6 +1,6 @@
 using Godot;
 
-public class SelectionUI : Control
+public class SelectionView : View
 {
     [Signal]
     public delegate void DisplayCards(int[] cardIds, int handSize);
@@ -8,11 +8,6 @@ public class SelectionUI : Control
     public delegate void AddCard(int id);
     [Signal]
     public delegate void RemoveCard(int id);
-    [Signal]
-    public delegate void Enter();
-    [Signal]
-    public delegate void Exit();
-
 
     public Button HelpButton;
     public Button VolumeButton;

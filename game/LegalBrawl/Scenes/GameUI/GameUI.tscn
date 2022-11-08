@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=2]
 
 [ext_resource path="res://Scenes/GameUI/GameUI.cs" type="Script" id=1]
-[ext_resource path="res://Scenes/SelectionUI/SelectionUI.tscn" type="PackedScene" id=2]
+[ext_resource path="res://Scenes/Views/SelectionView.tscn" type="PackedScene" id=2]
 
 [node name="GameUI" type="Control"]
 anchor_right = 1.0
@@ -9,4 +9,4 @@ anchor_bottom = 1.0
 mouse_filter = 2
 script = ExtResource( 1 )
 
-[node name="SelectionUI" parent="." instance=ExtResource( 2 )]
+[node name="SelectionView" parent="." instance=ExtResource( 2 )]
