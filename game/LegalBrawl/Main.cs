@@ -9,23 +9,26 @@ public class Main : Control
     private GameUI _ui;
     public override void _Ready()
     {
+        _ui = FindNode("GameUI") as GameUI;
+
         Connect("BeginSelection", this, "OnSelection");
         Connect("BeginBattle", this, "OnBattle");
-        //_ui = GetNode<GameUI>("GameUI");
+
+        Debugger.Add("OnSelection", this);
     }
 
     public void OnSelection()
     {
         Phase selectionPhase = new Selection();
         BeginPhase(selectionPhase);
-        //_ui.Show(selectionPhase);
+        _ui.Show(selectionPhase);
     }
 
     public void OnBattle()
     {
         Phase battlePhase = new Battle();
         BeginPhase(battlePhase);
-        //_ui.Show(battlePhase);
+        _ui.Show(battlePhase);
     }
 
     public void BeginPhase(Phase phase)

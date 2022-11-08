@@ -17,6 +17,7 @@ config/icon="res://icon.png"
 [autoload]
 
 SceneManager="*res://Autoloads/SceneManager.cs"
+CardLibrary="*res://Autoloads/CardLibrary.cs"
 
 [display]
 
