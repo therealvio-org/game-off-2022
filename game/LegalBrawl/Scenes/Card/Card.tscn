@@ -42,7 +42,6 @@ anchor_bottom = 0.5
 mouse_filter = 2
 
 [node name="CardDisplay" parent="Layer/CardAnchor" instance=ExtResource( 1 )]
-rect_pivot_offset = Vector2( 100, 140 )
 
 [node name="HoverBox" type="Control" parent="Layer/CardAnchor/CardDisplay"]
 anchor_left = 0.5
