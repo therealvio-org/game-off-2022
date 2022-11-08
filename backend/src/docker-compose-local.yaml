@@ -1,0 +1,16 @@
+version: "3.7"
+services:
+  apihandler:
+    image: public.ecr.aws/lambda/provided:al2
+    container_name: apihandler
+    hostname: apihandler
+    volumes:
+      - "${PWD}/dist/bootstrap:/var/runtime/bootstrap"
+    ports:
+      - 9000:8080
+    environment:
+      - AWS_REGION
+      - AWS_SECRET_ACCESS_KEY_ID
+      - AWS_SECRET_ACCESS_KEY
+      - AWS_SESSION_TOKEN
+    command: foo
