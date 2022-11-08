@@ -9,9 +9,14 @@ public class CardDisplay : NinePatchRect
     private Label _costLabel;
     private TextureRect _cardTexture;
     private Label _descriptionLabel;
+    private Control _frontFace;
+    private Control _backFace;
+    private AnimationPlayer _animator;
     private bool _selected;
     private bool _flipped;
     private bool _suppressClick;
+    private BaseCard _queueResource;
+    private bool _queueActive;
 
     public BaseCard Resource { get => _cardResource; }
 
@@ -21,6 +26,9 @@ public class CardDisplay : NinePatchRect
         _costLabel = FindNode("CardCost") as Label;
         _cardTexture = FindNode("CardTexture") as TextureRect;
         _descriptionLabel = FindNode("Description") as Label;
+        _frontFace = FindNode("FrontFace") as Control;
+        _backFace = FindNode("BackFace") as Control;
+        _animator = FindNode("Animator") as AnimationPlayer;
 
         Connect("OnClick", this, "SelfClick");
     }
@@ -39,8 +47,6 @@ public class CardDisplay : NinePatchRect
 
     public void Display(BaseCard resource, bool active = true)
     {
-        FlipUp();
-
         _cardResource = resource;
         _nameLabel.Text = resource.Name;
         _costLabel.Text = $"${resource.Cost}k";
@@ -51,22 +57,43 @@ public class CardDisplay : NinePatchRect
         else Select();
     }
 
+    public void QueueDisplay(BaseCard resource, bool active = true)
+    {
+        _queueResource = resource;
+        _queueActive = active;
+    }
+
     public void FlipUp()
     {
+        if (!_flipped)
+            _animator.Play("FlipDown");
+
         _flipped = false;
-        _nameLabel.Show();
-        _costLabel.Show();
-        _cardTexture.Show();
-        _descriptionLabel.Show();
+        _animator.Queue("FlipUp");
     }
 
     public void FlipDown()
     {
         _flipped = true;
-        _nameLabel.Hide();
-        _costLabel.Hide();
-        _cardTexture.Hide();
-        _descriptionLabel.Hide();
+        _animator.Play("FlipDown");
+    }
+
+    public void ShowFace()
+    {
+        _frontFace.Show();
+        _backFace.Hide();
+
+        if (_queueResource != null)
+        {
+            Display(_queueResource, _queueActive);
+            _queueResource = null;
+        }
+    }
+
+    public void ShowBack()
+    {
+        _frontFace.Hide();
+        _backFace.Show();
     }
 
     public void Select()

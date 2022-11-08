@@ -5,9 +5,14 @@ using System.Collections.Generic;
 public class CardPool : Control
 {
     private List<CardDisplay> _displayCards;
+    private int _nextFlipId;
+    private bool _flipToFace;
+    private AnimationPlayer _animationPlayer;
+
     public override void _Ready()
     {
         _displayCards = new List<CardDisplay>();
+        _animationPlayer = FindNode("AnimationPlayer") as AnimationPlayer;
 
         foreach (Node n in GetNode("Column/TopRow").GetChildren()) _displayCards.Add(n as CardDisplay);
         foreach (Node n in GetNode("Column/BottomRow").GetChildren()) _displayCards.Add(n as CardDisplay);
@@ -41,13 +46,27 @@ public class CardPool : Control
     {
         for (int i = 0; i < _displayCards.Count; i++)
         {
-            if (i >= cardIds.Length)
-                _displayCards[i].FlipDown();
-            else if (i < handSize)
-                _displayCards[i].Display(CardLibrary.Get(cardIds[i]), false);
+            if (i < handSize)
+                _displayCards[i].QueueDisplay(CardLibrary.Get(cardIds[i]), false);
             else
-                _displayCards[i].Display(CardLibrary.Get(cardIds[i]));
+                _displayCards[i].QueueDisplay(CardLibrary.Get(cardIds[i]));
         }
+
+        _nextFlipId = 0;
+        _flipToFace = true;
+        _animationPlayer.Stop(true);
+        _animationPlayer.Play("FlipAll");
+    }
+
+    public void FlipNext()
+    {
+        if (_nextFlipId >= _displayCards.Count)
+            return;
+
+        if (_flipToFace)
+            _displayCards[_nextFlipId++].FlipUp();
+        else
+            _displayCards[_nextFlipId++].FlipDown();
     }
 
     public void CardClicked(int id, bool selected, bool flipped)
