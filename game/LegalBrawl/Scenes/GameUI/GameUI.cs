@@ -4,13 +4,13 @@ using System;
 public class GameUI : Node
 {
     private enum Views { None, Selection, Battle }
-    private SelectionUI _selectionUI;
+    private SelectionView _selectionView;
     //private BattleUI _battleUI;
     private Views _currentView;
     public override void _Ready()
     {
         _currentView = Views.None;
-        _selectionUI = GetNode<SelectionUI>("SelectionUI");
+        _selectionView = GetNode<SelectionView>("SelectionView");
     }
 
     public void ExitCurrent()
@@ -29,7 +29,7 @@ public class GameUI : Node
 
     public void ShowSelection(Selection selection)
     {
-        _selectionUI.EmitSignal("Enter");
-        selection.ConnectTo(_selectionUI);
+        _selectionView.EmitSignal("Enter");
+        selection.ConnectTo(_selectionView);
     }
 }
