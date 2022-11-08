@@ -51,10 +51,10 @@ margin_left = 67.0
 margin_right = 180.0
 margin_bottom = 14.0
 size_flags_horizontal = 3
-text = "$5000"
+text = "$5k"
 align = 2
 
-[node name="TextureRect" type="TextureRect" parent="MarginContainer/VBoxContainer"]
+[node name="CardTexture" type="TextureRect" parent="MarginContainer/VBoxContainer"]
 margin_top = 18.0
 margin_right = 180.0
 margin_bottom = 155.0
@@ -64,10 +64,12 @@ texture = ExtResource( 2 )
 expand = true
 stretch_mode = 6
 
-[node name="Label" type="Label" parent="MarginContainer/VBoxContainer"]
+[node name="Description" type="Label" parent="MarginContainer/VBoxContainer"]
 modulate = Color( 0.266667, 0.262745, 0.262745, 1 )
 margin_top = 159.0
 margin_right = 180.0
 margin_bottom = 260.0
 size_flags_vertical = 3
 text = "Stuff"
+align = 1
+valign = 1

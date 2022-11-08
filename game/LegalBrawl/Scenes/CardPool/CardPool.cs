@@ -16,4 +16,12 @@ public class CardPool : Control
 
         foreach (CardDisplay c in _displayCards) GD.Print(c.Name);
     }
+
+    public void Display(int[] cardIds)
+    {
+        for (int i = 0; i < cardIds.Length; i++)
+        {
+            _displayCards[i].Display(CardLibrary.Get(cardIds[i]));
+        }
+    }
 }
