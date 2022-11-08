@@ -23,6 +23,8 @@ public class CardHand : Control
         _cards = new CardList();
         Owner.Connect("AddCard", this, "OnAdd");
         Owner.Connect("RemoveCard", this, "OnRemove");
+        Owner.Connect("Enter", this, "OnEnter");
+        Owner.Connect("Exit", this, "OnExit");
     }
 
     // Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -117,5 +119,15 @@ public class CardHand : Control
     public void OnRemove(int id)
     {
         _cards.RemoveId(id);
+    }
+
+    public void OnEnter()
+    {
+        _cards = new CardList();
+    }
+
+    public void OnExit()
+    {
+        _cards.Dispose();
     }
 }

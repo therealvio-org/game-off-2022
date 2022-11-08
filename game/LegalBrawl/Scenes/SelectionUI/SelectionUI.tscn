@@ -9,15 +9,15 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 script = ExtResource( 3 )
 
-[node name="HelpButton" type="Control" parent="."]
+[node name="HelpButton" type="Button" parent="."]
 margin_right = 40.0
 margin_bottom = 40.0
 
-[node name="VolumeButton" type="Control" parent="."]
+[node name="VolumeButton" type="Button" parent="."]
 margin_right = 40.0
 margin_bottom = 40.0
 
-[node name="BattleButton" type="Control" parent="."]
+[node name="BattleButton" type="Button" parent="."]
 margin_right = 40.0
 margin_bottom = 40.0
 

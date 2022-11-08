@@ -11,6 +11,7 @@ public class CardDisplay : NinePatchRect
     private Label _descriptionLabel;
     private bool _selected;
     private bool _flipped;
+    private bool _suppressClick;
 
     public BaseCard Resource { get => _cardResource; }
 
@@ -26,6 +27,9 @@ public class CardDisplay : NinePatchRect
 
     public override void _GuiInput(InputEvent @event)
     {
+        if (_cardResource == null || _suppressClick)
+            return;
+
         if (@event is InputEventMouseButton mouseEvent)
         {
             if (mouseEvent.Pressed && mouseEvent.ButtonIndex == (int)ButtonList.Left)
@@ -42,16 +46,39 @@ public class CardDisplay : NinePatchRect
         _costLabel.Text = $"${resource.Cost}k";
         // _cardTexture
         _descriptionLabel.Text = resource.Description;
+
+        if (active) Unselect();
+        else Select();
     }
 
     public void FlipUp()
     {
         _flipped = false;
+        _nameLabel.Show();
+        _costLabel.Show();
+        _cardTexture.Show();
+        _descriptionLabel.Show();
     }
 
     public void FlipDown()
     {
         _flipped = true;
+        _nameLabel.Hide();
+        _costLabel.Hide();
+        _cardTexture.Hide();
+        _descriptionLabel.Hide();
+    }
+
+    public void Select()
+    {
+        Modulate = new Color(1, 1, 1, 0.5f);
+        _selected = true;
+    }
+
+    public void Unselect()
+    {
+        Modulate = new Color(1, 1, 1, 1);
+        _selected = false;
     }
 
     public void SelfClick(int id, bool selected, bool flipped)
@@ -59,6 +86,14 @@ public class CardDisplay : NinePatchRect
         if (flipped)
             return;
 
-        _selected = !selected;
+        if (selected)
+            Unselect();
+        else
+            Select();
+    }
+
+    public void SuppressClick()
+    {
+        _suppressClick = true;
     }
 }
