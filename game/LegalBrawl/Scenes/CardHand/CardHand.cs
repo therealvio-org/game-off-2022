@@ -30,7 +30,7 @@ public class CardHand : Control
     // Called every frame. 'delta' is the elapsed time since the previous frame.
     public override void _Process(float delta)
     {
-        bool assignPositions = false;
+        //bool assignPositions = false;
 
         if (Input.IsPhysicalKeyPressed((int)Godot.KeyList.A))
         {
@@ -39,7 +39,7 @@ public class CardHand : Control
                 keyPress = true;
                 Card card = SceneManager.Create<Card>(SceneManager.Scenes.Card, this);
                 _cards.Add(card);
-                assignPositions = true;
+                //assignPositions = true;
             }
         }
         else if (Input.IsPhysicalKeyPressed((int)Godot.KeyList.D))
@@ -49,7 +49,7 @@ public class CardHand : Control
                 keyPress = true;
                 _cards.Get(_cards.Count - 1).Free();
                 _cards.RemoveAt(_cards.Count - 1);
-                assignPositions = true;
+                //assignPositions = true;
             }
         }
         else
