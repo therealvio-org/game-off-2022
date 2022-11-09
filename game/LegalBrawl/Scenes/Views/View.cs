@@ -5,5 +5,8 @@ public class View : Control
     public delegate void Enter();
     [Signal]
     public delegate void Exit();
+    public override void _Ready()
+    {
 
+    }
 }
