@@ -19,17 +19,6 @@ var (
 	env            = lbapiconfig.New()
 )
 
-type Body struct {
-	Handinfo HandInfo `json:"handinfo"`
-}
-
-type HandInfo struct {
-	Name     string  `json:"playerName"`
-	PlayerId string  `json:"playerId"`
-	Version  string  `json:"version"`
-	Cards    []int16 `json:"cards"`
-}
-
 // Parse the body of request (in JSON) into usable structs
 func ParseBody(b string) (*Body, error) {
 	var body Body
@@ -59,16 +48,10 @@ func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 		content = "Hello, World!"
 	case "/v1/playerHand":
 		if request.HTTPMethod == "POST" {
-			pB, err := ParseBody(request.Body)
+			parsedBody, err := ParseBody(request.Body)
 			if err != nil {
 				return events.APIGatewayProxyResponse{Body: "Error", StatusCode: 500}, fmt.Errorf("error: %v", err)
 			}
-			//INVOKE THE DYNAMO DB WRITER LOGIC
-			var hand Hand
-			hand.PlayerName = pB.Handinfo.Name
-			hand.PlayerId = pB.Handinfo.PlayerId
-			hand.Version = pB.Handinfo.Version
-			hand.Cards = pB.Handinfo.Cards //Hands are showing as null
 
 			cfg, err := config.LoadDefaultConfig(ctx)
 			if err != nil {
@@ -78,7 +61,7 @@ func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 				DynamoDbClient: dynamodb.NewFromConfig(cfg),
 				TableName:      env.PlayerHandTableName,
 			}
-			err = DDBHandler.AddHand(dDBHandler, hand)
+			err = DDBHandler.AddHand(dDBHandler, parsedBody.HandInfo)
 			if err != nil {
 				log.Fatalf("error adding item to table: %v", err)
 			}
