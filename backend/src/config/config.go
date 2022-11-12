@@ -6,6 +6,7 @@ import (
 
 type EnvConfig struct {
 	LegalBrawlSecretName string `split_words:"true" required:"true"`
+	PlayerHandTableName  string `split_words:"true" required:"true" default:"playerHands"`
 }
 
 func New() EnvConfig {
