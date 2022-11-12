@@ -9,8 +9,11 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 )
 
-// TODO: Handle Duplicates - this should return an error
-// TODO: Need to check that types match before marshalling
+// BUG: Handle Duplicates - this should return an error.
+//
+// BUG: Need to check that types match, and contents are not null before marshalling.
+//
+// Adds the player's submitted hand from the client to the Database.
 func (ddbh dDBHandler) addHand(h handInfo) error {
 	item, err := attributevalue.MarshalMap(h)
 	if err != nil {
