@@ -20,8 +20,8 @@ var (
 )
 
 // Parse the body of request (in JSON) into usable structs
-func ParseBody(b string) (*Body, error) {
-	var body Body
+func parseBody(b string) (*body, error) {
+	var body body
 	err := json.Unmarshal([]byte(b), &body)
 	if err != nil {
 		return nil, err
@@ -48,7 +48,7 @@ func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 		content = "Hello, World!"
 	case "/v1/playerHand":
 		if request.HTTPMethod == "POST" {
-			parsedBody, err := ParseBody(request.Body)
+			parsedBody, err := parseBody(request.Body)
 			if err != nil {
 				return events.APIGatewayProxyResponse{Body: "Error", StatusCode: 500}, fmt.Errorf("error: %v", err)
 			}
@@ -57,11 +57,11 @@ func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 			if err != nil {
 				log.Fatalf("error loading SDK config: %v\n", err)
 			}
-			dDBHandler := DDBHandler{
+			dynamoHandler := dDBHandler{
 				DynamoDbClient: dynamodb.NewFromConfig(cfg),
 				TableName:      env.PlayerHandTableName,
 			}
-			err = DDBHandler.AddHand(dDBHandler, parsedBody.HandInfo)
+			err = dDBHandler.addHand(dynamoHandler, parsedBody.HandInfo)
 			if err != nil {
 				log.Fatalf("error adding item to table: %v", err)
 			}

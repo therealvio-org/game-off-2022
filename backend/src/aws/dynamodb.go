@@ -11,7 +11,7 @@ import (
 
 // TODO: Handle Duplicates - this should return an error
 // TODO: Need to check that types match before marshalling
-func (ddbh DDBHandler) AddHand(h HandInfo) error {
+func (ddbh dDBHandler) addHand(h handInfo) error {
 	item, err := attributevalue.MarshalMap(h)
 	if err != nil {
 		log.Panicf("unable to marshal submitted hand: %v", err)
