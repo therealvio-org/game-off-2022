@@ -9,8 +9,6 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 )
 
-// BUG: Handle Duplicates - this should return an error.
-//
 // BUG: Need to check that types match, and contents are not null before marshalling.
 //
 // Adds the player's submitted hand from the client to the Database.
