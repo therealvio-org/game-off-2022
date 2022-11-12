@@ -1,4 +1,4 @@
-package dynamodb
+package lbapiaws
 
 import (
 	"context"
@@ -8,6 +8,18 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go/aws"
 )
+
+type DDBHandler struct {
+	DynamoDbClient *dynamodb.Client
+	TableName      string
+}
+
+type Hand struct {
+	PlayerName string  `dynamodbav:"playerName"`
+	PlayerId   string  `dynamodbav:"playerId"`
+	Version    string  `dynamodbav:"version"`
+	Cards      []int16 `dynamodbav:"cards"`
+}
 
 // TODO: Handle Duplicates - this should return an error
 // TODO: Need to check that types match before marshalling

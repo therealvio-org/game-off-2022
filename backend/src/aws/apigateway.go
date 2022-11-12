@@ -1,10 +1,9 @@
-package apigateway
+package lbapiaws
 
 import (
 	"context"
 	"encoding/json"
 	"fmt"
-	lbapidynamodb "legalbrawlapi/aws/dynamodb"
 	lbapiconfig "legalbrawlapi/config"
 	"legalbrawlapi/secret"
 	"log"
@@ -65,7 +64,7 @@ func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 				return events.APIGatewayProxyResponse{Body: "Error", StatusCode: 500}, fmt.Errorf("error: %v", err)
 			}
 			//INVOKE THE DYNAMO DB WRITER LOGIC
-			var hand lbapidynamodb.Hand
+			var hand Hand
 			hand.PlayerName = pB.Handinfo.Name
 			hand.PlayerId = pB.Handinfo.PlayerId
 			hand.Version = pB.Handinfo.Version
@@ -75,11 +74,11 @@ func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 			if err != nil {
 				log.Fatalf("error loading SDK config: %v\n", err)
 			}
-			dDBHandler := lbapidynamodb.DDBHandler{
+			dDBHandler := DDBHandler{
 				DynamoDbClient: dynamodb.NewFromConfig(cfg),
 				TableName:      env.PlayerHandTableName,
 			}
-			err = lbapidynamodb.DDBHandler.AddHand(dDBHandler, hand)
+			err = DDBHandler.AddHand(dDBHandler, hand)
 			if err != nil {
 				log.Fatalf("error adding item to table: %v", err)
 			}
