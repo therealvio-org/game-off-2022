@@ -31,6 +31,8 @@ func parseBody(b string) (*body, error) {
 }
 
 func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+	var response events.APIGatewayProxyResponse
+
 	fmt.Printf("Processing request data for request %s.\n", request.RequestContext.RequestID)
 
 	apiSecret := secret.RetrieveSecrets(ctx, secretCache, env.LegalBrawlSecretName)
@@ -42,33 +44,40 @@ func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 		fmt.Printf("    %s: %s\n", key, value)
 	}
 
-	var content string
 	switch request.Path {
+
 	case "/v1/formationId":
-		content = "Hello, World!"
+		response = events.APIGatewayProxyResponse{Body: "Hello, World!", StatusCode: 200}
+
 	case "/v1/playerHand":
-		if request.HTTPMethod == "POST" {
+		switch request.HTTPMethod {
+
+		case "POST":
 			parsedBody, err := parseBody(request.Body)
 			if err != nil {
-				return events.APIGatewayProxyResponse{Body: "Error", StatusCode: 500}, fmt.Errorf("error: %v", err)
+				return events.APIGatewayProxyResponse{Body: "Internal Error", StatusCode: 500}, fmt.Errorf("error: %v", err)
 			}
 
 			cfg, err := config.LoadDefaultConfig(ctx)
 			if err != nil {
-				log.Fatalf("error loading SDK config: %v\n", err)
+				log.Fatalf("error loading sdk config: %v\n", err)
 			}
+
 			dynamoHandler := dDBHandler{
 				DynamoDbClient: dynamodb.NewFromConfig(cfg),
 				TableName:      env.PlayerHandTableName,
 			}
+
 			err = dDBHandler.addHand(dynamoHandler, parsedBody.HandInfo)
 			if err != nil {
 				log.Fatalf("error adding item to table: %v", err)
 			}
-			content = "Peeps that database"
-		}
+			response = events.APIGatewayProxyResponse{Body: "peeps that database (this is a placeholder, lmao)", StatusCode: 200}
 
+		default:
+			return events.APIGatewayProxyResponse{Body: "invalid method returned", StatusCode: 500}, fmt.Errorf("error: invalid method used: %v", request.HTTPMethod)
+		}
 	}
 
-	return events.APIGatewayProxyResponse{Body: content, StatusCode: 200}, nil
+	return response, nil
 }
