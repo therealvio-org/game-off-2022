@@ -30,7 +30,7 @@ public class Main : Control
         if (CurrentPhase is Selection selectionPhase)
             EmitSignal("PhaseChange", new Battle(selectionPhase.GetHand(), CardLibrary.RandomHand()));
         else
-            EmitSignal("PhaseChange", new Battle(new int[] { 0, 0, 0, 0, 0, 0, 0 }, new int[] { 2, 2, 2, 2, 2, 2, 2 }));
+            EmitSignal("PhaseChange", new Battle(CardLibrary.RandomHand(), CardLibrary.RandomHand()));
     }
 
     public void OnPhaseChange(Phase phase)

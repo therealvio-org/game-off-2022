@@ -51,8 +51,8 @@ public class CardDisplay : NinePatchRect
         _cardResource = resource;
         _nameLabel.Text = resource.Name;
         _costLabel.Text = $"${resource.Cost}k";
-        // _cardTexture
-        _descriptionLabel.Text = resource.Description;
+        _cardTexture.Texture = resource.Art;
+        _descriptionLabel.Text = resource.GetDescription();
 
         if (active) Unselect();
         else Select();

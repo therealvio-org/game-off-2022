@@ -15,6 +15,7 @@ public class SelectionView : View
     public CardPool CardPool;
     public CardHand CardHand;
     public Button RerollButton;
+    private Label _costLabel;
 
     public override void _Ready()
     {
@@ -26,6 +27,6 @@ public class SelectionView : View
         CardPool = GetNode<CardPool>("CardPool");
         CardHand = GetNode<CardHand>("CardHand");
         RerollButton = GetNode<Button>("RerollButton");
-
+        _costLabel = FindNode("CostLabel") as Label;
     }
 }

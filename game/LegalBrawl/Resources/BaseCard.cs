@@ -10,13 +10,12 @@ public class BaseCard : Resource
     [Export]
     public int Cost;
     [Export]
-    public Image Art;
-    [Export]
-    public string Description;
+    public Texture Art;
 
     private Battle _battle;
     private PlayerTypes _owner;
     public virtual void OnPlay() { }
+    public virtual string GetDescription() => "No description available";
 
     public void Initialise(Battle battle, PlayerTypes owner)
     {
