@@ -7,6 +7,6 @@ public class AddCredibility : BaseCard
 
     public override void OnPlay()
     {
-        _self.ModifyCredibility(Value);
+        ModifyCredibility(Value);
     }
 }

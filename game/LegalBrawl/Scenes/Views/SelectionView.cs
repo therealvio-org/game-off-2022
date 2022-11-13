@@ -18,6 +18,8 @@ public class SelectionView : View
 
     public override void _Ready()
     {
+        base._Ready();
+
         HelpButton = GetNode<Button>("HelpButton");
         VolumeButton = GetNode<Button>("VolumeButton");
         BattleButton = GetNode<Button>("BattleButton");
@@ -25,34 +27,5 @@ public class SelectionView : View
         CardHand = GetNode<CardHand>("CardHand");
         RerollButton = GetNode<Button>("RerollButton");
 
-        Connect("Enter", this, "OnEnter");
-        Connect("Exit", this, "OnExit");
-
-        HelpButton.Hide();
-        VolumeButton.Hide();
-        BattleButton.Hide();
-        CardPool.Hide();
-        CardHand.Hide();
-        RerollButton.Hide();
-    }
-
-    public void OnEnter()
-    {
-        HelpButton.Show();
-        VolumeButton.Show();
-        BattleButton.Show();
-        CardPool.Show();
-        CardHand.Show();
-        RerollButton.Show();
-    }
-
-    public void OnExit()
-    {
-        HelpButton.Hide();
-        VolumeButton.Hide();
-        BattleButton.Hide();
-        CardPool.Hide();
-        CardHand.Hide();
-        RerollButton.Hide();
     }
 }

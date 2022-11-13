@@ -7,6 +7,6 @@ public class DamageCredibility : BaseCard
 
     public override void OnPlay()
     {
-        _opponent.ModifyCredibility(Value);
+        ModifyCredibility(-Value, false);
     }
 }

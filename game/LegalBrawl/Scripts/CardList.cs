@@ -31,7 +31,7 @@ public class CardList
     }
     public void RemoveId(int id)
     {
-        Card card = _cards.FindLast((Card c) => c.GetId() == id);
+        Card card = _cards.FindLast((Card c) => c.Display.Resource.Id == id);
         if (card == null)
             throw new System.Exception("Trying to remove a card that isn't present");
 

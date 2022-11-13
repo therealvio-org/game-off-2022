@@ -3,6 +3,7 @@ using System;
 
 public class CardDisplay : NinePatchRect
 {
+    [Signal] public delegate void Reveal();
     [Signal] public delegate void OnClick(int id, bool selected, bool flipped);
     private BaseCard _cardResource;
     private Label _nameLabel;
@@ -80,6 +81,7 @@ public class CardDisplay : NinePatchRect
 
     public void ShowFace()
     {
+        _flipped = false;
         _frontFace.Show();
         _backFace.Hide();
 
@@ -90,8 +92,14 @@ public class CardDisplay : NinePatchRect
         }
     }
 
+    public void WhenRevealed()
+    {
+        EmitSignal("Reveal");
+    }
+
     public void ShowBack()
     {
+        _flipped = true;
         _frontFace.Hide();
         _backFace.Show();
     }
@@ -122,5 +130,15 @@ public class CardDisplay : NinePatchRect
     public void SuppressClick()
     {
         _suppressClick = true;
+    }
+
+    public void OffsetRotation()
+    {
+        RectRotation += Randy.Range(-4f, 4f);
+    }
+
+    public void Prime()
+    {
+        Connect("Reveal", _cardResource, "Play");
     }
 }

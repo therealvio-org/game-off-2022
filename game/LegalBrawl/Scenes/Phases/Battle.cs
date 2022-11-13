@@ -1,10 +1,14 @@
 using Godot;
 public class Battle : Phase
 {
-    [Signal] public delegate void PlayCard(int id, Lawyer.Character character);
+    [Signal] public delegate void PlayCard(int id, PlayerTypes character, Battle battle);
+    [Signal] public delegate void CredibilityChange(PlayerTypes character, int from, int to);
+    [Signal] public delegate void LastCard();
+    [Signal] public delegate void DeclareWinner(PlayerTypes winner);
     private int[] _cards;
     private int _cardIndex;
-    private Lawyer.Character _turn;
+    private PlayerTypes _turn;
+    private BoardState _state;
     public Battle(int[] _playerCards, int[] _opponentCards)
     {
         _cardIndex = 0;
@@ -12,23 +16,42 @@ public class Battle : Phase
             _cards = JoinArrays(_playerCards, _opponentCards);
         else
             _cards = JoinArrays(_opponentCards, _playerCards);
+
+        _state = new BoardState();
     }
 
     public void ConnectTo(BattleView view)
     {
         view.Connect("NextCard", this, "GetNextCard");
+        view.Connect("FinishBattle", this, "OnFinishBattle");
         Connect("PlayCard", view, "OnPlayCard");
+        Connect("CredibilityChange", view, "OnCredibilityChange");
+        Connect("LastCard", view, "OnLastCard");
+        Connect("DeclareWinner", view, "OnDeclareWinner");
     }
 
     public void GetNextCard()
     {
-        EmitSignal("PlayCard", _cards[_cardIndex++], _turn);
+        EmitSignal("PlayCard", _cards[_cardIndex++], _turn, this);
+
+        if (_cardIndex == _cards.Length)
+        {
+            EmitSignal("LastCard");
+            return;
+        }
+
         ChangeTurn();
+    }
+
+    public void OnFinishBattle()
+    {
+        PlayerTypes winner = _state.GetWinner();
+        EmitSignal("DeclareWinner", winner);
     }
 
     public void ChangeTurn()
     {
-        _turn = _turn == Lawyer.Character.Player ? Lawyer.Character.Opponent : Lawyer.Character.Player;
+        _turn = _turn == PlayerTypes.Player ? PlayerTypes.Opponent : PlayerTypes.Player;
     }
 
     public bool GoesFirst(int playerCardId, int opponentCardId)
@@ -46,5 +69,14 @@ public class Battle : Phase
         }
 
         return collated;
+    }
+
+    public void ModifyCredibility(PlayerTypes owner, int value, PlayerTypes target)
+    {
+        int from = _state.GetCredibility(target);
+        _state.UpdateCredibility(target, value);
+        int to = _state.GetCredibility(target);
+
+        EmitSignal("CredibilityChange", target, from, to);
     }
 }
