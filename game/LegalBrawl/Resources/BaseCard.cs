@@ -14,14 +14,24 @@ public class BaseCard : Resource
     [Export]
     public string Description;
 
-    protected Player _self;
-    protected Player _opponent;
-
+    private Battle _battle;
+    private PlayerTypes _owner;
     public virtual void OnPlay() { }
 
-    public void Initialise(Player self, Player opponent)
+    public void Initialise(Battle battle, PlayerTypes owner)
     {
-        _self = self;
-        _opponent = opponent;
+        _battle = battle;
+        _owner = owner;
+    }
+
+    public void Play()
+    {
+        OnPlay();
+    }
+
+    public void ModifyCredibility(int value, bool self = true)
+    {
+        PlayerTypes target = self ? _owner : Lawyer.GetOther(_owner);
+        _battle.ModifyCredibility(_owner, value, target);
     }
 }

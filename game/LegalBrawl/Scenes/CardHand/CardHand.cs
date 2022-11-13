@@ -112,8 +112,9 @@ public class CardHand : Control
     public void OnAdd(int id)
     {
         Card card = SceneManager.Create<Card>(SceneManager.Scenes.Card, this);
-        card.SetId(id);
+        card.Display.Display(CardLibrary.Get(id));
         _cards.Add(card);
+        card.MakeGrabbable();
     }
 
     public void OnRemove(int id)

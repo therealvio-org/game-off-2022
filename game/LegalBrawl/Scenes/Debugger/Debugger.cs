@@ -18,4 +18,9 @@ public class Debugger : Node
         button.Text = signal;
         button.Connect("pressed", owner, signal);
     }
+
+    public static bool Exists()
+    {
+        return _instance != null;
+    }
 }

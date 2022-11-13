@@ -28,9 +28,9 @@ public class Main : Control
     public void GoToBattle()
     {
         if (CurrentPhase is Selection selectionPhase)
-            EmitSignal("PhaseChange", new Battle(selectionPhase.GetHand(), new int[0]));
+            EmitSignal("PhaseChange", new Battle(selectionPhase.GetHand(), CardLibrary.RandomHand()));
         else
-            EmitSignal("PhaseChange", new Battle(new int[] { 0, 1, 2, 3, 4, 5, 6 }, new int[] { 0, 1, 2, 3, 4, 5, 6 }));
+            EmitSignal("PhaseChange", new Battle(new int[] { 0, 0, 0, 0, 0, 0, 0 }, new int[] { 2, 2, 2, 2, 2, 2, 2 }));
     }
 
     public void OnPhaseChange(Phase phase)

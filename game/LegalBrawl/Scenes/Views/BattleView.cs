@@ -4,15 +4,28 @@ using System;
 public class BattleView : View
 {
     [Signal] public delegate void NextCard();
+    [Signal] public delegate void FinishBattle();
 
     private Lawyer _player;
     private Lawyer _opponent;
-
+    private Button _nextButton;
+    private AnimationPlayer _animator;
+    private Label _winnerLabel;
     public override void _Ready()
     {
-        GetNode<Button>("NextButton").Connect("pressed", this, "OnNextPressed");
-        _player = GetNode<Lawyer>("Player");
-        _opponent = GetNode<Lawyer>("Opponent");
+        base._Ready();
+
+        _player = FindNode("Player") as Lawyer;
+        _player.Represents(PlayerTypes.Player);
+
+        _opponent = FindNode("Opponent") as Lawyer;
+        _opponent.Represents(PlayerTypes.Opponent);
+
+        _nextButton = FindNode("NextButton") as Button;
+        _nextButton.Connect("pressed", this, "OnNextPressed");
+
+        _animator = GetNode<AnimationPlayer>("AnimationPlayer");
+        _winnerLabel = FindNode("WinnerLabel") as Label;
     }
 
     public void OnNextPressed()
@@ -20,11 +33,36 @@ public class BattleView : View
         EmitSignal("NextCard");
     }
 
-    public void OnPlayCard(int cardId, Lawyer.Character character)
+    public void OnPlayCard(int cardId, PlayerTypes character, Battle battle)
     {
-        if (character == Lawyer.Character.Player)
-            _player.Play(cardId);
-        else
-            _opponent.Play(cardId);
+        GetLawyer(character).Play(cardId, battle);
+    }
+
+    public void OnCredibilityChange(PlayerTypes character, int from, int to)
+    {
+        GetLawyer(character).UpdateCredibility(from, to);
+    }
+
+    public void OnLastCard()
+    {
+        _nextButton.Hide();
+        _animator.Play("Wait");
+    }
+
+    public void OnDeclareWinner(PlayerTypes winner)
+    {
+        _winnerLabel.Text = $"{winner} wins!";
+    }
+
+    public void CallFinishBattle()
+    {
+        EmitSignal("FinishBattle");
+    }
+
+    public Lawyer GetLawyer(PlayerTypes character)
+    {
+        if (character == PlayerTypes.Player)
+            return _player;
+        return _opponent;
     }
 }

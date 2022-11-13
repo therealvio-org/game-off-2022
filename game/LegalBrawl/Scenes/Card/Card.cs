@@ -15,8 +15,10 @@ public class Card : Control
     private bool _isMoving;
     public bool IsMoving { get => _isMoving; }
     private bool _isHighlight { get => !List.IsHeld && _isHover && List.LastHovered == this; }
+    private bool _isGrabbable;
     private AudioStreamPlayer _audioPlayer;
     public CardList List;
+    public CardDisplay Display { get => _cardBody; }
 
     public override void _Ready()
     {
@@ -44,7 +46,7 @@ public class Card : Control
         {
             if (_cardHover.GetGlobalRect().HasPoint(mouseEvent.GlobalPosition))
             {
-                if (!_isHeld)
+                if (_isGrabbable && !_isHeld)
                 {
                     _isHover = true;
                 }
@@ -76,6 +78,9 @@ public class Card : Control
 
     private void HoldCard(bool pressed)
     {
+        if (!_isGrabbable)
+            return;
+
         _isHeld = pressed;
         _cardHover.MouseFilter = _isHeld ? MouseFilterEnum.Ignore : MouseFilterEnum.Stop;
     }
@@ -100,6 +105,12 @@ public class Card : Control
         {
             List.LastHovered = this;
         }
+    }
+
+    public void SetCardPosition(CardPosition cardPosition)
+    {
+        _cardAnchor.RectGlobalPosition = cardPosition.Position;
+        _cardAnchor.RectRotation = cardPosition.Rotation;
     }
 
     public void SetFixedPosition(CardPosition cardPosition)
@@ -148,13 +159,8 @@ public class Card : Control
         _layer.Layer = above ? Layers.CARD_ABOVE : Layers.CARD;
     }
 
-    public int GetId()
+    public void MakeGrabbable()
     {
-        return _cardBody.Resource.Id;
-    }
-
-    public void SetId(int id)
-    {
-        _cardBody.Display(CardLibrary.Get(id));
+        _isGrabbable = true;
     }
 }

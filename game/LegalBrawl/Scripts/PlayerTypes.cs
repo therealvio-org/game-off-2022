@@ -1,0 +1,1 @@
+public enum PlayerTypes { Player, Opponent };
