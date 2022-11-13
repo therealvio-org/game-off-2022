@@ -1,9 +1,13 @@
-[gd_resource type="Resource" load_steps=4 format=2]
+[gd_resource type="Resource" load_steps=8 format=2]
 
 [ext_resource path="res://Resources/DeckResource.cs" type="Script" id=1]
-[ext_resource path="res://Resources/Cards/ExpensiveSuit.tres" type="Resource" id=2]
-[ext_resource path="res://Resources/Cards/EmbarassingDiscovery.tres" type="Resource" id=3]
+[ext_resource path="res://Resources/Cards/StrongHandshake.tres" type="Resource" id=2]
+[ext_resource path="res://Resources/Cards/GoldWatch.tres" type="Resource" id=3]
+[ext_resource path="res://Resources/Cards/TrickQuestion.tres" type="Resource" id=4]
+[ext_resource path="res://Resources/Cards/CourtAppointedLawyer.tres" type="Resource" id=5]
+[ext_resource path="res://Resources/Cards/FreudianSlip.tres" type="Resource" id=6]
+[ext_resource path="res://Resources/Cards/ExpensiveSuit.tres" type="Resource" id=7]
 
 [resource]
 script = ExtResource( 1 )
-Cards = [ ExtResource( 2 ), ExtResource( 3 ) ]
+Cards = [ ExtResource( 2 ), ExtResource( 3 ), ExtResource( 7 ), ExtResource( 6 ), ExtResource( 5 ), ExtResource( 4 ) ]

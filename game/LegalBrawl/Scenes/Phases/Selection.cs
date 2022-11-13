@@ -8,6 +8,7 @@ public class Selection : Phase
     private int _handSize { get => _handCards.Count; }
     private List<int> _poolCards;
     private List<int> _handCards;
+    private int _funds;
     private SelectionView _view;
 
     public override void _Ready()
