@@ -17,3 +17,8 @@ type dDBHandler struct {
 	DynamoDbClient *dynamodb.Client
 	TableName      string
 }
+
+type queryHandsResult struct {
+	HandInfoSlice []handInfo
+	Error         error
+}

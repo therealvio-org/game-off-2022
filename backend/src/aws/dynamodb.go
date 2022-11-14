@@ -34,20 +34,17 @@ func (ddbh dDBHandler) addHand(h handInfo) error {
 	return err
 }
 
-// Queries *all* entries in the database by version number.
-//
-// This operation is gonna be expensive for a Lambda later on, so this result will eventually need
-// to be a redis cache later.
-//
-// TODO: Put in timeout
-func (ddbh dDBHandler) queryHands(version string) ([]handInfo, error) {
+func (ddbh dDBHandler) doQueryHands(version string) queryHandsResult {
 	var availableHands []handInfo
 	var response *dynamodb.QueryOutput
 
 	keyEx := expression.Key("version").Equal(expression.Value(version))
 	expr, err := expression.NewBuilder().WithKeyCondition(keyEx).Build()
 	if err != nil {
-		return availableHands, fmt.Errorf("could not build expression for query. error: %v", err)
+		return queryHandsResult{
+			nil,
+			fmt.Errorf("could not build expression for query. error: %v", err),
+		}
 	} else {
 		response, err = ddbh.DynamoDbClient.Query(context.TODO(), &dynamodb.QueryInput{
 			TableName:                 aws.String(ddbh.TableName),
@@ -56,18 +53,44 @@ func (ddbh dDBHandler) queryHands(version string) ([]handInfo, error) {
 			KeyConditionExpression:    expr.KeyCondition(),
 		})
 		if err != nil {
-			return availableHands, fmt.Errorf("could not query for playerHands in v%v. error: %v", version, err)
+			return queryHandsResult{
+				nil,
+				fmt.Errorf("could not query for playerHands in v%v. error: %v", version, err),
+			}
 		} else {
 			err = attributevalue.UnmarshalListOfMaps(response.Items, &availableHands)
 			if err != nil {
-				return availableHands, fmt.Errorf("couldn't unmarshal query response. error: %v", err)
+				return queryHandsResult{
+					availableHands,
+					fmt.Errorf("couldn't unmarshal query response. error: %v", err),
+				}
 			}
 		}
 	}
 
-	fmt.Printf("%v", availableHands)
+	return queryHandsResult{availableHands, nil}
+}
 
-	return availableHands, nil
+// Queries *all* entries in the database by version number.
+//
+// NOTE: This operation is gonna be expensive for a Lambda later on, so this result will eventually
+// need to be cached later.
+func (ddbh dDBHandler) queryHands(version string) ([]handInfo, error) {
+
+	timeoutWindow := 5 * time.Second
+
+	result := make(chan queryHandsResult, 1)
+	go func() {
+		result <- ddbh.doQueryHands(version)
+	}()
+	select {
+	case <-time.After(timeoutWindow):
+		return nil, fmt.Errorf("timeout - could not query for playerHands in allotted window")
+
+	case result := <-result:
+		return result.HandInfoSlice, nil
+	}
+
 }
 
 // Creates the composite key for the playerHand dynamodb Table
