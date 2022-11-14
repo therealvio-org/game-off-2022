@@ -19,7 +19,7 @@ public class BoardState
 
     public void UpdateCredibility(PlayerTypes character, int value)
     {
-        GetPlayer(character).Credibility += value;
+        GetPlayer(character).UpdateCredibility(value);
     }
 
     public PlayerState GetPlayer(PlayerTypes character)
@@ -37,5 +37,10 @@ public class BoardState
 
 public class PlayerState
 {
-    public int Credibility { get; set; } = 0;
+    public int Credibility { get; private set; } = 0;
+
+    public void UpdateCredibility(int value)
+    {
+        Credibility = Math.Max(Credibility + value, 0);
+    }
 }
