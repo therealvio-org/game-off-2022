@@ -1,0 +1,1 @@
+public enum PhaseTypes { Selection, Battle }

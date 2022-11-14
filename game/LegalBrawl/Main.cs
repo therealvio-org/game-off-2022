@@ -3,8 +3,6 @@ using System;
 
 public class Main : Control
 {
-    [Signal] delegate void StartBattle();
-    [Signal] delegate void StartSelection();
     [Signal] delegate void PhaseChange();
     public Phase CurrentPhase;
     private GameUI _ui;
@@ -13,8 +11,6 @@ public class Main : Control
         _ui = FindNode("GameUI") as GameUI;
 
         Connect("PhaseChange", this, "OnPhaseChange");
-        Connect("StartSelection", this, "GoToSelection");
-        Connect("StartBattle", this, "GoToBattle");
 
         Debugger.Add("GoToSelection", this);
         Debugger.Add("GoToBattle", this);
@@ -39,7 +35,17 @@ public class Main : Control
         if (CurrentPhase != null)
             CurrentPhase.QueueFree();
 
+        phase.Connect("NextPhase", this, "OnNextPhase");
+
         CurrentPhase = phase;
         _ui.Transition(phase);
+    }
+
+    public void OnNextPhase(PhaseTypes type)
+    {
+        if (type == PhaseTypes.Selection)
+            GoToSelection();
+        if (type == PhaseTypes.Battle)
+            GoToBattle();
     }
 }
