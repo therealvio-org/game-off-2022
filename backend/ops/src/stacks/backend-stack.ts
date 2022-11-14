@@ -1,12 +1,13 @@
 import * as cdk from "aws-cdk-lib"
 import * as path from "path"
 import { Construct } from "constructs"
-import { aws_apigateway as apigateway } from "aws-cdk-lib"
+import { aws_apigateway as apigateway, Duration } from "aws-cdk-lib"
 import { aws_dynamodb as dynamodb } from "aws-cdk-lib"
 import { aws_iam as iam } from "aws-cdk-lib"
 import { aws_lambda as lambda } from "aws-cdk-lib"
 import { aws_secretsmanager as secretsmanager } from "aws-cdk-lib"
 import { aws_ssm as ssm } from "aws-cdk-lib"
+import { time } from "console"
 
 export class BackendStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -28,9 +29,13 @@ export class BackendStack extends cdk.Stack {
       runtime: lambda.Runtime.PROVIDED_AL2,
       handler: "bootstrap",
       code: lambda.Code.fromAsset(path.join(__dirname, "../../../src/dist")),
+      timeout: Duration.seconds(20),
       environment: {
         LEGAL_BRAWL_SECRET_NAME: "legalBrawl/prod/api/v1/",
         PLAYER_HAND_TABLE_NAME: playerHandsTable.tableName,
+        //The card balancing version. This should later be controlled via some flag, release tag
+        //or higher-level environment var during release
+        PLAYER_HAND_VERSION: "1.0",
       },
     })
 
@@ -49,7 +54,9 @@ export class BackendStack extends cdk.Stack {
         actions: [
           "secretsmanager:GetSecretValue",
           "secretsmanager:DescribeSecret",
+          "dynamodb:GetItem",
           "dynamodb:PutItem",
+          "dynamodb:Query",
         ],
         resources: [
           `${apiToken.secretArn}-${SecretArnSuffix}`,
@@ -116,6 +123,9 @@ export class BackendStack extends cdk.Stack {
         validateRequestParameters: false,
       },
     })
+    const playerHandGet = playerHand.addMethod("GET", apiIntegration, {
+      apiKeyRequired: true,
+    })
 
     const plan = api.addUsagePlan("legalBrawlUsagePlan", {
       throttle: {
@@ -136,6 +146,13 @@ export class BackendStack extends cdk.Stack {
         },
         {
           method: playerHandPost,
+          throttle: {
+            rateLimit: 10,
+            burstLimit: 2,
+          },
+        },
+        {
+          method: playerHandGet,
           throttle: {
             rateLimit: 10,
             burstLimit: 2,

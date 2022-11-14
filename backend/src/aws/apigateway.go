@@ -47,7 +47,10 @@ func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 	switch request.Path {
 
 	case "/v1/formationId":
-		response = events.APIGatewayProxyResponse{Body: "Hello, World!", StatusCode: 200}
+		response = events.APIGatewayProxyResponse{
+			Body:       "Hello, World!",
+			StatusCode: 200,
+		}
 
 	case "/v1/playerHand":
 		switch request.HTTPMethod {
@@ -55,7 +58,11 @@ func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 		case "POST":
 			parsedBody, err := parseBody(request.Body)
 			if err != nil {
-				return events.APIGatewayProxyResponse{Body: "Internal Error", StatusCode: 500}, fmt.Errorf("error: %v", err)
+				return events.APIGatewayProxyResponse{
+						Body:       "request body failed parsing",
+						StatusCode: 500,
+					},
+					fmt.Errorf("error: %v", err)
 			}
 
 			cfg, err := config.LoadDefaultConfig(ctx)
@@ -72,10 +79,45 @@ func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 			if err != nil {
 				log.Fatalf("error adding item to table: %v", err)
 			}
-			response = events.APIGatewayProxyResponse{Body: "peeps that database (this is a placeholder, lmao)", StatusCode: 200}
+			response = events.APIGatewayProxyResponse{
+				Body:       "peeps that database (this is a placeholder, lmao)",
+				StatusCode: 200,
+			}
+
+		case "GET":
+			cfg, err := config.LoadDefaultConfig(ctx)
+			if err != nil {
+				log.Fatalf("error loading sdk config: %v\n", err)
+			}
+
+			dynamoHandler := dDBHandler{
+				DynamoDbClient: dynamodb.NewFromConfig(cfg),
+				TableName:      env.PlayerHandTableName,
+			}
+
+			hands, err := dynamoHandler.queryHands(env.PlayerHandVersion)
+			if err != nil {
+				log.Fatalf("error querying playerHands database: %v", err)
+			}
+
+			selectedHand := dynamoHandler.chooseHand(hands)
+
+			selectedHandJson, err := json.Marshal(selectedHand)
+			if err != nil {
+				log.Fatalf("error marshalling selectedHand to json: %v", err)
+			}
+
+			response = events.APIGatewayProxyResponse{
+				Body:       fmt.Sprintf("%v", string(selectedHandJson)),
+				StatusCode: 200,
+			}
 
 		default:
-			return events.APIGatewayProxyResponse{Body: "invalid method returned", StatusCode: 500}, fmt.Errorf("error: invalid method used: %v", request.HTTPMethod)
+			return events.APIGatewayProxyResponse{
+					Body:       "invalid method returned",
+					StatusCode: 500,
+				},
+				fmt.Errorf("error: invalid method used: %v", request.HTTPMethod)
 		}
 	}
 
