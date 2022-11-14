@@ -14,10 +14,14 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 )
 
+var (
+	timeoutWindow = 3 * time.Second
+)
+
 // Adds the player's submitted hand from the client to the Database.
 //
 // BUG: Need to check that types match, and contents are not null before marshalling.
-func (ddbh dDBHandler) addHand(h handInfo) error {
+func (ddbh dDBHandler) doAddHand(h handInfo) error {
 	item, err := attributevalue.MarshalMap(h)
 	if err != nil {
 		log.Panicf("unable to marshal submitted hand: %v", err)
@@ -32,6 +36,24 @@ func (ddbh dDBHandler) addHand(h handInfo) error {
 	}
 
 	return err
+}
+
+func (ddbh dDBHandler) addHand(h handInfo) error {
+	err := make(chan error, 1)
+
+	go func() {
+		err <- ddbh.doAddHand(h)
+	}()
+	select {
+	case <-time.After(timeoutWindow):
+		return fmt.Errorf("timeout - could not add to playerHands table in allotted window")
+
+	case err := <-err:
+		if err != nil {
+			return fmt.Errorf("addHand execution failed. error: %v", err)
+		}
+		return nil
+	}
 }
 
 func (ddbh dDBHandler) doQueryHands(version string) queryHandsResult {
@@ -76,10 +98,8 @@ func (ddbh dDBHandler) doQueryHands(version string) queryHandsResult {
 // NOTE: This operation is gonna be expensive for a Lambda later on, so this result will eventually
 // need to be cached later.
 func (ddbh dDBHandler) queryHands(version string) ([]handInfo, error) {
-
-	timeoutWindow := 5 * time.Second
-
 	result := make(chan queryHandsResult, 1)
+
 	go func() {
 		result <- ddbh.doQueryHands(version)
 	}()
