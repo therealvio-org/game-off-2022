@@ -24,6 +24,7 @@ public class Battle : Phase
     {
         view.Connect("NextCard", this, "GetNextCard");
         view.Connect("FinishBattle", this, "OnFinishBattle");
+        view.Connect("PlayAgain", this, "OnPlayAgain");
         Connect("PlayCard", view, "OnPlayCard");
         Connect("CredibilityChange", view, "OnCredibilityChange");
         Connect("LastCard", view, "OnLastCard");
@@ -47,6 +48,11 @@ public class Battle : Phase
     {
         PlayerTypes winner = _state.GetWinner();
         EmitSignal("DeclareWinner", winner);
+    }
+
+    public void OnPlayAgain()
+    {
+        EmitSignal("NextPhase", PhaseTypes.Selection);
     }
 
     public void ChangeTurn()

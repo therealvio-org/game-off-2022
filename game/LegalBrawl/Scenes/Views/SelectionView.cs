@@ -26,6 +26,8 @@ public class SelectionView : View
         _rerollButton.Connect("pressed", this, "OnRerollClicked");
         _battleButton = FindNode("BattleButton") as Button;
         _battleButton.Connect("pressed", this, "OnBattleClicked");
+
+        Connect("Activate", this, "OnRerollClicked");
     }
 
     public override void Setup()
@@ -33,6 +35,7 @@ public class SelectionView : View
         fundsValue = realFundsValue = Selection.STARTING_FUNDS;
         _fundsLabel.Text = FormatFunds(fundsValue);
         _countLabel.Text = FormatCount(0);
+        EmitSignal("Reroll");
     }
 
     public override void _Process(float delta)

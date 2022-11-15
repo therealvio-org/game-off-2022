@@ -11,15 +11,8 @@ anchor_bottom = 1.0
 mouse_filter = 2
 script = ExtResource( 3 )
 
-[node name="HelpButton" type="Button" parent="."]
-margin_right = 40.0
-margin_bottom = 40.0
-
-[node name="VolumeButton" type="Button" parent="."]
-margin_right = 40.0
-margin_bottom = 40.0
-
 [node name="CardPool" parent="." instance=ExtResource( 1 )]
+mouse_filter = 2
 
 [node name="CardHand" parent="." instance=ExtResource( 2 )]
 
