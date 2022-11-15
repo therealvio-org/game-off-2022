@@ -109,6 +109,17 @@ public class CardHand : Control
         }
     }
 
+    public int[] GetCardOrder()
+    {
+        int[] ids = new int[_cards.Count];
+        for (int i = 0; i < _cards.Count; i++)
+        {
+            ids[i] = _cards.List[i].Display.Resource.Id;
+        }
+        return ids;
+    }
+
+
     public void OnAdd(int id)
     {
         Card card = SceneManager.Create<Card>(SceneManager.Scenes.Card, this);
@@ -129,6 +140,6 @@ public class CardHand : Control
 
     public void OnExit()
     {
-        _cards.Dispose();
+        _cards.RemoveAll();
     }
 }

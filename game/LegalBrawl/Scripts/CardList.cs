@@ -49,7 +49,7 @@ public class CardList
     public int Count => _cards.Count;
     public List<Card> List => _cards;
 
-    public void Dispose()
+    public void RemoveAll()
     {
         foreach (Card c in _cards)
         {

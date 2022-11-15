@@ -2,6 +2,7 @@ using Godot;
 
 public class SelectionView : View
 {
+
     [Signal] public delegate void DisplayCards(int[] cardIds, int handSize);
     [Signal] public delegate void AddCard(int id);
     [Signal] public delegate void RemoveCard(int id);
@@ -25,6 +26,13 @@ public class SelectionView : View
         _rerollButton.Connect("pressed", this, "OnRerollClicked");
         _battleButton = FindNode("BattleButton") as Button;
         _battleButton.Connect("pressed", this, "OnBattleClicked");
+    }
+
+    public override void Setup()
+    {
+        fundsValue = realFundsValue = Selection.STARTING_FUNDS;
+        _fundsLabel.Text = FormatFunds(fundsValue);
+        _countLabel.Text = FormatCount(0);
     }
 
     public override void _Process(float delta)
@@ -54,8 +62,19 @@ public class SelectionView : View
 
     public void OnUpdateHand(int size)
     {
-        _countLabel.Text = $"{size}/7";
+        _countLabel.Text = FormatCount(size);
     }
 
+    // This is a quick fix to get the order of cards from the CardList object on the CardHand
+    // Which is possessing state it really shouldn't have
+    // I really don't want to have to drill down through all these classes for something
+    // That should be represented at the highest level but alas
+    public int[] GetCardOrder()
+    {
+        CardHand cardHand = FindNode("CardHand") as CardHand;
+        return cardHand.GetCardOrder();
+    }
+
+    public string FormatCount(int size) => $"{size}/7";
     public string FormatFunds(int value) => $"${value}k";
 }

@@ -3,11 +3,11 @@ using System.Collections.Generic;
 
 public class Selection : Phase
 {
+    public const int MAX_HAND = 7;
+    public const int MAX_POOL = 10;
+    public const int STARTING_FUNDS = 100;
     [Signal] public delegate void UpdateFunds(int previous, int current);
     [Signal] public delegate void UpdateHand(int size);
-    const int MAX_HAND = 7;
-    const int MAX_POOL = 10;
-    const int STARTING_FUNDS = 100;
     private int _handSize { get => _handCards.Count; }
     private List<int> _poolCards;
     private List<int> _handCards;
@@ -35,6 +35,11 @@ public class Selection : Phase
     public void OnReroll()
     {
         RollCards();
+    }
+
+    public void OnCardsRearranged(int[] cards)
+    {
+        _handCards = new List<int>(cards);
     }
 
     public void OnBattle()
@@ -83,7 +88,8 @@ public class Selection : Phase
 
     public int[] GetHand()
     {
-        return _handCards.ToArray();
+        //return _handCards.ToArray(); // Ideally phases shouldn't even store references to their associated views
+        return _view.GetCardOrder(); // Read comments on this method to understand more
     }
 
     public int CalculateFunds()

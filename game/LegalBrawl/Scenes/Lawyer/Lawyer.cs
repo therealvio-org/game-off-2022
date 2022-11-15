@@ -5,7 +5,7 @@ using System.Collections.Generic;
 public class Lawyer : Control
 {
     private List<CardDisplay> _cards;
-    private CardList _list; // I really shouldn't need this but it's easier than trying to undo Card's dependency on CardList
+    private CardList _list;
     private Control _handAnchor;
     private Control _playedAnchor;
     private Control _container;
@@ -28,10 +28,10 @@ public class Lawyer : Control
         foreach (Node n in _handAnchor.GetChildren())
             _cards.Add(n as CardDisplay);
 
-        _handSize = _cards.Count;
         _list = new CardList();
 
-        Owner.Connect("Enter", this, "ShowCards");
+        Owner.Connect("Enter", this, "Setup");
+        Owner.Connect("Exit", this, "Cleanup");
     }
 
     public void Play(int id, Battle battle)
@@ -53,6 +53,13 @@ public class Lawyer : Control
         display.Prime();
     }
 
+    public void Setup()
+    {
+        ShowCards();
+        _handSize = _cards.Count;
+        _credibility.Text = "0";
+    }
+
     public void ShowCards()
     {
         foreach (CardDisplay c in _cards)
@@ -61,6 +68,11 @@ public class Lawyer : Control
             c.ShowBack();
             c.OffsetRotation();
         }
+    }
+
+    public void Cleanup()
+    {
+        _list.RemoveAll();
     }
 
     public void FlipDirection()
