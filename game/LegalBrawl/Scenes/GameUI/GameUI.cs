@@ -30,6 +30,11 @@ public class GameUI : Node
         Enter(_queuedPhase);
     }
 
+    public void ActivateCurrent()
+    {
+        _currentView.EmitSignal("Activate");
+    }
+
     public void ExitCurrent()
     {
         if (_currentView == null)

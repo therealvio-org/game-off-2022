@@ -83,11 +83,14 @@ tracks/3/loop_wrap = true
 tracks/3/imported = false
 tracks/3/enabled = true
 tracks/3/keys = {
-"times": PoolRealArray( 0.8 ),
-"transitions": PoolRealArray( 1 ),
+"times": PoolRealArray( 0.8, 1.6 ),
+"transitions": PoolRealArray( 1, 1 ),
 "values": [ {
 "args": [  ],
 "method": "SwapPhases"
+}, {
+"args": [  ],
+"method": "ActivateCurrent"
 } ]
 }
 
@@ -114,9 +117,9 @@ layer = 30
 [node name="Curtain" type="NinePatchRect" parent="CurtainTransition/CanvasLayer"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_left = -1591.0
+margin_left = 1295.0
 margin_top = -25.0
-margin_right = -1362.0
+margin_right = 1524.0
 margin_bottom = 157.0
 rect_rotation = -4.4
 mouse_filter = 0
