@@ -16,12 +16,18 @@ public class View : Control
     public void OnEnter()
     {
         ShowAllChildren();
+        Setup();
     }
+
+    public virtual void Setup() { }
 
     public void OnExit()
     {
         HideAllChildren();
+        Cleanup();
     }
+
+    public virtual void Cleanup() { }
 
     public void HideAllChildren()
     {

@@ -28,6 +28,11 @@ public class BattleView : View
         _winnerLabel = FindNode("WinnerLabel") as Label;
     }
 
+    public override void Setup()
+    {
+        _winnerLabel.Text = "";
+    }
+
     public void OnNextPressed()
     {
         EmitSignal("NextCard");
