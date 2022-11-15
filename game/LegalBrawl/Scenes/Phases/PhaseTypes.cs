@@ -1,1 +1,1 @@
-public enum PhaseTypes { Selection, Battle }
+public enum PhaseTypes { Menu, Selection, Battle }

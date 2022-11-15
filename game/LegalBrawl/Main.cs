@@ -14,6 +14,20 @@ public class Main : Control
 
         Debugger.Add("GoToSelection", this);
         Debugger.Add("GoToBattle", this);
+
+        Intro();
+    }
+
+    public void Intro()
+    {
+        Phase menu = new Menu();
+        SetPhase(menu);
+        _ui.Enter(menu);
+    }
+
+    public void GoToMenu()
+    {
+        EmitSignal("PhaseChange", new Menu());
     }
 
     public void GoToSelection()
@@ -31,6 +45,12 @@ public class Main : Control
 
     public void OnPhaseChange(Phase phase)
     {
+        SetPhase(phase);
+        _ui.Transition(phase);
+    }
+
+    public void SetPhase(Phase phase)
+    {
         AddChild(phase);
         if (CurrentPhase != null)
             CurrentPhase.QueueFree();
@@ -38,11 +58,12 @@ public class Main : Control
         phase.Connect("NextPhase", this, "OnNextPhase");
 
         CurrentPhase = phase;
-        _ui.Transition(phase);
     }
 
     public void OnNextPhase(PhaseTypes type)
     {
+        if (type == PhaseTypes.Menu)
+            GoToMenu();
         if (type == PhaseTypes.Selection)
             GoToSelection();
         if (type == PhaseTypes.Battle)

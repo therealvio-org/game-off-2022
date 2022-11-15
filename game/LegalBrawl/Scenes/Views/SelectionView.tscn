@@ -8,6 +8,7 @@
 [node name="SelectionView" type="Control"]
 anchor_right = 1.0
 anchor_bottom = 1.0
+mouse_filter = 2
 script = ExtResource( 3 )
 
 [node name="HelpButton" type="Button" parent="."]
@@ -50,6 +51,7 @@ anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_top = -158.0
+mouse_filter = 2
 
 [node name="FundsLabel" type="Label" parent="Overlay/VBoxContainer"]
 margin_right = 1280.0
