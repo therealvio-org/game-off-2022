@@ -112,6 +112,12 @@ func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 				StatusCode: 200,
 			}
 
+		case "PUT":
+			response = events.APIGatewayProxyResponse{
+				Body:       "PUT method invoked!",
+				StatusCode: 200,
+			}
+
 		default:
 			return events.APIGatewayProxyResponse{
 					Body:       "invalid method returned",

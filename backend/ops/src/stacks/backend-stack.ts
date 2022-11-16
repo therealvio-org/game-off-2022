@@ -126,6 +126,9 @@ export class BackendStack extends cdk.Stack {
     const playerHandGet = playerHand.addMethod("GET", apiIntegration, {
       apiKeyRequired: true,
     })
+    const playerHandPut = playerHand.addMethod("PUT", apiIntegration, {
+      apiKeyRequired: true,
+    })
 
     const plan = api.addUsagePlan("legalBrawlUsagePlan", {
       throttle: {
@@ -153,6 +156,13 @@ export class BackendStack extends cdk.Stack {
         },
         {
           method: playerHandGet,
+          throttle: {
+            rateLimit: 10,
+            burstLimit: 2,
+          },
+        },
+        {
+          method: playerHandPut,
           throttle: {
             rateLimit: 10,
             burstLimit: 2,
