@@ -4,6 +4,7 @@ using System;
 public class GameUI : Node
 {
     private MenuView _menuView;
+    private TutorialView _tutorialView;
     private SelectionView _selectionView;
     private BattleView _battleView;
     private View _currentView;
@@ -13,6 +14,7 @@ public class GameUI : Node
     {
         _currentView = null;
         _menuView = GetNode<MenuView>("MenuView");
+        _tutorialView = GetNode<TutorialView>("TutorialView");
         _selectionView = GetNode<SelectionView>("SelectionView");
         _battleView = GetNode<BattleView>("BattleView");
         _animationPlayer = GetNode<AnimationPlayer>("CurtainTransition");
@@ -48,6 +50,9 @@ public class GameUI : Node
         if (phase is Menu menuPhase)
             EnterMenu(menuPhase);
 
+        if (phase is Tutorial tutorialPhase)
+            EnterTutorial(tutorialPhase);
+
         if (phase is Selection selectionPhase)
             EnterSelection(selectionPhase);
 
@@ -60,6 +65,13 @@ public class GameUI : Node
         _currentView = _menuView;
         _menuView.EmitSignal("Enter");
         menu.ConnectTo(_menuView);
+    }
+
+    public void EnterTutorial(Tutorial tutorial)
+    {
+        _currentView = _tutorialView;
+        _tutorialView.EmitSignal("Enter");
+        tutorial.ConnectTo(_tutorialView);
     }
 
     public void EnterSelection(Selection selection)

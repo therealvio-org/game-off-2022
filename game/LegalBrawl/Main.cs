@@ -30,6 +30,11 @@ public class Main : Control
         EmitSignal("PhaseChange", new Menu());
     }
 
+    public void GoToTutorial()
+    {
+        EmitSignal("PhaseChange", new Tutorial());
+    }
+
     public void GoToSelection()
     {
         EmitSignal("PhaseChange", new Selection());
@@ -64,6 +69,8 @@ public class Main : Control
     {
         if (type == PhaseTypes.Menu)
             GoToMenu();
+        if (type == PhaseTypes.Tutorial)
+            GoToTutorial();
         if (type == PhaseTypes.Selection)
             GoToSelection();
         if (type == PhaseTypes.Battle)

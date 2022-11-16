@@ -1,0 +1,258 @@
+[gd_scene load_steps=8 format=2]
+
+[ext_resource path="res://Assets/Fonts/MediumFont.tres" type="DynamicFont" id=1]
+[ext_resource path="res://Themes/MainTheme.tres" type="Theme" id=2]
+[ext_resource path="res://Assets/Backgrounds/legal-lady.jpg" type="Texture" id=3]
+[ext_resource path="res://Assets/Fonts/SmallFont.tres" type="DynamicFont" id=4]
+[ext_resource path="res://Assets/Tutorial/selection-tutorial.jpg" type="Texture" id=5]
+[ext_resource path="res://Assets/Tutorial/battle-tutorial.jpg" type="Texture" id=6]
+[ext_resource path="res://Scenes/Views/TutorialView.cs" type="Script" id=7]
+
+[node name="TutorialView" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+script = ExtResource( 7 )
+
+[node name="Background" type="TextureRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+texture = ExtResource( 3 )
+expand = true
+stretch_mode = 7
+
+[node name="Overview" type="Control" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 1
+theme = ExtResource( 2 )
+
+[node name="Label3" type="Label" parent="Overview"]
+anchor_left = 0.4
+anchor_top = 0.2
+anchor_right = 0.6
+anchor_bottom = 0.3
+margin_left = -473.0
+margin_top = -19.5
+margin_right = 473.0
+margin_bottom = 19.5
+theme = ExtResource( 2 )
+custom_fonts/font = ExtResource( 1 )
+text = "Combat By Trial is Deckbuilding Autobattler played in two phases"
+align = 1
+valign = 1
+
+[node name="Label" type="Label" parent="Overview"]
+anchor_left = 0.3
+anchor_top = 0.7
+anchor_right = 0.3
+anchor_bottom = 0.8
+grow_horizontal = 2
+grow_vertical = 2
+text = "Selection
+Phase"
+align = 1
+
+[node name="Label2" type="Label" parent="Overview"]
+anchor_left = 0.7
+anchor_top = 0.7
+anchor_right = 0.7
+anchor_bottom = 0.8
+grow_horizontal = 2
+grow_vertical = 2
+text = "Battle
+Phase"
+align = 1
+
+[node name="Selection" type="Control" parent="."]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 1
+theme = ExtResource( 2 )
+
+[node name="Label3" type="Label" parent="Selection"]
+anchor_left = 0.4
+anchor_top = 0.2
+anchor_right = 0.6
+anchor_bottom = 0.3
+margin_left = -473.0
+margin_top = -19.5
+margin_right = 473.0
+margin_bottom = 19.5
+theme = ExtResource( 2 )
+custom_fonts/font = ExtResource( 1 )
+text = "In the Selection Phase you select the cards
+which will be played during the battle"
+align = 1
+valign = 1
+
+[node name="Panel" type="Panel" parent="Selection"]
+anchor_left = 0.1
+anchor_top = 0.35
+anchor_right = 0.9
+anchor_bottom = 0.9
+mouse_filter = 1
+
+[node name="TextureRect" type="TextureRect" parent="Selection/Panel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 5 )
+expand = true
+stretch_mode = 6
+
+[node name="Label" type="Label" parent="Selection/Panel"]
+anchor_left = 0.141
+anchor_top = 0.055
+anchor_right = 0.203
+anchor_bottom = 0.239
+grow_horizontal = 0
+custom_fonts/font = ExtResource( 4 )
+text = "Click cards to
+add or remove them
+from your hand"
+align = 2
+
+[node name="Label2" type="Label" parent="Selection/Panel"]
+anchor_left = 0.144
+anchor_top = 0.957
+anchor_right = 0.199
+anchor_bottom = 0.957
+grow_horizontal = 0
+grow_vertical = 0
+custom_fonts/font = ExtResource( 4 )
+text = "Cards in your hand are
+played from left to right
+during battle. They can be
+dragged to rearrange"
+align = 2
+
+[node name="Label3" type="Label" parent="Selection/Panel"]
+anchor_left = 0.872
+anchor_top = 0.237
+anchor_right = 0.915
+anchor_bottom = 0.372
+grow_horizontal = 2
+grow_vertical = 2
+custom_fonts/font = ExtResource( 4 )
+text = "'Discovery' will reroll
+your available cards.
+It's currently free but this
+may change in the future"
+
+[node name="Label4" type="Label" parent="Selection/Panel"]
+anchor_left = 0.872
+anchor_top = 0.728
+anchor_right = 0.915
+anchor_bottom = 0.861
+grow_horizontal = 2
+grow_vertical = 2
+custom_fonts/font = ExtResource( 4 )
+text = "'Fight!' will take you to
+the Battle Phase.
+Battle requires that you
+have 7 cards, and the total
+costs must fit in your
+$100k budget"
+
+[node name="Battle" type="Control" parent="."]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 1
+theme = ExtResource( 2 )
+
+[node name="Label3" type="Label" parent="Battle"]
+anchor_left = 0.4
+anchor_top = 0.2
+anchor_right = 0.6
+anchor_bottom = 0.3
+margin_left = -473.0
+margin_top = -19.5
+margin_right = 473.0
+margin_bottom = 19.5
+theme = ExtResource( 2 )
+custom_fonts/font = ExtResource( 1 )
+text = "In the Battle Phase, the cards you previously selected
+will be played against a random opponent online"
+align = 1
+valign = 1
+
+[node name="Panel" type="Panel" parent="Battle"]
+anchor_left = 0.1
+anchor_top = 0.35
+anchor_right = 0.9
+anchor_bottom = 0.9
+mouse_filter = 1
+
+[node name="TextureRect" type="TextureRect" parent="Battle/Panel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 6 )
+expand = true
+stretch_mode = 6
+
+[node name="Label" type="Label" parent="Battle/Panel"]
+anchor_left = 0.141
+anchor_top = 0.055
+anchor_right = 0.203
+anchor_bottom = 0.239
+grow_horizontal = 0
+custom_fonts/font = ExtResource( 4 )
+text = "Cards played by you and
+the opposing council
+will raise and lower
+credibility"
+align = 2
+
+[node name="Label2" type="Label" parent="Battle/Panel"]
+anchor_left = 0.144
+anchor_top = 0.957
+anchor_right = 0.199
+anchor_bottom = 0.957
+grow_horizontal = 0
+grow_vertical = 0
+custom_fonts/font = ExtResource( 4 )
+text = "Both players will take
+turns playing the top card
+of their deck, one by one
+
+Whoever has the more
+expensive first card
+will go first"
+align = 2
+
+[node name="Label3" type="Label" parent="Battle/Panel"]
+anchor_left = 0.796
+anchor_top = 0.151
+anchor_right = 0.915
+anchor_bottom = 0.17
+grow_vertical = 2
+custom_fonts/font = ExtResource( 4 )
+text = "Credibility can not go below
+zero, so playing damaging
+cards early may waste them"
+
+[node name="Label4" type="Label" parent="Battle/Panel"]
+anchor_left = 0.798
+anchor_top = 0.906
+anchor_right = 0.915
+anchor_bottom = 0.912
+grow_vertical = 2
+custom_fonts/font = ExtResource( 4 )
+text = "Click Next to
+play the next card"
+
+[node name="Continue" type="Label" parent="."]
+anchor_left = 0.5
+anchor_top = 0.95
+anchor_right = 0.5
+anchor_bottom = 0.95
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource( 2 )
+custom_fonts/font = ExtResource( 1 )
+text = "Click to continue"
+align = 1
+valign = 1
