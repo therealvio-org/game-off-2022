@@ -80,7 +80,7 @@ export class BackendStack extends cdk.Stack {
       modelName: "playerHandv1",
       schema: {
         schema: apigateway.JsonSchemaVersion.DRAFT4,
-        title: "PlayerHandPost",
+        title: "PlayerHand",
         type: apigateway.JsonSchemaType.OBJECT,
         required: ["handInfo"],
         properties: {
@@ -112,22 +112,45 @@ export class BackendStack extends cdk.Stack {
     const formationPostMethod = formation.addMethod("POST", apiIntegration, {
       apiKeyRequired: false,
     }) //Set apiKeyRequired to `true` when ready to start locking down the API
+
+    //Need to create individual validator objects, refer to: https://github.com/aws/aws-cdk/issues/7613
+    const playerHandPostValidator = new apigateway.RequestValidator(
+      this,
+      "playerHandPostValidator",
+      {
+        restApi: api,
+        requestValidatorName: "playerHandPostValidator",
+        validateRequestBody: true,
+        validateRequestParameters: false,
+      }
+    )
+    const playerHandPutValidator = new apigateway.RequestValidator(
+      this,
+      "playerHandPutValidator",
+      {
+        restApi: api,
+        requestValidatorName: "playerHandPutValidator",
+        validateRequestBody: true,
+        validateRequestParameters: false,
+      }
+    )
+
     const playerHandPost = playerHand.addMethod("POST", apiIntegration, {
       apiKeyRequired: true,
       requestModels: {
         "application/json": playerHandModel,
       },
-      requestValidatorOptions: {
-        requestValidatorName: "playerHandValidator",
-        validateRequestBody: true,
-        validateRequestParameters: false,
-      },
+      requestValidator: playerHandPostValidator,
     })
     const playerHandGet = playerHand.addMethod("GET", apiIntegration, {
       apiKeyRequired: true,
     })
     const playerHandPut = playerHand.addMethod("PUT", apiIntegration, {
       apiKeyRequired: true,
+      requestModels: {
+        "application/json": playerHandModel,
+      },
+      requestValidator: playerHandPutValidator,
     })
 
     const plan = api.addUsagePlan("legalBrawlUsagePlan", {
