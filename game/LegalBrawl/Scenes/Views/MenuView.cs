@@ -4,6 +4,7 @@ using System;
 public class MenuView : View
 {
     [Signal] public delegate void Play();
+    [Signal] public delegate void Tutorial();
     private Button _playButton;
     private Button _leaderboardButton;
     private Button _helpButton;
@@ -19,7 +20,7 @@ public class MenuView : View
         _leaderboardButton.Disabled = true;
 
         _helpButton = FindNode("HelpButton") as Button;
-        _helpButton.Disabled = true;
+        _helpButton.Connect("pressed", this, "OnHelpClicked");
 
         _settingsButton = FindNode("SettingsButton") as Button;
         _settingsButton.Disabled = true;
@@ -28,5 +29,10 @@ public class MenuView : View
     public void OnPlayClicked()
     {
         EmitSignal("Play");
+    }
+
+    public void OnHelpClicked()
+    {
+        EmitSignal("Tutorial");
     }
 }

@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=2]
+[gd_scene load_steps=11 format=2]
 
 [ext_resource path="res://Scenes/GameUI/GameUI.cs" type="Script" id=1]
 [ext_resource path="res://Scenes/Views/SelectionView.tscn" type="PackedScene" id=2]
@@ -6,6 +6,7 @@
 [ext_resource path="res://Assets/scales_white.png" type="Texture" id=4]
 [ext_resource path="res://Scenes/Views/BattleView.tscn" type="PackedScene" id=5]
 [ext_resource path="res://Scenes/Views/MenuView.tscn" type="PackedScene" id=6]
+[ext_resource path="res://Scenes/Views/TutorialView.tscn" type="PackedScene" id=7]
 
 [sub_resource type="Animation" id=3]
 resource_name = "Intro"
@@ -101,6 +102,8 @@ mouse_filter = 2
 script = ExtResource( 1 )
 
 [node name="MenuView" parent="." instance=ExtResource( 6 )]
+
+[node name="TutorialView" parent="." instance=ExtResource( 7 )]
 
 [node name="SelectionView" parent="." instance=ExtResource( 2 )]
 

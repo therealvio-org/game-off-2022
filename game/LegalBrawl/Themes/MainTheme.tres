@@ -1,6 +1,57 @@
-[gd_resource type="Theme" load_steps=2 format=2]
+[gd_resource type="Theme" load_steps=11 format=2]
 
 [ext_resource path="res://Assets/Fonts/MainFont.tres" type="DynamicFont" id=1]
+[ext_resource path="res://Assets/Fonts/MediumFont.tres" type="DynamicFont" id=2]
+[ext_resource path="res://Assets/Fonts/SmallFont.tres" type="DynamicFont" id=3]
+[ext_resource path="res://Assets/UI/grey_button12.png" type="Texture" id=4]
+[ext_resource path="res://Assets/UI/grey_button11.png" type="Texture" id=5]
+[ext_resource path="res://Assets/UI/grey_button07.png" type="Texture" id=6]
+
+[sub_resource type="StyleBoxTexture" id=4]
+texture = ExtResource( 5 )
+region_rect = Rect2( 0, 0, 49, 45 )
+margin_left = 8.0
+margin_right = 8.0
+margin_top = 8.0
+margin_bottom = 8.0
+modulate_color = Color( 1, 1, 1, 0.6 )
+
+[sub_resource type="StyleBoxTexture" id=3]
+texture = ExtResource( 6 )
+region_rect = Rect2( 0, 0, 49, 49 )
+margin_left = 8.0
+margin_right = 8.0
+margin_top = 8.0
+margin_bottom = 8.0
+
+[sub_resource type="StyleBoxTexture" id=1]
+texture = ExtResource( 4 )
+region_rect = Rect2( 0, 0, 49, 49 )
+margin_left = 8.0
+margin_right = 8.0
+margin_top = 8.0
+margin_bottom = 8.0
+
+[sub_resource type="StyleBoxTexture" id=2]
+texture = ExtResource( 5 )
+region_rect = Rect2( 0, 0, 49, 45 )
+margin_left = 8.0
+margin_right = 8.0
+margin_top = 8.0
+margin_bottom = 8.0
 
 [resource]
 default_font = ExtResource( 1 )
+Button/colors/font_color = Color( 0, 0, 0, 1 )
+Button/colors/font_color_disabled = Color( 0, 0, 0, 1 )
+Button/colors/font_color_focus = Color( 0, 0, 0, 1 )
+Button/colors/font_color_hover = Color( 0, 0, 0, 1 )
+Button/colors/font_color_pressed = Color( 0, 0, 0, 1 )
+Button/fonts/font = ExtResource( 3 )
+Button/styles/disabled = SubResource( 4 )
+Button/styles/hover = SubResource( 3 )
+Button/styles/normal = SubResource( 1 )
+Button/styles/pressed = SubResource( 2 )
+Label/fonts/Main = ExtResource( 1 )
+Label/fonts/Medium = ExtResource( 2 )
+Label/fonts/Small = ExtResource( 3 )
