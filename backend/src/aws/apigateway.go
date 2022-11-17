@@ -48,6 +48,20 @@ func parseParameters(p map[string]string) (GetMethodParameters, error) {
 	return result, nil
 }
 
+func validateBody(b body) error {
+	_, err := uuid.Parse(b.HandInfo.PlayerId)
+	if err != nil {
+		return fmt.Errorf("playerId is not a valid UUID format: %v", err)
+	}
+
+	err = validateSubmittedVersion(b.HandInfo.Version, env.PlayerHandVersion)
+	if err != nil {
+		return fmt.Errorf("submitted version did not pass validation: %v", err)
+	}
+
+	return nil
+}
+
 func validateParameters(pg GetMethodParameters) error {
 	err := validatePlayerId(pg.PlayerId)
 	if err != nil {
@@ -60,6 +74,14 @@ func validatePlayerId(pId string) error {
 	_, err := uuid.Parse(pId)
 	if err != nil {
 		return fmt.Errorf("playerId is not a valid UUID format: %v", err)
+	}
+	return nil
+}
+
+// Checks if submitted version matches current balance version
+func validateSubmittedVersion(sv string, av string) error {
+	if sv != av {
+		return fmt.Errorf("submitted version (%v) in request, does not match actual balance version %v", sv, av)
 	}
 	return nil
 }
@@ -97,6 +119,14 @@ func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 						StatusCode: 500,
 					},
 					fmt.Errorf("error: %v", err)
+			}
+
+			err = validateBody(*parsedBody)
+			if err != nil {
+				return events.APIGatewayProxyResponse{
+					Body:       "parameters in request failed validation",
+					StatusCode: 500,
+				}, fmt.Errorf("body contents failed validation: %v", err)
 			}
 
 			cfg, err := config.LoadDefaultConfig(ctx)
