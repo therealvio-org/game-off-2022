@@ -10,12 +10,13 @@ public class SelectionView : View
     [Signal] public delegate void Battle();
     [Signal] public delegate void ShowTips();
     [Signal] public delegate void HideTips();
+    [Signal] public delegate void CardHeld(int id);
+    [Signal] public delegate void CardDropped(int id, Vector2 location);
 
     private Button _rerollButton;
     private Button _battleButton;
     private Label _fundsLabel;
     private Label _countLabel;
-    private Control _dropTip;
     private int fundsValue;
     private int realFundsValue;
 
@@ -29,11 +30,8 @@ public class SelectionView : View
         _rerollButton.Connect("pressed", this, "OnRerollClicked");
         _battleButton = FindNode("BattleButton") as Button;
         _battleButton.Connect("pressed", this, "OnBattleClicked");
-        _dropTip = FindNode("DropTip") as Control;
 
         Connect("Activate", this, "OnRerollClicked");
-        Connect("ShowTips", this, "OnShowTips");
-        Connect("HideTips", this, "OnHideTips");
     }
 
     public override void Setup()
@@ -82,22 +80,6 @@ public class SelectionView : View
     {
         CardHand cardHand = FindNode("CardHand") as CardHand;
         return cardHand.GetCardOrder();
-    }
-
-    public void OnShowTips()
-    {
-        _dropTip.Show();
-    }
-
-    public void OnHideTips()
-    {
-        _dropTip.Hide();
-    }
-
-    public void OnCardDropped(int id, Vector2 location)
-    {
-        if (_dropTip.GetGlobalRect().HasPoint(location))
-            EmitSignal("RemoveCard", id);
     }
 
     public string FormatCount(int size) => $"{size}/7";

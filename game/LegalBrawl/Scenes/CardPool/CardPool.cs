@@ -7,12 +7,15 @@ public class CardPool : Control
     private List<CardDisplay> _displayCards;
     private int _nextFlipId;
     private bool _flipToFace;
+    private Control _dropTip;
+
     private AnimationPlayer _animationPlayer;
 
     public override void _Ready()
     {
         _displayCards = new List<CardDisplay>();
         _animationPlayer = FindNode("AnimationPlayer") as AnimationPlayer;
+        _dropTip = FindNode("DropTip") as Control;
 
         foreach (Node n in GetNode("Column/TopRow").GetChildren()) _displayCards.Add(n as CardDisplay);
         foreach (Node n in GetNode("Column/BottomRow").GetChildren()) _displayCards.Add(n as CardDisplay);
@@ -20,12 +23,14 @@ public class CardPool : Control
         foreach (CardDisplay c in _displayCards)
         {
             c.FlipDown();
-            c.Connect("OnClick", this, "CardClicked");
+            c.Connect("Click", this, "OnCardClicked");
         }
 
         Owner.Connect("DisplayCards", this, "OnDisplay");
         Owner.Connect("Enter", this, "OnEnter");
         Owner.Connect("Exit", this, "OnExit");
+        Owner.Connect("CardHeld", this, "OnCardHeld");
+        Owner.Connect("CardDropped", this, "OnCardDropped");
     }
 
     public void OnEnter()
@@ -69,18 +74,36 @@ public class CardPool : Control
             _displayCards[_nextFlipId++].FlipDown();
     }
 
-    public void CardClicked(int id, bool selected, bool flipped)
+    public void OnCardClicked(CardDisplay card)
     {
-        if (flipped)
+        if (card.IsFlipped)
             return;
 
-        if (selected)
+        if (card.IsSelected)
         {
-            Owner.EmitSignal("RemoveCard", id);
+            Owner.EmitSignal("RemoveCard", card.Id);
+            card.Unselect();
         }
         else
         {
-            Owner.EmitSignal("AddCard", id);
+            Owner.EmitSignal("AddCard", card.Id);
+            card.Select();
         }
+    }
+
+    public void OnCardHeld(int id)
+    {
+        _dropTip.Show();
+    }
+
+    public void OnCardDropped(int id, Vector2 location)
+    {
+        if (_dropTip.GetGlobalRect().HasPoint(location))
+        {
+            Owner.EmitSignal("RemoveCard", id);
+            _displayCards.Find((c) => c.Id == id && c.IsSelected).Unselect();
+        }
+
+        _dropTip.Hide();
     }
 }
