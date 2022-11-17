@@ -158,6 +158,7 @@ mouse_filter = 2
 [node name="Symbol" type="TextureRect" parent="BackFace"]
 margin_right = 180.0
 margin_bottom = 260.0
+mouse_filter = 2
 texture = ExtResource( 4 )
 expand = true
 stretch_mode = 6
@@ -179,20 +180,22 @@ mouse_filter = 2
 [node name="HBoxContainer" type="HBoxContainer" parent="FrontFace/VBoxContainer"]
 margin_right = 180.0
 margin_bottom = 20.0
+mouse_filter = 2
 
 [node name="CardName" type="Label" parent="FrontFace/VBoxContainer/HBoxContainer"]
 modulate = Color( 0.266667, 0.262745, 0.262745, 1 )
-margin_right = 69.0
+margin_right = 150.0
 margin_bottom = 20.0
+size_flags_horizontal = 3
 custom_fonts/font = ExtResource( 5 )
 text = "Objection"
+clip_text = true
 
 [node name="CardCost" type="Label" parent="FrontFace/VBoxContainer/HBoxContainer"]
 modulate = Color( 0.266667, 0.262745, 0.262745, 1 )
-margin_left = 73.0
+margin_left = 154.0
 margin_right = 180.0
 margin_bottom = 20.0
-size_flags_horizontal = 3
 custom_fonts/font = ExtResource( 5 )
 text = "$5k"
 align = 2
@@ -201,6 +204,7 @@ align = 2
 margin_top = 24.0
 margin_right = 180.0
 margin_bottom = 158.0
+mouse_filter = 2
 size_flags_vertical = 3
 size_flags_stretch_ratio = 1.37
 texture = ExtResource( 2 )
