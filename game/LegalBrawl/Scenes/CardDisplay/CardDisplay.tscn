@@ -1,10 +1,11 @@
-[gd_scene load_steps=10 format=2]
+[gd_scene load_steps=11 format=2]
 
 [ext_resource path="res://Assets/grey_panel.png" type="Texture" id=1]
 [ext_resource path="res://Assets/CardArt/gavel.png" type="Texture" id=2]
 [ext_resource path="res://Scenes/CardDisplay/CardDisplay.cs" type="Script" id=3]
 [ext_resource path="res://Assets/scales.png" type="Texture" id=4]
 [ext_resource path="res://Assets/Fonts/SmallFont.tres" type="DynamicFont" id=5]
+[ext_resource path="res://Assets/UI/CardTrim.png" type="Texture" id=6]
 
 [sub_resource type="Animation" id=2]
 resource_name = "FlipDown"
@@ -145,6 +146,17 @@ patch_margin_right = 10
 patch_margin_bottom = 10
 script = ExtResource( 3 )
 
+[node name="Border" type="NinePatchRect" parent="."]
+self_modulate = Color( 0.423529, 0.423529, 0.423529, 0.333333 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 1 )
+draw_center = false
+patch_margin_left = 8
+patch_margin_top = 8
+patch_margin_right = 8
+patch_margin_bottom = 8
+
 [node name="BackFace" type="MarginContainer" parent="."]
 visible = false
 anchor_right = 1.0
@@ -162,6 +174,15 @@ mouse_filter = 2
 texture = ExtResource( 4 )
 expand = true
 stretch_mode = 6
+
+[node name="NinePatchRect" type="NinePatchRect" parent="BackFace"]
+margin_right = 180.0
+margin_bottom = 260.0
+texture = ExtResource( 6 )
+patch_margin_left = 50
+patch_margin_top = 50
+patch_margin_right = 50
+patch_margin_bottom = 50
 
 [node name="FrontFace" type="MarginContainer" parent="."]
 anchor_right = 1.0
@@ -210,6 +231,21 @@ size_flags_stretch_ratio = 1.37
 texture = ExtResource( 2 )
 expand = true
 stretch_mode = 7
+
+[node name="Border2" type="NinePatchRect" parent="FrontFace/VBoxContainer/CardTexture"]
+self_modulate = Color( 0.898039, 0.898039, 0.898039, 1 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -4.0
+margin_top = -4.0
+margin_right = 4.0
+margin_bottom = 4.0
+texture = ExtResource( 1 )
+draw_center = false
+patch_margin_left = 4
+patch_margin_top = 4
+patch_margin_right = 4
+patch_margin_bottom = 4
 
 [node name="Description" type="Label" parent="FrontFace/VBoxContainer"]
 modulate = Color( 0.266667, 0.262745, 0.262745, 1 )

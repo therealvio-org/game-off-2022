@@ -6,13 +6,16 @@ public class Selection : Phase
     public const int MAX_HAND = 7;
     public const int MAX_POOL = 10;
     public const int STARTING_FUNDS = 100;
-    [Signal] public delegate void UpdateFunds(int previous, int current);
-    [Signal] public delegate void UpdateHand(int size);
+    [Signal] public delegate void UpdateFunds(int previous, int current, bool check);
+    [Signal] public delegate void UpdateHand(int size, bool check);
     private int _handSize { get => _handCards.Count; }
     private List<int> _poolCards;
     private List<int> _handCards;
     private int _funds;
     private SelectionView _view;
+
+    public bool CheckHand { get => _handCards.Count == MAX_HAND; }
+    public bool CheckFunds { get => _funds >= 0; }
 
     public override void _Ready()
     {
@@ -44,7 +47,7 @@ public class Selection : Phase
 
     public void OnBattle()
     {
-        if (CanFightStart())
+        if (CanFight())
         {
             EmitSignal("NextPhase", PhaseTypes.Battle);
         }
@@ -74,7 +77,7 @@ public class Selection : Phase
     {
         GD.Print("Adding ", CardLibrary.Get(id).Name);
         _handCards.Add(id);
-        EmitSignal("UpdateHand", _handCards.Count);
+        EmitSignal("UpdateHand", _handCards.Count, CheckHand);
         _funds = CalculateFunds();
     }
 
@@ -82,7 +85,7 @@ public class Selection : Phase
     {
         GD.Print("Removing ", CardLibrary.Get(id).Name);
         _handCards.Remove(id);
-        EmitSignal("UpdateHand", _handCards.Count);
+        EmitSignal("UpdateHand", _handCards.Count, CheckHand);
         _funds = CalculateFunds();
     }
 
@@ -101,13 +104,13 @@ public class Selection : Phase
             funds -= CardLibrary.Get(cardId).Cost;
         }
 
-        EmitSignal("UpdateFunds", _funds, funds);
+        EmitSignal("UpdateFunds", _funds, funds, funds >= 0);
 
         return funds;
     }
 
-    public bool CanFightStart()
+    public bool CanFight()
     {
-        return _handCards.Count == MAX_HAND && _funds >= 0;
+        return CheckHand && CheckFunds;
     }
 }
