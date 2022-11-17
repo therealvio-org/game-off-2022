@@ -67,6 +67,8 @@ public class CardDisplay : NinePatchRect
 
     public void FlipUp()
     {
+        AudioManager.Play("Flip");
+
         if (!_flipped)
             _animator.Play("FlipDown");
 

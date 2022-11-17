@@ -16,7 +16,6 @@ public class Card : Control
     public bool IsMoving { get => _isMoving; }
     private bool _isHighlight { get => !List.IsHeld && _isHover && List.LastHovered == this; }
     private bool _isGrabbable;
-    private AudioStreamPlayer _audioPlayer;
     public CardList List;
     public CardDisplay Display { get => _cardBody; }
 
@@ -36,8 +35,6 @@ public class Card : Control
 
         _cardHover = _cardBody.GetNode<Control>("HoverBox");
         _cardHover.Connect("gui_input", this, "OnGuiInput");
-
-        //_audioPlayer = GetNode<AudioStreamPlayer>("AudioPlayer");
     }
 
     public override void _Input(InputEvent inputEvent)
@@ -108,7 +105,13 @@ public class Card : Control
 
         if (_isHover && !List.IsHovered)
         {
+            AudioManager.Play("Slide");
             List.LastHovered = this;
+        }
+
+        if (!_isHover && List.LastHovered == this)
+        {
+            List.LastHovered = null;
         }
     }
 

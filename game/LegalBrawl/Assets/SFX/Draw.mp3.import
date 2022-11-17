@@ -1,0 +1,15 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+path="res://.import/Draw.mp3-ab730bd1a074990d9068e2e7977c4d3c.mp3str"
+
+[deps]
+
+source_file="res://Assets/SFX/Draw.mp3"
+dest_files=[ "res://.import/Draw.mp3-ab730bd1a074990d9068e2e7977c4d3c.mp3str" ]
+
+[params]
+
+loop=false
+loop_offset=0

@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=11 format=2]
+[gd_resource type="Theme" load_steps=13 format=2]
 
 [ext_resource path="res://Assets/Fonts/MainFont.tres" type="DynamicFont" id=1]
 [ext_resource path="res://Assets/Fonts/MediumFont.tres" type="DynamicFont" id=2]
@@ -6,6 +6,7 @@
 [ext_resource path="res://Assets/UI/grey_button12.png" type="Texture" id=4]
 [ext_resource path="res://Assets/UI/grey_button11.png" type="Texture" id=5]
 [ext_resource path="res://Assets/UI/grey_button07.png" type="Texture" id=6]
+[ext_resource path="res://Assets/grey_panel.png" type="Texture" id=7]
 
 [sub_resource type="StyleBoxTexture" id=4]
 texture = ExtResource( 5 )
@@ -40,6 +41,14 @@ margin_right = 8.0
 margin_top = 8.0
 margin_bottom = 8.0
 
+[sub_resource type="StyleBoxTexture" id=5]
+texture = ExtResource( 7 )
+region_rect = Rect2( 0, 0, 100, 100 )
+margin_left = 8.0
+margin_right = 8.0
+margin_top = 8.0
+margin_bottom = 8.0
+
 [resource]
 default_font = ExtResource( 1 )
 Button/colors/font_color = Color( 0, 0, 0, 1 )
@@ -55,3 +64,4 @@ Button/styles/pressed = SubResource( 2 )
 Label/fonts/Main = ExtResource( 1 )
 Label/fonts/Medium = ExtResource( 2 )
 Label/fonts/Small = ExtResource( 3 )
+PanelContainer/styles/panel = SubResource( 5 )
