@@ -35,6 +35,12 @@ public class CardList
         if (card == null)
             throw new System.Exception("Trying to remove a card that isn't present");
 
+        if (LastHeld == card)
+            LastHeld = null;
+
+        if (LastHovered == card)
+            LastHovered = null;
+
         _cards.Remove(card);
         card.QueueFree();
     }

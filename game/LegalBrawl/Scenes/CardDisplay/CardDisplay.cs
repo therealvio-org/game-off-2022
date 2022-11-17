@@ -4,7 +4,7 @@ using System;
 public class CardDisplay : NinePatchRect
 {
     [Signal] public delegate void Reveal();
-    [Signal] public delegate void OnClick(int id, bool selected, bool flipped);
+    [Signal] public delegate void Click(CardDisplay card);
     private BaseCard _cardResource;
     private Label _nameLabel;
     private Label _costLabel;
@@ -20,6 +20,9 @@ public class CardDisplay : NinePatchRect
     private bool _queueActive;
 
     public BaseCard Resource { get => _cardResource; }
+    public int Id { get => _cardResource.Id; }
+    public bool IsSelected { get => _selected; }
+    public bool IsFlipped { get => _flipped; }
 
     public override void _Ready()
     {
@@ -30,8 +33,6 @@ public class CardDisplay : NinePatchRect
         _frontFace = FindNode("FrontFace") as Control;
         _backFace = FindNode("BackFace") as Control;
         _animator = FindNode("Animator") as AnimationPlayer;
-
-        Connect("OnClick", this, "SelfClick");
     }
 
     public override void _GuiInput(InputEvent @event)
@@ -42,7 +43,7 @@ public class CardDisplay : NinePatchRect
         if (@event is InputEventMouseButton mouseEvent)
         {
             if (mouseEvent.Pressed && mouseEvent.ButtonIndex == (int)ButtonList.Left)
-                EmitSignal("OnClick", _cardResource.Id, _selected, _flipped);
+                EmitSignal("Click", this);
         }
     }
 
@@ -114,17 +115,6 @@ public class CardDisplay : NinePatchRect
     {
         Modulate = new Color(1, 1, 1, 1);
         _selected = false;
-    }
-
-    public void SelfClick(int id, bool selected, bool flipped)
-    {
-        if (flipped)
-            return;
-
-        if (selected)
-            Unselect();
-        else
-            Select();
     }
 
     public void SuppressClick()

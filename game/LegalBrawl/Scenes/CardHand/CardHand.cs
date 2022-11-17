@@ -16,12 +16,14 @@ public class CardHand : Control
     public float LiftRatio;
     CardList _cards;
     Control _cardAnchor;
+    Control _dragTip;
     bool keyPress = false;
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
         _cardAnchor = GetNode<Control>("Anchor");
+        _dragTip = FindNode("DragTip") as Control;
         _cards = new CardList();
         Owner.Connect("AddCard", this, "OnAdd");
         Owner.Connect("RemoveCard", this, "OnRemove");
@@ -29,7 +31,6 @@ public class CardHand : Control
         Owner.Connect("Exit", this, "OnExit");
         Connect("CardHeld", this, "OnCardHeld");
         Connect("CardDropped", this, "OnCardDropped");
-        Connect("CardDropped", Owner, "OnCardDropped");
     }
 
     // Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -151,12 +152,14 @@ public class CardHand : Control
     public void OnCardHeld(int id)
     {
         GD.Print("Holding " + CardLibrary.NameOf(id));
-        Owner.EmitSignal("ShowTips");
+        Owner.EmitSignal("CardHeld", id);
+        _dragTip.Show();
     }
 
     public void OnCardDropped(int id, Vector2 location)
     {
         GD.Print("Dropped " + CardLibrary.NameOf(id));
-        Owner.EmitSignal("HideTips");
+        Owner.EmitSignal("CardDropped", id, location);
+        _dragTip.Hide();
     }
 }

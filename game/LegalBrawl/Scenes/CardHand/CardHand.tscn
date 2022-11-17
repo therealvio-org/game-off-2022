@@ -1,6 +1,8 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=4 format=2]
 
+[ext_resource path="res://Themes/MainTheme.tres" type="Theme" id=1]
 [ext_resource path="res://Scenes/CardHand/CardHand.cs" type="Script" id=2]
+[ext_resource path="res://Assets/Fonts/MediumFont.tres" type="DynamicFont" id=3]
 
 [node name="CardHand" type="Control"]
 anchor_right = 1.0
@@ -30,3 +32,20 @@ margin_top = -20.0
 margin_right = 20.0
 margin_bottom = 20.0
 mouse_filter = 2
+
+[node name="TipLayer" type="CanvasLayer" parent="."]
+layer = 30
+
+[node name="DragTip" type="Label" parent="TipLayer"]
+visible = false
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_top = -14.0
+grow_horizontal = 2
+grow_vertical = 0
+theme = ExtResource( 1 )
+custom_fonts/font = ExtResource( 3 )
+text = "First ------> Drag to reorder ------> Last"
+align = 1
+valign = 2
