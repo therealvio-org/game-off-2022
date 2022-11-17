@@ -4,6 +4,8 @@ using System.Collections.Generic;
 
 public class CardHand : Control
 {
+    [Signal] public delegate void CardHeld(int id);
+    [Signal] public delegate void CardDropped(int id, Vector2 location);
     [Export]
     public float CardWidth;
     [Export]
@@ -25,6 +27,9 @@ public class CardHand : Control
         Owner.Connect("RemoveCard", this, "OnRemove");
         Owner.Connect("Enter", this, "OnEnter");
         Owner.Connect("Exit", this, "OnExit");
+        Connect("CardHeld", this, "OnCardHeld");
+        Connect("CardDropped", this, "OnCardDropped");
+        Connect("CardDropped", Owner, "OnCardDropped");
     }
 
     // Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -141,5 +146,17 @@ public class CardHand : Control
     public void OnExit()
     {
         _cards.RemoveAll();
+    }
+
+    public void OnCardHeld(int id)
+    {
+        GD.Print("Holding " + CardLibrary.NameOf(id));
+        Owner.EmitSignal("ShowTips");
+    }
+
+    public void OnCardDropped(int id, Vector2 location)
+    {
+        GD.Print("Dropped " + CardLibrary.NameOf(id));
+        Owner.EmitSignal("HideTips");
     }
 }

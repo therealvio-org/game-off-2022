@@ -16,6 +16,11 @@ public class CardLibrary : Node
         return _instance._database[id];
     }
 
+    public static string NameOf(int id)
+    {
+        return _instance._database[id].Name;
+    }
+
     private void ReadDeck(DeckResource deck)
     {
         _database = new Dictionary<int, BaseCard>();

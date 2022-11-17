@@ -78,11 +78,16 @@ public class Card : Control
 
     private void HoldCard(bool pressed)
     {
-        if (!_isGrabbable)
+        if (!_isGrabbable || _isHeld == pressed)
             return;
 
         _isHeld = pressed;
         _cardHover.MouseFilter = _isHeld ? MouseFilterEnum.Ignore : MouseFilterEnum.Stop;
+
+        if (_isHeld)
+            Owner.EmitSignal("CardHeld", _cardBody.Resource.Id);
+        else
+            Owner.EmitSignal("CardDropped", _cardBody.Resource.Id, GetGlobalMousePosition());
     }
 
     public override void _Process(float delta)
