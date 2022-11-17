@@ -223,6 +223,7 @@ anims/FlipDown = SubResource( 2 )
 anims/FlipUp = SubResource( 1 )
 
 [node name="Glow" type="NinePatchRect" parent="."]
+visible = false
 self_modulate = Color( 1, 0.905882, 0, 0.901961 )
 show_behind_parent = true
 anchor_right = 1.0

@@ -35,6 +35,7 @@ public class SceneManager : Node
 
         Node node = _instance.GetPackedScene(scene).Instance();
         parent.AddChild(node);
+        node.Owner = parent;
         return node;
     }
 

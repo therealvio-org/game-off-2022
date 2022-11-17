@@ -8,4 +8,4 @@ region_rect = Rect2( 0, 0, 49, 49 )
 margin_left = 8.0
 margin_right = 8.0
 margin_top = 8.0
-margin_bottom = 8.0
+margin_bottom = 12.0

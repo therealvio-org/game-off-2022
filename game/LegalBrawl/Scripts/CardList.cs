@@ -36,7 +36,7 @@ public class CardList
             throw new System.Exception("Trying to remove a card that isn't present");
 
         _cards.Remove(card);
-        card.Free();
+        card.QueueFree();
     }
 
     public void RemoveAt(int index)
