@@ -7,6 +7,8 @@ import (
 	"math/rand"
 	"time"
 
+	lbapiconfig "legalbrawlapi/config"
+
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/expression"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
@@ -135,4 +137,37 @@ func (ddbh dDBHandler) chooseHand(h []handInfo) handInfo {
 	rand.Seed(time.Now().Unix())
 	selectedHand := h[rand.Intn(len(h))]
 	return selectedHand
+}
+
+// Checks if the player by specified playerId and version exists. If it does, return true, else
+// return false. The intention for this is to determine if player has hand has previously been
+// recorded on the Database.
+//
+// This method should only be used for `GET` methods, as only *just* enough fields are populated
+// in the handInfo struct to generate a DynamoDB key.
+func (ddbh dDBHandler) checkIfPlayerHandExists(p GetMethodParameters, e lbapiconfig.EnvConfig) (bool, error) {
+	var player = handInfo{
+		PlayerId: p.PlayerId,
+		Version:  e.PlayerHandVersion, //Incoming request should always be the *latest* playerHand version when checking
+	}
+
+	dbKey, err := player.GetKey()
+	if err != nil {
+		return false, fmt.Errorf("failed to generate dbkey: %v", err)
+	}
+
+	response, err := ddbh.DynamoDbClient.GetItem(context.TODO(), &dynamodb.GetItemInput{
+		Key:       dbKey,
+		TableName: aws.String(ddbh.TableName),
+	})
+	if err != nil {
+		return false, fmt.Errorf("failed to query player: %v", err)
+	} else {
+		err = attributevalue.UnmarshalMap(response.Item, &player)
+		if err != nil {
+			return false, fmt.Errorf("failed to unmarshal response:  %v", err)
+		}
+	}
+
+	return true, nil
 }

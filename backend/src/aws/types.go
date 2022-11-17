@@ -6,6 +6,8 @@ type body struct {
 	HandInfo handInfo `json:"handinfo"`
 }
 
+// `Version` refers to the balance version of cards. Functions concerning live service should be
+// using the latest version defined in the `PlayerHandVersion` env var
 type handInfo struct {
 	PlayerName string  `json:"playerName" dynamodbav:"playerName"`
 	PlayerId   string  `json:"playerId" dynamodbav:"playerId"`
@@ -21,4 +23,8 @@ type dDBHandler struct {
 type queryHandsResult struct {
 	HandInfoSlice []handInfo
 	Error         error
+}
+
+type GetMethodParameters struct {
+	PlayerId string
 }
