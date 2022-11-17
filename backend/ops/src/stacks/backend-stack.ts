@@ -124,6 +124,15 @@ export class BackendStack extends cdk.Stack {
         validateRequestParameters: false,
       }
     )
+    const playerHandGetValidator = new apigateway.RequestValidator(
+      this,
+      "playerHandGetValidator",
+      {
+        restApi: api,
+        requestValidatorName: "playerHandGetValidator",
+        validateRequestParameters: true,
+      }
+    )
     const playerHandPutValidator = new apigateway.RequestValidator(
       this,
       "playerHandPutValidator",
@@ -144,6 +153,10 @@ export class BackendStack extends cdk.Stack {
     })
     const playerHandGet = playerHand.addMethod("GET", apiIntegration, {
       apiKeyRequired: true,
+      requestParameters: {
+        "method.request.querystring.playerId": true,
+      },
+      requestValidator: playerHandGetValidator,
     })
     const playerHandPut = playerHand.addMethod("PUT", apiIntegration, {
       apiKeyRequired: true,
