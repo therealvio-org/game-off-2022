@@ -46,6 +46,6 @@ grow_horizontal = 2
 grow_vertical = 0
 theme = ExtResource( 1 )
 custom_fonts/font = ExtResource( 3 )
-text = "First ------> Drag to reorder ------> Last"
+text = "Drag to reorder"
 align = 1
 valign = 2

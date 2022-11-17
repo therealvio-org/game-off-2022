@@ -52,9 +52,11 @@ public class SelectionView : View
         _fundsLabel.Text = FormatFunds(fundsValue);
     }
 
-    public void OnUpdateFunds(int previous, int current)
+    public void OnUpdateFunds(int previous, int current, bool check)
     {
         realFundsValue = current;
+        _fundsLabel.SelfModulate = check ? Colors.White : Colors.Red;
+
     }
 
     public void OnRerollClicked()
@@ -67,9 +69,10 @@ public class SelectionView : View
         EmitSignal("Battle");
     }
 
-    public void OnUpdateHand(int size)
+    public void OnUpdateHand(int size, bool check)
     {
         _countLabel.Text = FormatCount(size);
+        _countLabel.SelfModulate = check ? Colors.White : Colors.Red;
     }
 
     // This is a quick fix to get the order of cards from the CardList object on the CardHand
