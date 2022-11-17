@@ -90,6 +90,7 @@ public class CardPool : Control
         {
             Owner.EmitSignal("AddCard", card.Id);
             card.Select();
+            AudioManager.Play("Draw");
         }
     }
 

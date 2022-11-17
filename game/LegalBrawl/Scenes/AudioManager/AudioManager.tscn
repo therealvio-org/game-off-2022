@@ -1,14 +1,30 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=8 format=2]
 
 [ext_resource path="res://Scenes/AudioManager/AudioManager.cs" type="Script" id=1]
-[ext_resource path="res://Assets/SFX/Minimalist1.wav" type="AudioStream" id=2]
+[ext_resource path="res://Assets/SFX/Minimalist13.wav" type="AudioStream" id=2]
 [ext_resource path="res://Assets/SFX/Minimalist7.wav" type="AudioStream" id=3]
+[ext_resource path="res://Assets/SFX/Paper.mp3" type="AudioStream" id=4]
+[ext_resource path="res://Assets/SFX/Flip.mp3" type="AudioStream" id=5]
+[ext_resource path="res://Assets/SFX/Slide.mp3" type="AudioStream" id=6]
+[ext_resource path="res://Assets/SFX/Draw.mp3" type="AudioStream" id=7]
 
 [node name="AudioManager" type="Node"]
 script = ExtResource( 1 )
 
 [node name="Hover" type="AudioStreamPlayer" parent="."]
-stream = ExtResource( 2 )
+stream = ExtResource( 3 )
 
 [node name="Click" type="AudioStreamPlayer" parent="."]
-stream = ExtResource( 3 )
+stream = ExtResource( 2 )
+
+[node name="Paper" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 4 )
+
+[node name="Flip" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 5 )
+
+[node name="Draw" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 7 )
+
+[node name="Slide" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 6 )

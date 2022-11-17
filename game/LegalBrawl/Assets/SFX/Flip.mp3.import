@@ -1,0 +1,15 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+path="res://.import/Flip.mp3-19c1e95e4c7e9e4b4c5cdbdceb5ba065.mp3str"
+
+[deps]
+
+source_file="res://Assets/SFX/Flip.mp3"
+dest_files=[ "res://.import/Flip.mp3-19c1e95e4c7e9e4b4c5cdbdceb5ba065.mp3str" ]
+
+[params]
+
+loop=false
+loop_offset=0

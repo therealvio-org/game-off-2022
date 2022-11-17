@@ -5,19 +5,19 @@ public class AudioManager : Node
 {
     [Signal] public delegate void SetVolume(float volume);
     private static AudioManager _instance;
-    private AudioStreamPlayer _hoverPlayer;
-    private AudioStreamPlayer _clickPlayer;
     private Dictionary<string, AudioStreamPlayer> _players;
     public override void _Ready()
     {
         _instance = this;
         _players = new Dictionary<string, AudioStreamPlayer>();
 
-        _hoverPlayer = GetNode<AudioStreamPlayer>("Hover");
-        _clickPlayer = GetNode<AudioStreamPlayer>("Click");
-
-        _players.Add("Hover", _hoverPlayer);
-        _players.Add("Click", _clickPlayer);
+        foreach (Node n in GetChildren())
+        {
+            if (n is AudioStreamPlayer player)
+            {
+                _players.Add(n.Name, player);
+            }
+        }
     }
 
     public static void Play(string effect)
