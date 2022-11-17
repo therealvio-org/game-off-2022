@@ -127,8 +127,27 @@ public class CardDisplay : NinePatchRect
         RectRotation += Randy.Range(-4f, 4f);
     }
 
+    public void ResetRotation()
+    {
+        RectRotation = 0;
+    }
+
     public void Prime()
     {
         Connect("Reveal", _cardResource, "Play");
+    }
+
+    public void OnHoverStart()
+    {
+        if (_flipped || _selected)
+            return;
+
+        OffsetRotation();
+        AudioManager.Play("Hover");
+    }
+
+    public void OnHoverEnd()
+    {
+        ResetRotation();
     }
 }

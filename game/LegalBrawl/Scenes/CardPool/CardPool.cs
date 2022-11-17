@@ -24,6 +24,8 @@ public class CardPool : Control
         {
             c.FlipDown();
             c.Connect("Click", this, "OnCardClicked");
+            c.Connect("mouse_entered", c, "OnHoverStart");
+            c.Connect("mouse_exited", c, "OnHoverEnd");
         }
 
         Owner.Connect("DisplayCards", this, "OnDisplay");
