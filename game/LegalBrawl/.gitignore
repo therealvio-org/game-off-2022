@@ -11,4 +11,7 @@ export_presets.cfg
 data_*/
 
 # Custom ignores
-.build/
+build/
+Build/
+
+DebugKeys.cs
