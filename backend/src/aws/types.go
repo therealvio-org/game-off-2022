@@ -25,6 +25,7 @@ type queryHandsResult struct {
 	Error         error
 }
 
-type playerHandParameters struct {
+type playerHandCompositeKey struct {
 	PlayerId string
+	Version  string
 }

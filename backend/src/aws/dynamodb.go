@@ -7,8 +7,6 @@ import (
 	"math/rand"
 	"time"
 
-	lbapiconfig "legalbrawlapi/config"
-
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/expression"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
@@ -144,15 +142,19 @@ func (ddbh dDBHandler) chooseHand(h []handInfo) handInfo {
 // return false. The intention for this is to determine if player has hand has previously been
 // recorded on the Database.
 //
-// This method should only be used for `GET` methods, as only *just* enough fields are populated
-// in the handInfo struct to generate a DynamoDB key.
-func (ddbh dDBHandler) checkIfPlayerHandExists(p playerHandParameters, e lbapiconfig.EnvConfig) (bool, map[string]types.AttributeValue, error) {
-	var player = handInfo{
+// Unlike `checkForDuplicate`, this is only a partial check to verify if the player making a request
+// is in the DB. It does not check if every attribute is a match.
+// TODO: `checkForDuplicate` and `checkIfPlayerHandExists` could be made as a single method achieving
+// the same thing
+func (ddbh dDBHandler) checkIfPlayerHandExists(p playerHandCompositeKey) (bool, map[string]types.AttributeValue, error) {
+	playerInRequest := handInfo{
 		PlayerId: p.PlayerId,
-		Version:  e.PlayerHandVersion, //Incoming request should always be the *latest* playerHand version when checking
+		Version:  p.Version, //Incoming request should always be the *latest* playerHand version when checking
 	}
 
-	dbKey, err := player.GetKey()
+	var result handInfo
+
+	dbKey, err := playerInRequest.GetKey()
 	if err != nil {
 		return false, nil, fmt.Errorf("failed to generate dbkey: %v", err)
 	}
@@ -163,20 +165,36 @@ func (ddbh dDBHandler) checkIfPlayerHandExists(p playerHandParameters, e lbapico
 	})
 	if err != nil {
 		return false, nil, fmt.Errorf("failed to query player: %v", err)
-	} else { //TODO: This logic is unused. Could be discarded
-		err = attributevalue.UnmarshalMap(response.Item, &player)
+	} else {
+		err = attributevalue.UnmarshalMap(response.Item, &result)
 		if err != nil {
 			return false, nil, fmt.Errorf("failed to unmarshal response:  %v", err)
 		}
 	}
 
-	return true, response.Item, nil
+	// using cmp.Equal checks for *all* values if they match. We can use the unmarshalled result
+	// and use that to produce a partial struct like `playerInRequest` for comparison purposes only
+	playerInDB := handInfo{
+		PlayerId: result.PlayerId,
+		Version:  result.Version,
+	}
+
+	playerExists := cmp.Equal(playerInRequest, playerInDB)
+	if playerExists {
+		return true, response.Item, nil
+	} else {
+		return false, nil, nil
+	}
+
 }
 
-// Checks if the submitted hand already exists. This is done by checking if the submitted hand is a
-// 1:1 match with a pre-existing record. If it is, return true, else return false.
+// Checks if the submitted playerHand item already exists. This is done by checking if the submitted
+// hand is a 1:1 match with a pre-existing record. If it is, return true, else return false.
 // The intention here is that it can be used to determine whether a POST request needs to in fact be
 // a PUT request, and if an isolated PUT request isn't necessary.
+//
+// This method should be used for `PUT` requests, where a check needs to be made for every single
+// attribute for a given item.
 func (ddbh dDBHandler) checkForDuplicate(h handInfo, item map[string]types.AttributeValue) (bool, error) {
 	var dbHand handInfo
 

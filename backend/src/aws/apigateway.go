@@ -32,18 +32,20 @@ func parseBody(b string) (*body, error) {
 	return &body, nil
 }
 
-func parseParameters(p map[string]string) (playerHandParameters, error) {
+func parseParameters(p map[string]string) (playerHandCompositeKey, error) {
 	input := make(map[string]interface{})
 
 	for k, v := range p {
 		input[k] = v
 	}
 
-	var result playerHandParameters
+	var result playerHandCompositeKey
 	err := mapstructure.Decode(input, &result)
 	if err != nil {
-		return playerHandParameters{}, fmt.Errorf("unable to decode get request parameters: %v", err)
+		return playerHandCompositeKey{}, fmt.Errorf("unable to decode get request parameters: %v", err)
 	}
+
+	result.Version = env.PlayerHandVersion //Adds the balance version to the struct. Not supplied in GET request
 
 	return result, nil
 }
@@ -62,7 +64,7 @@ func validateBody(b body) error {
 	return nil
 }
 
-func validateParameters(pg playerHandParameters) error {
+func validateParameters(pg playerHandCompositeKey) error {
 	err := validatePlayerId(pg.PlayerId)
 	if err != nil {
 		return fmt.Errorf("playerId is not a valid UUID format: %v", err)
@@ -139,13 +141,33 @@ func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 				TableName:      env.PlayerHandTableName,
 			}
 
-			err = dDBHandler.addHand(dynamoHandler, parsedBody.HandInfo)
-			if err != nil {
-				log.Fatalf("error adding item to table: %v", err)
+			playerHandParams := playerHandCompositeKey{
+				PlayerId: parsedBody.HandInfo.PlayerId,
+				Version:  env.PlayerHandVersion,
 			}
-			response = events.APIGatewayProxyResponse{
-				Body:       "peeps that database (this is a placeholder, lmao)",
-				StatusCode: 200,
+			playerExist, _, err := dynamoHandler.checkIfPlayerHandExists(playerHandParams)
+			if err != nil {
+				return events.APIGatewayProxyResponse{
+					Body:       "error checking for duplicate player",
+					StatusCode: 500,
+				}, fmt.Errorf("failed to check for duplicate playerId %v: %v", parsedBody.HandInfo.PlayerId, err)
+			}
+			if playerExist { //Player exists, use PUT request to update player instead
+				log.Printf("playerId %v already exists in database", parsedBody.HandInfo.PlayerId)
+				response = events.APIGatewayProxyResponse{
+					Body:       "submitted player info already exists in database",
+					StatusCode: 400,
+				}
+			} else { //Add player hand to the DB
+				err = dDBHandler.addHand(dynamoHandler, parsedBody.HandInfo)
+				if err != nil {
+					log.Fatalf("error adding item to table: %v", err)
+				}
+				log.Printf("playerId %v added to database", parsedBody.HandInfo.PlayerId)
+				response = events.APIGatewayProxyResponse{
+					Body:       "submitted player info successfully added to database",
+					StatusCode: 200,
+				}
 			}
 
 		case "GET":
@@ -177,7 +199,7 @@ func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 				TableName:      env.PlayerHandTableName,
 			}
 
-			playerExists, _, err := dynamoHandler.checkIfPlayerHandExists(parsedParameters, env)
+			playerExists, _, err := dynamoHandler.checkIfPlayerHandExists(parsedParameters)
 			if err != nil {
 				log.Fatalf("failed to determine if player exists on database: %v", err)
 			}
@@ -234,13 +256,17 @@ func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 				TableName:      env.PlayerHandTableName,
 			}
 
-			playerHandParams := playerHandParameters{
+			playerHandParams := playerHandCompositeKey{
 				PlayerId: parsedBody.HandInfo.PlayerId,
+				Version:  env.PlayerHandVersion,
 			}
 
-			playerExist, playerEntry, err := dynamoHandler.checkIfPlayerHandExists(playerHandParams, env)
+			playerExist, playerEntry, err := dynamoHandler.checkIfPlayerHandExists(playerHandParams)
 			if err != nil {
-				log.Fatalf("failed to determine if player exists on database: %v", err)
+				return events.APIGatewayProxyResponse{
+					Body:       "error checking for duplicate player",
+					StatusCode: 500,
+				}, fmt.Errorf("failed to check for duplicate player: %v", err)
 			}
 			if playerExist { //Check PUT request
 				isDupe, err := dynamoHandler.checkForDuplicate(parsedBody.HandInfo, playerEntry)
