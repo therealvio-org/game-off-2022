@@ -19,6 +19,7 @@ config/icon="res://icon.png"
 SceneManager="*res://Autoloads/SceneManager.cs"
 CardLibrary="*res://Autoloads/CardLibrary.cs"
 Randy="*res://Autoloads/Randy.cs"
+NetworkingManager="*res://Autoloads/NetworkingManager.cs"
 
 [display]
 

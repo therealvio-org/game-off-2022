@@ -54,16 +54,6 @@ margin_left = 642.0
 margin_right = 1280.0
 margin_bottom = 720.0
 
-[node name="NextButton" type="Button" parent="."]
-anchor_left = 0.5
-anchor_top = 0.95
-anchor_right = 0.5
-anchor_bottom = 0.95
-grow_horizontal = 2
-grow_vertical = 2
-custom_fonts/font = ExtResource( 4 )
-text = "Next"
-
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 anims/Wait = SubResource( 1 )
 
@@ -87,11 +77,31 @@ theme = ExtResource( 3 )
 align = 1
 valign = 1
 
-[node name="AgainButton" type="Button" parent="CanvasLayer/VBoxContainer"]
+[node name="PanelContainer" type="PanelContainer" parent="."]
+anchor_left = 0.45
+anchor_top = 0.95
+anchor_right = 0.55
+anchor_bottom = 0.95
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="NextButton" type="Button" parent="PanelContainer"]
+margin_left = 8.0
+margin_top = 8.0
+margin_right = 120.0
+margin_bottom = 44.0
+grow_horizontal = 2
+grow_vertical = 2
+custom_fonts/font = ExtResource( 4 )
+text = "Next"
+
+[node name="AgainButton" type="Button" parent="PanelContainer"]
 visible = false
-margin_left = 594.0
-margin_right = 685.0
-margin_bottom = 36.0
-size_flags_horizontal = 4
+margin_left = 8.0
+margin_top = 8.0
+margin_right = 120.0
+margin_bottom = 44.0
+grow_horizontal = 2
+grow_vertical = 2
 custom_fonts/font = ExtResource( 4 )
 text = "Play again"

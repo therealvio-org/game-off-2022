@@ -17,8 +17,8 @@ public class CardPool : Control
         _animationPlayer = FindNode("AnimationPlayer") as AnimationPlayer;
         _dropTip = FindNode("DropTip") as Control;
 
-        foreach (Node n in GetNode("Column/TopRow").GetChildren()) _displayCards.Add(n as CardDisplay);
-        foreach (Node n in GetNode("Column/BottomRow").GetChildren()) _displayCards.Add(n as CardDisplay);
+        foreach (Node n in GetNode("Container/Column/TopRow").GetChildren()) _displayCards.Add(n as CardDisplay);
+        foreach (Node n in GetNode("Container/Column/BottomRow").GetChildren()) _displayCards.Add(n as CardDisplay);
 
         foreach (CardDisplay c in _displayCards)
         {
