@@ -1,35 +1,33 @@
 using Godot;
 using System;
+using System.Collections.Generic;
 
 public class BoardState
 {
-    private PlayerState _player;
-    private PlayerState _opponent;
+    private PlayerState[] _players;
 
     public BoardState()
     {
-        _player = new PlayerState();
-        _opponent = new PlayerState();
+        _players = new PlayerState[Enum.GetNames(typeof(PlayerTypes)).Length];
+
+        _players[(int)PlayerTypes.Player] = new PlayerState();
+        _players[(int)PlayerTypes.Opponent] = new PlayerState();
     }
+
 
     public int GetCredibility(PlayerTypes character)
     {
-        return GetPlayer(character).Credibility;
+        return _players[(int)character].Credibility;
     }
 
     public void UpdateCredibility(PlayerTypes character, int value)
     {
-        GetPlayer(character).UpdateCredibility(value);
-    }
-
-    public PlayerState GetPlayer(PlayerTypes character)
-    {
-        return character == PlayerTypes.Player ? _player : _opponent;
+        _players[(int)character].UpdateCredibility(value);
     }
 
     public PlayerTypes GetWinner()
     {
-        if (_opponent.Credibility > _player.Credibility)
+        if (_players[0].Credibility > _players[1].Credibility)
             return PlayerTypes.Opponent;
         return PlayerTypes.Player;
     }
@@ -37,7 +35,7 @@ public class BoardState
 
 public class PlayerState
 {
-    public int Credibility { get; private set; } = 0;
+    public int Credibility { get; private set; } = Main.CREDIBILITY;
 
     public void UpdateCredibility(int value)
     {

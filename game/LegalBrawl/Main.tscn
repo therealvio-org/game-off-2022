@@ -16,6 +16,5 @@ script = ExtResource( 3 )
 layer = 50
 
 [node name="Debugger" parent="CanvasLayer" instance=ExtResource( 1 )]
-visible = false
 
 [node name="AudioManager" parent="." instance=ExtResource( 2 )]

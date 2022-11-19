@@ -3,9 +3,6 @@ using System.Collections.Generic;
 
 public class Selection : Phase
 {
-    public const int MAX_HAND = 7;
-    public const int MAX_POOL = 10;
-    public const int STARTING_FUNDS = 100;
     [Signal] public delegate void UpdateFunds(int previous, int current, bool check);
     [Signal] public delegate void UpdateHand(int size, bool check);
     private int _handSize { get => _handCards.Count; }
@@ -14,7 +11,7 @@ public class Selection : Phase
     private int _funds;
     private SelectionView _view;
 
-    public bool CheckHand { get => _handCards.Count == MAX_HAND; }
+    public bool CheckHand { get => _handCards.Count == Main.MAX_HAND; }
     public bool CheckFunds { get => _funds >= 0; }
 
     public override void _Ready()
@@ -49,6 +46,7 @@ public class Selection : Phase
     {
         if (CanFight())
         {
+            HandCache.Store(new Hand(GetHand()));
             EmitSignal("NextPhase", PhaseTypes.Battle);
         }
     }
@@ -69,7 +67,7 @@ public class Selection : Phase
 
     public void RefillPool()
     {
-        while (_poolCards.Count < MAX_POOL)
+        while (_poolCards.Count < Main.MAX_POOL)
             _poolCards.Add(CardLibrary.DrawRandomId());
     }
 
@@ -97,7 +95,7 @@ public class Selection : Phase
 
     public int CalculateFunds()
     {
-        int funds = STARTING_FUNDS;
+        int funds = Main.STARTING_FUNDS;
 
         foreach (int cardId in _handCards)
         {
