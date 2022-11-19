@@ -36,7 +36,7 @@ public class SelectionView : View
 
     public override void Setup()
     {
-        fundsValue = realFundsValue = Selection.STARTING_FUNDS;
+        fundsValue = realFundsValue = Main.STARTING_FUNDS;
         _fundsLabel.Text = FormatFunds(fundsValue);
         _countLabel.Text = FormatCount(0);
         EmitSignal("Reroll");

@@ -5,19 +5,16 @@ public class Battle : Phase
     [Signal] public delegate void CredibilityChange(PlayerTypes character, int from, int to);
     [Signal] public delegate void LastCard();
     [Signal] public delegate void DeclareWinner(PlayerTypes winner);
-    private int[] _cards;
-    private int _cardIndex;
-    private PlayerTypes _turn;
     private BoardState _state;
-    public Battle(int[] _playerCards, int[] _opponentCards)
+    private TurnController _turnController;
+    public Battle()
     {
-        _cardIndex = 0;
-        if (GoesFirst(_playerCards[0], _opponentCards[0]))
-            _cards = JoinArrays(_playerCards, _opponentCards);
-        else
-            _cards = JoinArrays(_opponentCards, _playerCards);
+        Hand playerHand = HandCache.Get(PlayerTypes.Player);
+        //Hand opponentHand = HandCache.Get(PlayerTypes.Opponent);
+        Hand opponentHand = Hand.GetRandom();
 
         _state = new BoardState();
+        _turnController = new TurnController(playerHand, opponentHand);
     }
 
     public void ConnectTo(BattleView view)
@@ -33,15 +30,16 @@ public class Battle : Phase
 
     public void GetNextCard()
     {
-        EmitSignal("PlayCard", _cards[_cardIndex++], _turn, this);
+        Turn currentTurn = _turnController.Current();
+        EmitSignal("PlayCard", currentTurn.Id, currentTurn.Owner, this);
 
-        if (_cardIndex == _cards.Length)
+        if (_turnController.IsLast())
         {
             EmitSignal("LastCard");
             return;
         }
 
-        ChangeTurn();
+        _turnController.Advance();
     }
 
     public void OnFinishBattle()
@@ -53,28 +51,6 @@ public class Battle : Phase
     public void OnPlayAgain()
     {
         EmitSignal("NextPhase", PhaseTypes.Selection);
-    }
-
-    public void ChangeTurn()
-    {
-        _turn = _turn == PlayerTypes.Player ? PlayerTypes.Opponent : PlayerTypes.Player;
-    }
-
-    public bool GoesFirst(int playerCardId, int opponentCardId)
-    {
-        return true;
-    }
-
-    public int[] JoinArrays(int[] first, int[] second)
-    {
-        int[] collated = new int[first.Length + second.Length];
-        for (int i = 0; i < first.Length; i++)
-        {
-            collated[i * 2] = first[i];
-            collated[i * 2 + 1] = second[i];
-        }
-
-        return collated;
     }
 
     public void ModifyCredibility(PlayerTypes owner, int value, PlayerTypes target)

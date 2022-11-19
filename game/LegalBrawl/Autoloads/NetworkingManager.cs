@@ -9,7 +9,7 @@ public class NetworkingManager : Node
     public override void _Ready()
     {
         string playerId = "6d0506fc-c6bf-4dd6-a3ec-cca4515990d1";
-        CreateRequest(MakeGetURL(playerId));
+        //CreateRequest(MakeGetURL(playerId));
     }
 
     public void CreateRequest(string url)

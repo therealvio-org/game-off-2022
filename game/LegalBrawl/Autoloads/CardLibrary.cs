@@ -38,16 +38,4 @@ public class CardLibrary : Node
         _instance._database.Keys.CopyTo(keys, 0);
         return keys[Randy.Range(0, keys.Length - 1)];
     }
-
-    public static int[] RandomHand()
-    {
-        int[] cards = new int[7];
-
-        for (int i = 0; i < 7; i++)
-        {
-            cards[i] = DrawRandomId();
-        }
-
-        return cards;
-    }
 }

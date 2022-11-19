@@ -3,6 +3,10 @@ using System;
 
 public class Main : Control
 {
+    public const int MAX_HAND = 7;
+    public const int MAX_POOL = 10;
+    public const int STARTING_FUNDS = 100;
+    public const int CREDIBILITY = 15;
     [Signal] delegate void PhaseChange();
     public Phase CurrentPhase;
     private GameUI _ui;
@@ -42,10 +46,7 @@ public class Main : Control
 
     public void GoToBattle()
     {
-        if (CurrentPhase is Selection selectionPhase)
-            EmitSignal("PhaseChange", new Battle(selectionPhase.GetHand(), CardLibrary.RandomHand()));
-        else
-            EmitSignal("PhaseChange", new Battle(CardLibrary.RandomHand(), CardLibrary.RandomHand()));
+        EmitSignal("PhaseChange", new Battle());
     }
 
     public void OnPhaseChange(Phase phase)
