@@ -14,6 +14,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/google/go-cmp/cmp"
 )
 
 var (
@@ -67,7 +68,7 @@ func (ddbh dDBHandler) doQueryHands(version string) queryHandsResult {
 	if err != nil {
 		return queryHandsResult{
 			nil,
-			fmt.Errorf("could not build expression for query. error: %v", err),
+			fmt.Errorf("could not build expression to query available hands. error: %v", err),
 		}
 	} else {
 		response, err = ddbh.DynamoDbClient.Query(context.TODO(), &dynamodb.QueryInput{
@@ -145,7 +146,7 @@ func (ddbh dDBHandler) chooseHand(h []handInfo) handInfo {
 //
 // This method should only be used for `GET` methods, as only *just* enough fields are populated
 // in the handInfo struct to generate a DynamoDB key.
-func (ddbh dDBHandler) checkIfPlayerHandExists(p GetMethodParameters, e lbapiconfig.EnvConfig) (bool, error) {
+func (ddbh dDBHandler) checkIfPlayerHandExists(p playerHandParameters, e lbapiconfig.EnvConfig) (bool, map[string]types.AttributeValue, error) {
 	var player = handInfo{
 		PlayerId: p.PlayerId,
 		Version:  e.PlayerHandVersion, //Incoming request should always be the *latest* playerHand version when checking
@@ -153,7 +154,7 @@ func (ddbh dDBHandler) checkIfPlayerHandExists(p GetMethodParameters, e lbapicon
 
 	dbKey, err := player.GetKey()
 	if err != nil {
-		return false, fmt.Errorf("failed to generate dbkey: %v", err)
+		return false, nil, fmt.Errorf("failed to generate dbkey: %v", err)
 	}
 
 	response, err := ddbh.DynamoDbClient.GetItem(context.TODO(), &dynamodb.GetItemInput{
@@ -161,13 +162,66 @@ func (ddbh dDBHandler) checkIfPlayerHandExists(p GetMethodParameters, e lbapicon
 		TableName: aws.String(ddbh.TableName),
 	})
 	if err != nil {
-		return false, fmt.Errorf("failed to query player: %v", err)
-	} else {
+		return false, nil, fmt.Errorf("failed to query player: %v", err)
+	} else { //TODO: This logic is unused. Could be discarded
 		err = attributevalue.UnmarshalMap(response.Item, &player)
 		if err != nil {
-			return false, fmt.Errorf("failed to unmarshal response:  %v", err)
+			return false, nil, fmt.Errorf("failed to unmarshal response:  %v", err)
 		}
 	}
 
-	return true, nil
+	return true, response.Item, nil
+}
+
+// Checks if the submitted hand already exists. This is done by checking if the submitted hand is a
+// 1:1 match with a pre-existing record. If it is, return true, else return false.
+// The intention here is that it can be used to determine whether a POST request needs to in fact be
+// a PUT request, and if an isolated PUT request isn't necessary.
+func (ddbh dDBHandler) checkForDuplicate(h handInfo, item map[string]types.AttributeValue) (bool, error) {
+	var dbHand handInfo
+
+	err := attributevalue.UnmarshalMap(item, &dbHand)
+	if err != nil {
+		return false, fmt.Errorf("failed to unmarshal response:  %v", err)
+	}
+
+	isDupe := cmp.Equal(h, dbHand)
+	if isDupe {
+		return true, nil
+	} else {
+		return false, nil
+	}
+}
+
+func (ddbh dDBHandler) updatePlayerHand(h handInfo) error {
+	var attributeMap map[string]map[string]interface{}
+
+	dbKey, err := h.GetKey()
+	if err != nil {
+		return fmt.Errorf("failed to generate dbkey: %v", err)
+	}
+
+	update := expression.Set(expression.Name("cards"), expression.Value(h.Cards))
+	expr, err := expression.NewBuilder().WithUpdate(update).Build()
+	if err != nil {
+		return fmt.Errorf("could not build expression for updating playerHand (%v) record. error: %v", h.PlayerId, err)
+	}
+
+	response, err := ddbh.DynamoDbClient.UpdateItem(context.TODO(), &dynamodb.UpdateItemInput{
+		Key:                       dbKey,
+		TableName:                 &env.PlayerHandTableName,
+		ExpressionAttributeNames:  expr.Names(),
+		ExpressionAttributeValues: expr.Values(),
+		UpdateExpression:          expr.Update(),
+	})
+	if err != nil {
+		return fmt.Errorf("unable to update entry for playerId %v: %v", h.PlayerId, err)
+	} else {
+		err = attributevalue.UnmarshalMap(response.Attributes, &attributeMap)
+		if err != nil {
+			return fmt.Errorf("failed to unmarshal response:  %v", err)
+		}
+
+		return nil
+	}
 }

@@ -57,6 +57,7 @@ export class BackendStack extends cdk.Stack {
           "dynamodb:GetItem",
           "dynamodb:PutItem",
           "dynamodb:Query",
+          "dynamodb:UpdateItem",
         ],
         resources: [
           `${apiToken.secretArn}-${SecretArnSuffix}`,

@@ -25,6 +25,6 @@ type queryHandsResult struct {
 	Error         error
 }
 
-type GetMethodParameters struct {
+type playerHandParameters struct {
 	PlayerId string
 }
