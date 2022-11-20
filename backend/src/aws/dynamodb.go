@@ -147,6 +147,21 @@ func (ddbh dDBHandler) chooseHand(h []handInfo) handInfo {
 // TODO: `checkForDuplicate` and `checkIfPlayerHandExists` could be made as a single method achieving
 // the same thing
 func (ddbh dDBHandler) checkIfPlayerHandExists(p playerHandCompositeKey) (bool, map[string]types.AttributeValue, error) {
+	result := make(chan checkPlayerHandExistsResult, 1)
+
+	go func() {
+		result <- ddbh.doCheckIfPlayerHandExist(p)
+	}()
+	select {
+	case <-time.After(timeoutWindow):
+		return false, nil, fmt.Errorf("timeout - could not return existing player in allotted window")
+
+	case result := <-result:
+		return result.PlayerExists, result.PlayerItem, nil
+	}
+}
+
+func (ddbh dDBHandler) doCheckIfPlayerHandExist(p playerHandCompositeKey) checkPlayerHandExistsResult {
 	playerInRequest := handInfo{
 		PlayerId: p.PlayerId,
 		Version:  p.Version, //Incoming request should always be the *latest* playerHand version when checking
@@ -156,7 +171,11 @@ func (ddbh dDBHandler) checkIfPlayerHandExists(p playerHandCompositeKey) (bool, 
 
 	dbKey, err := playerInRequest.GetKey()
 	if err != nil {
-		return false, nil, fmt.Errorf("failed to generate dbkey: %v", err)
+		return checkPlayerHandExistsResult{
+			PlayerExists: false,
+			PlayerItem:   nil,
+			Error:        fmt.Errorf("failed to generate dbkey: %v", err),
+		}
 	}
 
 	response, err := ddbh.DynamoDbClient.GetItem(context.TODO(), &dynamodb.GetItemInput{
@@ -164,11 +183,19 @@ func (ddbh dDBHandler) checkIfPlayerHandExists(p playerHandCompositeKey) (bool, 
 		TableName: aws.String(ddbh.TableName),
 	})
 	if err != nil {
-		return false, nil, fmt.Errorf("failed to query player: %v", err)
+		return checkPlayerHandExistsResult{
+			PlayerExists: false,
+			PlayerItem:   nil,
+			Error:        fmt.Errorf("failed to query player: %v", err),
+		}
 	} else {
 		err = attributevalue.UnmarshalMap(response.Item, &result)
 		if err != nil {
-			return false, nil, fmt.Errorf("failed to unmarshal response:  %v", err)
+			return checkPlayerHandExistsResult{
+				PlayerExists: false,
+				PlayerItem:   nil,
+				Error:        fmt.Errorf("failed to unmarshal response:  %v", err),
+			}
 		}
 	}
 
@@ -181,11 +208,18 @@ func (ddbh dDBHandler) checkIfPlayerHandExists(p playerHandCompositeKey) (bool, 
 
 	playerExists := cmp.Equal(playerInRequest, playerInDB)
 	if playerExists {
-		return true, response.Item, nil
+		return checkPlayerHandExistsResult{
+			PlayerExists: true,
+			PlayerItem:   response.Item,
+			Error:        nil,
+		}
 	} else {
-		return false, nil, nil
+		return checkPlayerHandExistsResult{
+			PlayerExists: false,
+			PlayerItem:   nil,
+			Error:        nil,
+		}
 	}
-
 }
 
 // Checks if the submitted playerHand item already exists. This is done by checking if the submitted
@@ -212,6 +246,25 @@ func (ddbh dDBHandler) checkForDuplicate(h handInfo, item map[string]types.Attri
 }
 
 func (ddbh dDBHandler) updatePlayerHand(h handInfo) error {
+	err := make(chan error, 1)
+
+	go func() {
+		err <- ddbh.doUpdatePlayerHand(h)
+	}()
+	select {
+	case <-time.After(timeoutWindow):
+		return fmt.Errorf("timeout - could not update playerHand in allotted window")
+
+	case err := <-err:
+		if err != nil {
+			return fmt.Errorf("updatePlayerHand execution failed. error: %v", err)
+		}
+		return nil
+	}
+}
+
+func (ddbh dDBHandler) doUpdatePlayerHand(h handInfo) error {
+
 	var attributeMap map[string]map[string]interface{}
 
 	dbKey, err := h.GetKey()

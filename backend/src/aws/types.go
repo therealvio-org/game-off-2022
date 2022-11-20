@@ -1,6 +1,9 @@
 package lbapiaws
 
-import "github.com/aws/aws-sdk-go-v2/service/dynamodb"
+import (
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
+)
 
 type body struct {
 	HandInfo handInfo `json:"handinfo"`
@@ -23,6 +26,12 @@ type dDBHandler struct {
 type queryHandsResult struct {
 	HandInfoSlice []handInfo
 	Error         error
+}
+
+type checkPlayerHandExistsResult struct {
+	PlayerExists bool
+	PlayerItem   map[string]types.AttributeValue
+	Error        error
 }
 
 type playerHandCompositeKey struct {
