@@ -301,19 +301,6 @@ func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 						StatusCode: 403,
 					}
 				} else {
-					cfg, err := config.LoadDefaultConfig(ctx)
-					if err != nil {
-						return events.APIGatewayProxyResponse{
-							Body:       "internal error",
-							StatusCode: 500,
-						}, fmt.Errorf("error loading sdk config: %v", err)
-					}
-
-					dynamoHandler := dDBHandler{
-						DynamoDbClient: dynamodb.NewFromConfig(cfg),
-						TableName:      env.PlayerHandTableName,
-					}
-
 					err = dynamoHandler.updatePlayerHand(parsedBody.HandInfo)
 					if err != nil {
 						return events.APIGatewayProxyResponse{
