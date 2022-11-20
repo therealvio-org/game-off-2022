@@ -21,6 +21,7 @@ CardLibrary="*res://Autoloads/CardLibrary.cs"
 Randy="*res://Autoloads/Randy.cs"
 NetworkingManager="*res://Autoloads/NetworkingManager.cs"
 HandCache="*res://Autoloads/HandCache.cs"
+GameStats="*res://Autoloads/GameStats.cs"
 
 [display]
 
