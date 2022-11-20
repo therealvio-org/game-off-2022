@@ -3,6 +3,7 @@ using System;
 
 public class Main : Control
 {
+    public const string VERSION = "1.0";
     public const int MAX_HAND = 7;
     public const int MAX_POOL = 10;
     public const int STARTING_FUNDS = 100;
@@ -44,6 +45,11 @@ public class Main : Control
         EmitSignal("PhaseChange", new Selection());
     }
 
+    public void GoToNetworking()
+    {
+        EmitSignal("PhaseChange", new Networking());
+    }
+
     public void GoToBattle()
     {
         EmitSignal("PhaseChange", new Battle());
@@ -74,6 +80,8 @@ public class Main : Control
             GoToTutorial();
         if (type == PhaseTypes.Selection)
             GoToSelection();
+        if (type == PhaseTypes.Networking)
+            GoToNetworking();
         if (type == PhaseTypes.Battle)
             GoToBattle();
     }

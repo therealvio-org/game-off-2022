@@ -21,4 +21,12 @@ public class PlayerEntity : Node
             Cards[i] = (int)((System.Single)arr[i]);
         }
     }
+
+    public PlayerEntity(string id, string name, string version, int[] cards)
+    {
+        PlayerId = id;
+        PlayerName = name;
+        Version = version;
+        Cards = cards;
+    }
 }
