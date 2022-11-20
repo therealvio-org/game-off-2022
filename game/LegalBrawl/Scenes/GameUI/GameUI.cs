@@ -6,6 +6,7 @@ public class GameUI : Node
     private MenuView _menuView;
     private TutorialView _tutorialView;
     private SelectionView _selectionView;
+    private NetworkingView _networkingView;
     private BattleView _battleView;
     private View _currentView;
     private Phase _queuedPhase;
@@ -16,6 +17,7 @@ public class GameUI : Node
         _menuView = GetNode<MenuView>("MenuView");
         _tutorialView = GetNode<TutorialView>("TutorialView");
         _selectionView = GetNode<SelectionView>("SelectionView");
+        _networkingView = GetNode<NetworkingView>("NetworkingView");
         _battleView = GetNode<BattleView>("BattleView");
         _animationPlayer = GetNode<AnimationPlayer>("CurtainTransition");
     }
@@ -56,6 +58,9 @@ public class GameUI : Node
         if (phase is Selection selectionPhase)
             EnterSelection(selectionPhase);
 
+        if (phase is Networking networkingPhase)
+            EnterNetworking(networkingPhase);
+
         if (phase is Battle battlePhase)
             EnterBattle(battlePhase);
     }
@@ -79,6 +84,13 @@ public class GameUI : Node
         _currentView = _selectionView;
         _selectionView.EmitSignal("Enter");
         selection.ConnectTo(_selectionView);
+    }
+
+    public void EnterNetworking(Networking networking)
+    {
+        _currentView = _networkingView;
+        _networkingView.EmitSignal("Enter");
+        networking.ConnectTo(_networkingView);
     }
 
     public void EnterBattle(Battle battle)
