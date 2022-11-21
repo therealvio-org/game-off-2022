@@ -29,4 +29,17 @@ public class PlayerEntity : Node
         Version = version;
         Cards = cards;
     }
+
+    public Dictionary ToDict()
+    {
+        Dictionary dict = new Dictionary();
+        dict.Add("playerId", PlayerId);
+        dict.Add("playerName", PlayerName);
+        dict.Add("version", Version);
+
+        Array cardArray = new Array(Cards);
+        dict.Add("cards", cardArray);
+
+        return dict;
+    }
 }

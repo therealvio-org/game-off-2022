@@ -9,7 +9,7 @@ public class GameStats : Node
     public override void _Ready()
     {
         _instance = this;
-        _playerId = "6d0506fc-c6bf-4dd6-a3ec-cca4515990d1";
+        _playerId = Guid.NewGuid().ToString();
     }
 
     public static string GetId() => _instance._playerId;
