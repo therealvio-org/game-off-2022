@@ -65,9 +65,19 @@ public class BattleView : View
         _animator.Play("Wait");
     }
 
-    public void OnDeclareWinner(PlayerTypes winner)
+    public void OnDeclareWinner(Battle.Outcomes outcome)
     {
-        _winnerLabel.Text = $"{winner} wins!";
+        string output = "";
+        switch (outcome)
+        {
+            case Battle.Outcomes.Win:
+                output = "You win!"; break;
+            case Battle.Outcomes.Loss:
+                output = "Opposing council wins!"; break;
+            case Battle.Outcomes.Draw:
+                output = "It's a draw!"; break;
+        }
+        _winnerLabel.Text = output;
         _winnerLabel.Show();
         _againButton.Show();
     }
