@@ -4,29 +4,30 @@ using System;
 public class Networking : Phase
 {
     [Signal] public delegate void SendPlayerData();
-    [Signal] public delegate void SendPlayerDataSuccess();
-    [Signal] public delegate void SendPlayerDataFailure();
     [Signal] public delegate void GetOpponentData();
-    [Signal] public delegate void GetOpponentDataSuccess();
-    [Signal] public delegate void GetOpponentDataFailure();
+    [Signal] public delegate void BattleReady();
 
     public override void _Ready()
     {
-
+        Connect("SendPlayerData", this, "OnSendPlayerData");
+        Connect("GetOpponentData", this, "OnGetOpponentData");
+        Connect("BattleReady", this, "OnBattleReady");
     }
     public void ConnectTo(NetworkingView view)
     {
         Connect("SendPlayerData", view, "OnSendPlayerData");
-        Connect("SendPlayerDataSuccess", view, "OnSendPlayerDataSuccess");
-        Connect("SendPlayerDataFailure", view, "OnSendPlayerDataFailure");
         Connect("GetOpponentData", view, "OnGetOpponentData");
-        Connect("GetOpponentDataSuccess", view, "OnGetOpponentDataSuccess");
-        Connect("GetOpponentDataFailure", view, "OnGetOpponentDataFailure");
 
         view.Connect("Activate", this, "OnViewActivate");
+
     }
 
     public void OnViewActivate()
+    {
+        EmitSignal("SendPlayerData");
+    }
+
+    public void OnSendPlayerData()
     {
         PlayerEntity entity = new PlayerEntity(
             GameStats.GetId(),
@@ -36,17 +37,39 @@ public class Networking : Phase
         );
 
         NetworkingManager.Instance.SendPlayerEntity(entity, this, "OnSendSuccess", "OnSendFailure");
-        EmitSignal("SendPlayerData");
     }
 
     public void OnSendSuccess()
     {
-        EmitSignal("SendPlayerDataSuccess");
+        GD.Print("Success");
+        EmitSignal("GetOpponentData");
     }
 
-    public void OnSendFailure()
+    public void OnSendFailure(int responseCode, string reason)
     {
-        EmitSignal("SendPlayerDataFailure");
+        GD.Print("Failed", responseCode, reason);
+        //EmitSignal("PromptSendingRetry");
     }
 
+    public void OnGetOpponentData()
+    {
+        NetworkingManager.Instance.GetPlayerEntity(this, "OnGetSuccess", "OnGetFailure");
+    }
+
+    public void OnGetSuccess(PlayerEntity entity)
+    {
+        HandCache.Store(new Hand(entity.Cards), PlayerTypes.Opponent);
+        EmitSignal("BattleReady");
+    }
+
+    public void OnGetFailure(int responseCode, string reason)
+    {
+        GD.Print("Getting failed", responseCode, reason);
+        //EmitSignal("PromptGettingRetry");
+    }
+
+    public void OnBattleReady()
+    {
+        EmitSignal("NextPhase", PhaseTypes.Battle);
+    }
 }

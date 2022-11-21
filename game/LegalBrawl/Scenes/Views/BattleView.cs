@@ -35,6 +35,7 @@ public class BattleView : View
 
     public override void Setup()
     {
+        _nextButton.Show();
         _winnerLabel.Hide();
         _againButton.Hide();
     }

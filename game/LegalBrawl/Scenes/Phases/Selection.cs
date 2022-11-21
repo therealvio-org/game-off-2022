@@ -47,7 +47,7 @@ public class Selection : Phase
         if (CanFight())
         {
             HandCache.Store(new Hand(GetHand()));
-            EmitSignal("NextPhase", PhaseTypes.Battle);
+            EmitSignal("NextPhase", PhaseTypes.Networking);
         }
     }
 

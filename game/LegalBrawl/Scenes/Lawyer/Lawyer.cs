@@ -57,7 +57,8 @@ public class Lawyer : Control
     {
         ShowCards();
         _handSize = _cards.Count;
-        _credibility.Text = "0";
+        _credibility.Text = Main.CREDIBILITY.ToString();
+        _damageText.SelfModulate = Colors.Transparent;
     }
 
     public void ShowCards()

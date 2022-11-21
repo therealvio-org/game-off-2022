@@ -20,40 +20,49 @@ public class NetworkingManager : Node
     {
         // Attempt to put
         HTTPRequest request = CreateRequest();
-        string url = Endpoints.PlayerHand(GameStats.GetId());
-        string[] headers = new string[] { $"x-api-key: {DebugKeys.API_KEY}" };
-        request.Request(url, headers, true, HTTPClient.Method.Put);
+        string url = Endpoints.PlayerHand();
+        string[] headers = new string[] { $"x-api-key: {DebugKeys.API_KEY}", "Content-Type: application/json" };
+        Dictionary handInfo = new Dictionary();
+        handInfo.Add("handInfo", entity.ToDict());
+        string body = JSON.Print(handInfo);
+
+        request.Request(url, headers, true, HTTPClient.Method.Put, body);
         request.Connect("request_completed", this, "OnPutPlayerEntityComplete");
 
         // Post if that fails
+        if (IsConnected("AttemptPostEntity", this, "OnAttemptPostEntity"))
+            Disconnect("AttemptPostEntity", this, "OnAttemptPostEntity"); // Have to disconnect so I can bind a new entity
         Connect("AttemptPostEntity", this, "OnAttemptPostEntity", new Array() { entity }, (uint)ConnectFlags.Oneshot);
 
         // Callback when complete
-        caller.Connect("SentPlayerEntitySuccess", caller, successSignal, null, (uint)ConnectFlags.Oneshot);
-        caller.Connect("RequestFailed", caller, failureSignal, null, (uint)ConnectFlags.Oneshot);
+        Connect("SentPlayerEntitySuccess", caller, successSignal, null, (uint)ConnectFlags.Oneshot);
+        Connect("RequestFailed", caller, failureSignal, null, (uint)ConnectFlags.Oneshot);
     }
 
     public void OnPutPlayerEntityComplete(int result, int response_code, string[] headers, byte[] body)
     {
+        string message = Encoding.UTF8.GetString(body);
         if (response_code == 200)
         {
+            GD.Print("Put success");
             EmitSignal("SentPlayerEntitySuccess");
             return;
         }
         switch (response_code)
         {
             case 404:
-                GD.Print("Put failed, attempting post");
+                GD.Print("404: ", message, " attempting post");
                 EmitSignal("AttemptPostEntity");
                 break;
 
             case 403:
-                GD.Print("Duplicate hand already exists, ignoring");
+                GD.Print("403: ", message);
                 EmitSignal("SentPlayerEntitySuccess");
                 break;
 
             default:
-                EmitSignal("RequestFailed", response_code, Encoding.UTF8.GetString(body));
+                GD.Print("Put Failed");
+                EmitSignal("RequestFailed", response_code, message);
                 break;
         }
     }
@@ -61,9 +70,12 @@ public class NetworkingManager : Node
     public void OnAttemptPostEntity(PlayerEntity entity)
     {
         HTTPRequest request = CreateRequest();
-        string url = Endpoints.PlayerHand(GameStats.GetId());
-        string[] headers = new string[] { $"x-api-key: {DebugKeys.API_KEY}" };
-        request.Request(url, headers, true, HTTPClient.Method.Post);
+        string url = Endpoints.PlayerHand();
+        string[] headers = new string[] { $"x-api-key: {DebugKeys.API_KEY}", "Content-Type: application/json" };
+        Dictionary handInfo = new Dictionary();
+        handInfo.Add("handInfo", entity.ToDict());
+        string body = JSON.Print(handInfo);
+        request.Request(url, headers, true, HTTPClient.Method.Post, body);
         request.Connect("request_completed", this, "OnPostPlayerEntityComplete");
     }
 
@@ -85,26 +97,32 @@ public class NetworkingManager : Node
         // Attempt to get
         // request.Request(url, new string[] { $"x-api-key: {DebugKeys.API_KEY}" });
         HTTPRequest request = CreateRequest();
-        request.Request(Endpoints.PlayerHand(GameStats.GetId()), new string[] { $"x-api-key: {DebugKeys.API_KEY}" });
+        string query = Endpoints.PlayerIdQuery(GameStats.GetId());
+        string url = Endpoints.PlayerHand(query);
+        GD.Print(url);
+        request.Request(url, new string[] { $"x-api-key: {DebugKeys.API_KEY}" });
         request.Connect("request_completed", this, "OnGetPlayerEntityComplete");
 
         // Respond with value
-        caller.Connect("PlayerEntityAvailable", caller, successSignal, null, (uint)ConnectFlags.Oneshot);
-        caller.Connect("RequestFailed", caller, failureSignal, null, (uint)ConnectFlags.Oneshot);
+        Connect("PlayerEntityAvailable", caller, successSignal, null, (uint)ConnectFlags.Oneshot);
+        Connect("RequestFailed", caller, failureSignal, null, (uint)ConnectFlags.Oneshot);
     }
 
     public void OnGetPlayerEntityComplete(int result, int response_code, string[] headers, byte[] body)
     {
+        string message = Encoding.UTF8.GetString(body);
+
         if (response_code == 200)
         {
-            JSONParseResult json = JSON.Parse(Encoding.UTF8.GetString(body));
+            GD.Print(message);
+            JSONParseResult json = JSON.Parse(message);
             PlayerEntity playerEntity = new PlayerEntity((Dictionary)json.Result);
             EmitSignal("PlayerEntityAvailable", playerEntity);
             return;
         }
 
         GD.Print(result);
-        EmitSignal("RequestFailed", response_code, Encoding.UTF8.GetString(body));
+        EmitSignal("RequestFailed", response_code, message);
     }
 
     public HTTPRequest CreateRequest()
