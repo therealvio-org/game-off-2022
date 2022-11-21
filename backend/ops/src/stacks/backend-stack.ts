@@ -108,11 +108,7 @@ export class BackendStack extends cdk.Stack {
 
     //b.s. example of API paths
     const v1 = api.root.addResource("v1")
-    const formation = v1.addResource("formationId")
     const playerHand = v1.addResource("playerHand")
-    const formationPostMethod = formation.addMethod("POST", apiIntegration, {
-      apiKeyRequired: false,
-    }) //Set apiKeyRequired to `true` when ready to start locking down the API
 
     //Need to create individual validator objects, refer to: https://github.com/aws/aws-cdk/issues/7613
     const playerHandPostValidator = new apigateway.RequestValidator(
@@ -169,8 +165,8 @@ export class BackendStack extends cdk.Stack {
 
     const plan = api.addUsagePlan("legalBrawlUsagePlan", {
       throttle: {
-        rateLimit: 10,
-        burstLimit: 2,
+        rateLimit: 50,
+        burstLimit: 10,
       },
     })
 
@@ -178,31 +174,24 @@ export class BackendStack extends cdk.Stack {
       stage: api.deploymentStage,
       throttle: [
         {
-          method: formationPostMethod,
-          throttle: {
-            rateLimit: 10,
-            burstLimit: 2,
-          },
-        },
-        {
           method: playerHandPost,
           throttle: {
-            rateLimit: 10,
-            burstLimit: 2,
+            rateLimit: 50,
+            burstLimit: 10,
           },
         },
         {
           method: playerHandGet,
           throttle: {
-            rateLimit: 10,
-            burstLimit: 2,
+            rateLimit: 50,
+            burstLimit: 10,
           },
         },
         {
           method: playerHandPut,
           throttle: {
-            rateLimit: 10,
-            burstLimit: 2,
+            rateLimit: 50,
+            burstLimit: 10,
           },
         },
       ],
