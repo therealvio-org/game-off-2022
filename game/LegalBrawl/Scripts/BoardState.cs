@@ -25,11 +25,14 @@ public class BoardState
         _players[(int)character].UpdateCredibility(value);
     }
 
-    public PlayerTypes GetWinner()
+    public Battle.Outcomes GetOutcome()
     {
-        if (_players[0].Credibility > _players[1].Credibility)
-            return PlayerTypes.Opponent;
-        return PlayerTypes.Player;
+        int result = _players[0].Credibility - _players[1].Credibility;
+        if (result > 0)
+            return Battle.Outcomes.Win;
+        if (result < 0)
+            return Battle.Outcomes.Loss;
+        return Battle.Outcomes.Draw;
     }
 }
 

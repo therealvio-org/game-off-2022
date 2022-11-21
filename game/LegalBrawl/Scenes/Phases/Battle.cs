@@ -1,10 +1,11 @@
 using Godot;
 public class Battle : Phase
 {
+    public enum Outcomes { Loss, Win, Draw }
     [Signal] public delegate void PlayCard(int id, PlayerTypes character, Battle battle);
     [Signal] public delegate void CredibilityChange(PlayerTypes character, int from, int to);
     [Signal] public delegate void LastCard();
-    [Signal] public delegate void DeclareWinner(PlayerTypes winner);
+    [Signal] public delegate void DeclareWinner(Outcomes outcome);
     private BoardState _state;
     private TurnController _turnController;
     public Battle()
@@ -44,8 +45,7 @@ public class Battle : Phase
 
     public void OnFinishBattle()
     {
-        PlayerTypes winner = _state.GetWinner();
-        EmitSignal("DeclareWinner", winner);
+        EmitSignal("DeclareWinner", _state.GetOutcome());
     }
 
     public void OnPlayAgain()
