@@ -104,12 +104,6 @@ func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 
 	switch request.Path {
 
-	case "/v1/formationId":
-		response = events.APIGatewayProxyResponse{
-			Body:       "Hello, World!",
-			StatusCode: 200,
-		}
-
 	case "/v1/playerHand":
 		switch request.HTTPMethod {
 
