@@ -23,6 +23,7 @@ public class Battle : Phase
         view.Connect("NextCard", this, "GetNextCard");
         view.Connect("FinishBattle", this, "OnFinishBattle");
         view.Connect("PlayAgain", this, "OnPlayAgain");
+        view.Connect("Menu", this, "OnMenu");
         Connect("PlayCard", view, "OnPlayCard");
         Connect("CredibilityChange", view, "OnCredibilityChange");
         Connect("LastCard", view, "OnLastCard");
@@ -51,6 +52,11 @@ public class Battle : Phase
     public void OnPlayAgain()
     {
         EmitSignal("NextPhase", PhaseTypes.Selection);
+    }
+
+    public void OnMenu()
+    {
+        EmitSignal("NextPhase", PhaseTypes.Menu);
     }
 
     public void ModifyCredibility(PlayerTypes owner, int value, PlayerTypes target)

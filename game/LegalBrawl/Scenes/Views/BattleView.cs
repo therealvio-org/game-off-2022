@@ -6,6 +6,7 @@ public class BattleView : View
     [Signal] public delegate void NextCard();
     [Signal] public delegate void FinishBattle();
     [Signal] public delegate void PlayAgain();
+    [Signal] public delegate void Menu();
 
     private Lawyer _player;
     private Lawyer _opponent;
@@ -13,6 +14,7 @@ public class BattleView : View
     private AnimationPlayer _animator;
     private Label _winnerLabel;
     private Button _againButton;
+    private Button _menuButton;
     public override void _Ready()
     {
         base._Ready();
@@ -29,6 +31,9 @@ public class BattleView : View
         _againButton = FindNode("AgainButton") as Button;
         _againButton.Connect("pressed", this, "OnAgainPressed");
 
+        _menuButton = FindNode("MenuButton") as Button;
+        _menuButton.Connect("pressed", this, "OnMenuPressed");
+
         _animator = GetNode<AnimationPlayer>("AnimationPlayer");
         _winnerLabel = FindNode("WinnerLabel") as Label;
     }
@@ -38,6 +43,7 @@ public class BattleView : View
         _nextButton.Show();
         _winnerLabel.Hide();
         _againButton.Hide();
+        _menuButton.Hide();
     }
 
     public void OnNextPressed()
@@ -47,6 +53,11 @@ public class BattleView : View
     public void OnAgainPressed()
     {
         EmitSignal("PlayAgain");
+    }
+
+    public void OnMenuPressed()
+    {
+        EmitSignal("Menu");
     }
 
     public void OnPlayCard(int cardId, PlayerTypes character, Battle battle)
@@ -84,6 +95,7 @@ public class BattleView : View
         _winnerLabel.Text = output;
         _winnerLabel.Show();
         _againButton.Show();
+        _menuButton.Show();
     }
 
     public void CallFinishBattle()
