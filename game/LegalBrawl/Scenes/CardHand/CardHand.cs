@@ -38,29 +38,6 @@ public class CardHand : Control
     {
         //bool assignPositions = false;
 
-        if (Input.IsPhysicalKeyPressed((int)Godot.KeyList.A))
-        {
-            if (!keyPress)
-            {
-                keyPress = true;
-                Card card = SceneManager.Create<Card>(SceneManager.Scenes.Card, this);
-                _cards.Add(card);
-                //assignPositions = true;
-            }
-        }
-        else if (Input.IsPhysicalKeyPressed((int)Godot.KeyList.D))
-        {
-            if (!keyPress)
-            {
-                keyPress = true;
-                _cards.Get(_cards.Count - 1).Free();
-                _cards.RemoveAt(_cards.Count - 1);
-                //assignPositions = true;
-            }
-        }
-        else
-            keyPress = false;
-
         if (_cards.IsHeld && _cards.IsHovered)
         {
             // GD.Print("Held: ", _cards.IsHeld ? _cards.LastHeld.Name : "None");

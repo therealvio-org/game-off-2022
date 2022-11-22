@@ -46,6 +46,8 @@ public class View : Control
     {
         foreach (Node n in GetChildren())
         {
+            if (n is Popup)
+                continue;
             if (n is Control c)
                 c.Show();
             if (n is CanvasLayer l)

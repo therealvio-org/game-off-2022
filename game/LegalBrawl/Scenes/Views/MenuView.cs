@@ -9,6 +9,7 @@ public class MenuView : View
     private Button _leaderboardButton;
     private Button _helpButton;
     private Button _settingsButton;
+    private Popup _playerNamePopup;
     public override void _Ready()
     {
         base._Ready();
@@ -24,6 +25,9 @@ public class MenuView : View
 
         _settingsButton = FindNode("SettingsButton") as Button;
         _settingsButton.Disabled = true;
+
+        _playerNamePopup = FindNode("PlayerNamePopup") as Popup;
+        _playerNamePopup.Connect("Finished", this, "UpdatePlayerName");
     }
 
     public void OnPlayClicked()
@@ -35,4 +39,17 @@ public class MenuView : View
     {
         EmitSignal("Tutorial");
     }
+
+    public void OnGetPlayerName()
+    {
+        _playerNamePopup.Popup_();
+    }
+
+
+    public void UpdatePlayerName(string name)
+    {
+        GameStats.SetPlayerName(name);
+        _playerNamePopup.Hide();
+    }
+
 }
