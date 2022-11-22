@@ -1,0 +1,73 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://Assets/Fonts/MediumFont.tres" type="DynamicFont" id=1]
+[ext_resource path="res://Assets/Fonts/SmallFont.tres" type="DynamicFont" id=2]
+[ext_resource path="res://Themes/MainTheme.tres" type="Theme" id=3]
+[ext_resource path="res://Scenes/Popups/TextEntryPopup.cs" type="Script" id=4]
+
+[node name="PlayerNamePopup" type="PopupPanel"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -210.0
+margin_top = -150.0
+margin_right = 210.0
+margin_bottom = 150.0
+grow_horizontal = 2
+grow_vertical = 2
+rect_clip_content = true
+theme = ExtResource( 3 )
+popup_exclusive = true
+script = ExtResource( 4 )
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+margin_left = 4.0
+margin_top = 4.0
+margin_right = 416.0
+margin_bottom = 296.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+
+[node name="NameLabel" type="Label" parent="VBoxContainer"]
+margin_right = 412.0
+margin_bottom = 39.0
+size_flags_vertical = 0
+custom_fonts/font = ExtResource( 1 )
+text = "New Player"
+
+[node name="DescriptionLabel" type="Label" parent="VBoxContainer"]
+margin_top = 68.0
+margin_right = 412.0
+margin_bottom = 111.0
+size_flags_vertical = 6
+custom_fonts/font = ExtResource( 2 )
+text = "What should we call you?
+Make it sound lawyer-y"
+
+[node name="HintLabel" type="Label" parent="VBoxContainer"]
+self_modulate = Color( 1, 0, 0, 1 )
+margin_top = 140.0
+margin_right = 412.0
+margin_bottom = 160.0
+custom_fonts/font = ExtResource( 2 )
+text = " "
+
+[node name="LineEdit" type="LineEdit" parent="VBoxContainer"]
+margin_top = 164.0
+margin_right = 412.0
+margin_bottom = 194.0
+custom_fonts/font = ExtResource( 2 )
+max_length = 64
+placeholder_text = "Lionel Hutz"
+caret_blink = true
+
+[node name="DoneButton" type="Button" parent="VBoxContainer"]
+margin_left = 179.0
+margin_top = 227.0
+margin_right = 233.0
+margin_bottom = 263.0
+size_flags_horizontal = 4
+size_flags_vertical = 6
+text = "Done"

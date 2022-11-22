@@ -68,8 +68,8 @@ public class GameUI : Node
     public void EnterMenu(Menu menu)
     {
         _currentView = _menuView;
-        _menuView.EmitSignal("Enter");
         menu.ConnectTo(_menuView);
+        _menuView.EmitSignal("Enter");
     }
 
     public void EnterTutorial(Tutorial tutorial)
