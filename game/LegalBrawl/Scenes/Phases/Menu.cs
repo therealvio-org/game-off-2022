@@ -3,7 +3,7 @@ using System;
 
 public class Menu : Phase
 {
-    [Signal] public delegate void GetPlayerName();
+    [Signal] public delegate void GetPlayerName(bool queueSelection = false);
     public void ConnectTo(MenuView view)
     {
         view.Connect("Play", this, "OnPlay");
@@ -15,7 +15,7 @@ public class Menu : Phase
     {
         if (!GameStats.HasPlayerName())
         {
-            EmitSignal("GetPlayerName");
+            EmitSignal("GetPlayerName", true);
             return;
         }
 

@@ -139,3 +139,14 @@ size_flags_vertical = 4
 anims/CredibilityDown = SubResource( 1 )
 anims/CredibilityUp = SubResource( 2 )
 anims/RESET = SubResource( 3 )
+
+[node name="NameLabel" type="Label" parent="."]
+anchor_left = 0.5
+anchor_top = 0.8
+anchor_right = 0.5
+anchor_bottom = 0.8
+margin_top = -14.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource( 3 )
+align = 1
