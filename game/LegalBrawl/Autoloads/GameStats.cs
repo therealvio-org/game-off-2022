@@ -7,7 +7,7 @@ public class GameStats : Node
     private PlayerStats _player;
     private static GameStats _instance;
 
-    public static string PlayerName { get => _instance._player.PlayerName; }
+    public static PlayerStats Player { get => _instance._player; }
 
     public override void _Ready()
     {

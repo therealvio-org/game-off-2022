@@ -31,7 +31,7 @@ public class Networking : Phase
     {
         PlayerEntity entity = new PlayerEntity(
             GameStats.GetId(),
-            "Aidan Debug",
+            GameStats.Player.PlayerName,
             Main.VERSION,
             HandCache.Get(PlayerTypes.Player).GetIds()
         );
@@ -58,7 +58,7 @@ public class Networking : Phase
 
     public void OnGetSuccess(PlayerEntity entity)
     {
-        HandCache.Store(new Hand(entity.Cards), PlayerTypes.Opponent);
+        HandCache.Store(new Hand(entity.Cards, entity.PlayerName), PlayerTypes.Opponent);
         EmitSignal("BattleReady");
     }
 

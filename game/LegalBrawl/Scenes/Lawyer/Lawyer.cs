@@ -11,6 +11,7 @@ public class Lawyer : Control
     private Control _container;
     private Label _credibility;
     private Label _damageText;
+    private Label _lawyerName;
     private AnimationPlayer _animator;
 
     private int _handSize;
@@ -23,6 +24,7 @@ public class Lawyer : Control
         _container = FindNode("HBoxContainer") as Control;
         _credibility = FindNode("CredibilityLabel") as Label;
         _damageText = FindNode("DamageLabel") as Label;
+        _lawyerName = FindNode("NameLabel") as Label;
         _animator = FindNode("AnimationPlayer") as AnimationPlayer;
 
         foreach (Node n in _handAnchor.GetChildren())
@@ -59,6 +61,7 @@ public class Lawyer : Control
         _handSize = _cards.Count;
         _credibility.Text = Main.CREDIBILITY.ToString();
         _damageText.SelfModulate = Colors.Transparent;
+        _lawyerName.Text = HandCache.Get(_representing).Name;
     }
 
     public void ShowCards()

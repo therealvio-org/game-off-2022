@@ -71,9 +71,13 @@ public class BattleView : View
         switch (outcome)
         {
             case Battle.Outcomes.Win:
-                output = "You win!"; break;
+                GameStats.Player.AddWin();
+                output = $"{HandCache.Get(PlayerTypes.Player).Name} wins!";
+                break;
             case Battle.Outcomes.Loss:
-                output = "Opposing council wins!"; break;
+                GameStats.Player.AddLoss();
+                output = $"{HandCache.Get(PlayerTypes.Opponent).Name} wins!";
+                break;
             case Battle.Outcomes.Draw:
                 output = "It's a draw!"; break;
         }

@@ -3,9 +3,12 @@ using System;
 public class Hand
 {
     private int[] _cards;
-    public Hand(int[] cards)
+    private string _name;
+    public string Name { get => _name; }
+    public Hand(int[] cards, string name)
     {
         _cards = cards;
+        _name = name;
     }
 
     public static Hand GetRandom()
@@ -17,7 +20,7 @@ public class Hand
             cards[i] = CardLibrary.DrawRandomId();
         }
 
-        return new Hand(cards);
+        return new Hand(cards, "Random Hand");
     }
 
     public BaseCard[] GetCards()

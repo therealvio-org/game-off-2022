@@ -10,6 +10,10 @@ public class MenuView : View
     private Button _helpButton;
     private Button _settingsButton;
     private Popup _playerNamePopup;
+    private Label _playerName;
+    private Label _playerWins;
+    private Label _playerLosses;
+    private bool _queueSelection = false;
     public override void _Ready()
     {
         base._Ready();
@@ -28,6 +32,26 @@ public class MenuView : View
 
         _playerNamePopup = FindNode("PlayerNamePopup") as Popup;
         _playerNamePopup.Connect("Finished", this, "UpdatePlayerName");
+
+        _playerName = FindNode("PlayerName") as Label;
+        _playerWins = FindNode("PlayerWins") as Label;
+        _playerLosses = FindNode("PlayerLosses") as Label;
+    }
+
+    public override void Setup()
+    {
+        if (GameStats.HasPlayerName())
+        {
+            _playerName.Text = GameStats.Player.PlayerName;
+            _playerWins.Text = $"{GameStats.Player.Wins} - Wins";
+            _playerLosses.Text = $"{GameStats.Player.Losses} - Losses";
+        }
+        else
+        {
+            _playerName.Text = "";
+            _playerWins.Text = "";
+            _playerLosses.Text = "";
+        }
     }
 
     public void OnPlayClicked()
@@ -40,8 +64,9 @@ public class MenuView : View
         EmitSignal("Tutorial");
     }
 
-    public void OnGetPlayerName()
+    public void OnGetPlayerName(bool queueSelection = false)
     {
+        _queueSelection = queueSelection;
         _playerNamePopup.Popup_();
     }
 
@@ -50,6 +75,8 @@ public class MenuView : View
     {
         GameStats.SetPlayerName(name);
         _playerNamePopup.Hide();
+        if (_queueSelection)
+            EmitSignal("Play");
     }
 
 }
