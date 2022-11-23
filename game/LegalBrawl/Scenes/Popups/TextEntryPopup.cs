@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using System.Text.RegularExpressions;
+using ProfanityFilter;
 
 public class TextEntryPopup : PopupPanel
 {
@@ -9,6 +10,7 @@ public class TextEntryPopup : PopupPanel
     private Label _hint;
     private LineEdit _entry;
     private Button _doneButton;
+    private ProfanityFilter.ProfanityFilter _filter;
     public override void _Ready()
     {
         _hint = FindNode("HintLabel") as Label;
@@ -18,6 +20,8 @@ public class TextEntryPopup : PopupPanel
         _doneButton.Connect("pressed", this, "ValidateEntry");
 
         Connect("InvalidInput", this, "OnInvalidInput");
+
+        _filter = new ProfanityFilter.ProfanityFilter();
     }
 
     public void ValidateEntry()
@@ -36,11 +40,11 @@ public class TextEntryPopup : PopupPanel
             return;
         }
 
-        // if (RudeWords.IsRude(text))
-        // {
-        //     EmitSignal("InvalidInput", "Contains an inappropriate word");
-        //     return;
-        // }
+        if (_filter.ContainsProfanity(Regex.Replace(text.ToLower(), @"[ ]+", "")))
+        {
+            EmitSignal("InvalidInput", "Contains an inappropriate word");
+            return;
+        }
 
         EmitSignal("Finished", text);
     }
