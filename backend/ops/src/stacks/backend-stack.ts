@@ -106,7 +106,6 @@ export class BackendStack extends cdk.Stack {
       stringValue: api.url,
     })
 
-    //b.s. example of API paths
     const v1 = api.root.addResource("v1")
     const playerHand = v1.addResource("playerHand")
 
@@ -161,6 +160,9 @@ export class BackendStack extends cdk.Stack {
         "application/json": playerHandModel,
       },
       requestValidator: playerHandPutValidator,
+    })
+    const playerHandOption = playerHand.addMethod("OPTIONS", apiIntegration, {
+      apiKeyRequired: false,
     })
 
     const plan = api.addUsagePlan("legalBrawlUsagePlan", {

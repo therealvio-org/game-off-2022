@@ -90,6 +90,11 @@ func validateSubmittedVersion(sv string, av string) error {
 
 func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	var response events.APIGatewayProxyResponse
+	headers := map[string]string{
+		"Access-Control-Allow-Headers": "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token",
+		"Access-Control-Allow-Origin":  "*",
+		"Access-Control-Allow-Methods": "OPTIONS,POST,GET,PUT",
+	}
 
 	fmt.Printf("Processing request data for request %s.\n", request.RequestContext.RequestID)
 
@@ -107,10 +112,18 @@ func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 	case "/v1/playerHand":
 		switch request.HTTPMethod {
 
+		case "OPTIONS":
+			return events.APIGatewayProxyResponse{
+				Headers:    headers,
+				Body:       "Options Method invoked successfully!",
+				StatusCode: 200,
+			}, nil
+
 		case "POST":
 			parsedBody, err := parseBody(request.Body)
 			if err != nil {
 				return events.APIGatewayProxyResponse{
+						Headers:    headers,
 						Body:       "internal error parsing request",
 						StatusCode: 500,
 					},
@@ -120,6 +133,7 @@ func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 			err = validateBody(*parsedBody)
 			if err != nil {
 				return events.APIGatewayProxyResponse{
+					Headers:    headers,
 					Body:       "parameters in request failed validation",
 					StatusCode: 500,
 				}, fmt.Errorf("body contents failed validation: %v", err)
@@ -128,6 +142,7 @@ func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 			cfg, err := config.LoadDefaultConfig(ctx)
 			if err != nil {
 				return events.APIGatewayProxyResponse{
+					Headers:    headers,
 					Body:       "internal error",
 					StatusCode: 500,
 				}, fmt.Errorf("error loading sdk config: %v", err)
@@ -145,6 +160,7 @@ func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 			playerExist, _, err := dynamoHandler.checkIfPlayerHandExists(playerHandParams)
 			if err != nil {
 				return events.APIGatewayProxyResponse{
+					Headers:    headers,
 					Body:       "error checking for duplicate player",
 					StatusCode: 500,
 				}, fmt.Errorf("failed to check for duplicate playerId %v in playerHand table: %v", parsedBody.HandInfo.PlayerId, err)
@@ -152,6 +168,7 @@ func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 			if playerExist { //Player exists, use PUT request to update player instead
 				log.Printf("specified playerId %v already exists", parsedBody.HandInfo.PlayerId)
 				response = events.APIGatewayProxyResponse{
+					Headers:    headers,
 					Body:       "playerId already exists",
 					StatusCode: 400,
 				}
@@ -160,12 +177,14 @@ func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 				if err != nil {
 					log.Fatalf("error adding playerId %v to playerHand table: %v", parsedBody.HandInfo.PlayerId, err)
 					response = events.APIGatewayProxyResponse{
+						Headers:    headers,
 						Body:       "error adding item",
 						StatusCode: 500,
 					}
 				}
 				log.Printf("playerId %v added to playerHand table", parsedBody.HandInfo.PlayerId)
 				response = events.APIGatewayProxyResponse{
+					Headers:    headers,
 					Body:       "submitted player info successfully added",
 					StatusCode: 200,
 				}
@@ -175,6 +194,7 @@ func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 			parsedParameters, err := parseParameters(request.QueryStringParameters)
 			if err != nil {
 				return events.APIGatewayProxyResponse{
+						Headers:    headers,
 						Body:       "internal error parsing request",
 						StatusCode: 500,
 					},
@@ -184,6 +204,7 @@ func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 			err = validateParameters(parsedParameters)
 			if err != nil {
 				return events.APIGatewayProxyResponse{
+						Headers:    headers,
 						Body:       "parameters in request failed validation",
 						StatusCode: 500,
 					},
@@ -193,6 +214,7 @@ func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 			cfg, err := config.LoadDefaultConfig(ctx)
 			if err != nil {
 				return events.APIGatewayProxyResponse{
+					Headers:    headers,
 					Body:       "internal error",
 					StatusCode: 500,
 				}, fmt.Errorf("error loading sdk config: %v", err)
@@ -219,6 +241,7 @@ func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 				if err != nil {
 					log.Fatalf("error marshalling selectedHand to json: %v", err)
 					response = events.APIGatewayProxyResponse{
+						Headers:    headers,
 						Body:       "internal error",
 						StatusCode: 500,
 					}
@@ -226,11 +249,13 @@ func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 
 				log.Printf("matchmaking: requesting playerId %v is matched up again playerId %v", parsedParameters.PlayerId, selectedHand.PlayerId)
 				response = events.APIGatewayProxyResponse{
+					Headers:    headers,
 					Body:       fmt.Sprintf("%v", string(selectedHandJson)),
 					StatusCode: 200,
 				}
 			} else {
 				return events.APIGatewayProxyResponse{
+						Headers:    headers,
 						Body:       "playerId does not exist",
 						StatusCode: 404,
 					},
@@ -241,6 +266,7 @@ func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 			parsedBody, err := parseBody(request.Body)
 			if err != nil {
 				return events.APIGatewayProxyResponse{
+						Headers:    headers,
 						Body:       "internal error parsing request",
 						StatusCode: 500,
 					},
@@ -250,6 +276,7 @@ func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 			err = validateBody(*parsedBody)
 			if err != nil {
 				return events.APIGatewayProxyResponse{
+					Headers:    headers,
 					Body:       "parameters in request failed validation",
 					StatusCode: 500,
 				}, fmt.Errorf("body contents failed validation: %v", err)
@@ -258,6 +285,7 @@ func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 			cfg, err := config.LoadDefaultConfig(ctx)
 			if err != nil {
 				return events.APIGatewayProxyResponse{
+					Headers:    headers,
 					Body:       "internal error",
 					StatusCode: 500,
 				}, fmt.Errorf("error loading sdk config: %v", err)
@@ -276,6 +304,7 @@ func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 			playerExist, playerEntry, err := dynamoHandler.checkIfPlayerHandExists(playerHandParams)
 			if err != nil {
 				return events.APIGatewayProxyResponse{
+					Headers:    headers,
 					Body:       "error checking for duplicate player",
 					StatusCode: 500,
 				}, fmt.Errorf("failed to check for duplicate player in playerHand table: %v", err)
@@ -284,6 +313,7 @@ func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 				isDupe, err := dynamoHandler.checkForDuplicate(parsedBody.HandInfo, playerEntry)
 				if err != nil {
 					return events.APIGatewayProxyResponse{
+						Headers:    headers,
 						Body:       "error checking for duplicate player",
 						StatusCode: 500,
 					}, fmt.Errorf("failed to check for duplicate player: %v", err)
@@ -291,6 +321,7 @@ func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 				if isDupe { //The card configuration needs to be different
 					log.Printf("specified cards for playerId %v already exists", parsedBody.HandInfo.PlayerId)
 					response = events.APIGatewayProxyResponse{
+						Headers:    headers,
 						Body:       "specified card configuration for playerId already exists",
 						StatusCode: 403,
 					}
@@ -298,12 +329,14 @@ func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 					err = dynamoHandler.updatePlayerHand(parsedBody.HandInfo)
 					if err != nil {
 						return events.APIGatewayProxyResponse{
+							Headers:    headers,
 							Body:       "error updating playerHand",
 							StatusCode: 500,
 						}, fmt.Errorf("failed to update card configuration for playerId %v: %v", parsedBody.HandInfo.PlayerId, err)
 					} else {
 						log.Printf("updated playerHand for playerId %v", parsedBody.HandInfo.PlayerId)
 						response = events.APIGatewayProxyResponse{
+							Headers:    headers,
 							Body:       "card configuration for playerId successfully updated",
 							StatusCode: 200,
 						}
@@ -313,6 +346,7 @@ func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 			} else { //Player doesn't exist - the request should be a POST request instead
 				log.Printf("playerId %v does not exist", parsedBody.HandInfo.PlayerId)
 				response = events.APIGatewayProxyResponse{
+					Headers:    headers,
 					Body:       "playerId does not exist",
 					StatusCode: 404,
 				}
