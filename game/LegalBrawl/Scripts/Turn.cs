@@ -22,7 +22,7 @@ public class Turn : Godot.Object
     public BoardState Perform(BoardState state)
     {
         StartState = state;
-        EndState = CardLogic.Apply(Card, state, Owner);
+        EndState = CardLogic.Apply(state, this);
         return EndState;
     }
 }

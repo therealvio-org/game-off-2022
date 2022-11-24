@@ -70,8 +70,8 @@ public class BattleView : View
 
     public void OnCardReveal(Turn turn)
     {
-        _player.UpdateCredibility(turn.StartState[(int)PlayerTypes.Player].Credibility, turn.EndState[(int)PlayerTypes.Player].Credibility);
-        _opponent.UpdateCredibility(turn.StartState[(int)PlayerTypes.Opponent].Credibility, turn.EndState[(int)PlayerTypes.Opponent].Credibility);
+        _player.UpdateState(turn.StartState[(int)PlayerTypes.Player], turn.EndState[(int)PlayerTypes.Player]);
+        _opponent.UpdateState(turn.StartState[(int)PlayerTypes.Opponent], turn.EndState[(int)PlayerTypes.Opponent]);
     }
 
     public void OnLastTurn()
