@@ -40,7 +40,9 @@ public class TextEntryPopup : PopupPanel
             return;
         }
 
-        if (_filter.ContainsProfanity(Regex.Replace(text.ToLower(), @"[ ]+", "")))
+        string noSpaces = Regex.Replace(text.ToLower(), @"[ ]+", "");
+
+        if (_filter.ContainsProfanity(noSpaces))
         {
             EmitSignal("InvalidInput", "Contains an inappropriate word");
             return;

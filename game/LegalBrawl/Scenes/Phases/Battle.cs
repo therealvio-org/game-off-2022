@@ -2,9 +2,9 @@ using Godot;
 public class Battle : Phase
 {
     public enum Outcomes { Loss, Win, Draw }
-    [Signal] public delegate void PlayCard(int id, PlayerTypes character, Battle battle);
+    [Signal] public delegate void PlayTurn(Turn turn);
     [Signal] public delegate void CredibilityChange(PlayerTypes character, int from, int to);
-    [Signal] public delegate void LastCard();
+    [Signal] public delegate void LastTurn();
     [Signal] public delegate void DeclareWinner(Outcomes outcome);
     private BoardState _state;
     private TurnController _turnController;
@@ -14,30 +14,31 @@ public class Battle : Phase
         //Hand opponentHand = HandCache.Get(PlayerTypes.Opponent);
         Hand opponentHand = Hand.GetRandom();
 
-        _state = new BoardState();
+        _state = new BoardState(new PlayerState(Main.CREDIBILITY), new PlayerState(Main.CREDIBILITY));
         _turnController = new TurnController(playerHand, opponentHand);
     }
 
     public void ConnectTo(BattleView view)
     {
-        view.Connect("NextCard", this, "GetNextCard");
+        view.Connect("NextTurn", this, "OnNextTurn");
         view.Connect("FinishBattle", this, "OnFinishBattle");
         view.Connect("PlayAgain", this, "OnPlayAgain");
         view.Connect("Menu", this, "OnMenu");
-        Connect("PlayCard", view, "OnPlayCard");
-        Connect("CredibilityChange", view, "OnCredibilityChange");
-        Connect("LastCard", view, "OnLastCard");
+        Connect("PlayTurn", view, "OnPlayTurn");
+        Connect("LastTurn", view, "OnLastTurn");
         Connect("DeclareWinner", view, "OnDeclareWinner");
     }
 
-    public void GetNextCard()
+    public void OnNextTurn()
     {
         Turn currentTurn = _turnController.Current();
-        EmitSignal("PlayCard", currentTurn.Id, currentTurn.Owner, this);
+        _state = currentTurn.Perform(_state);
+
+        EmitSignal("PlayTurn", currentTurn);
 
         if (_turnController.IsLast())
         {
-            EmitSignal("LastCard");
+            EmitSignal("LastTurn");
             return;
         }
 
@@ -57,14 +58,5 @@ public class Battle : Phase
     public void OnMenu()
     {
         EmitSignal("NextPhase", PhaseTypes.Menu);
-    }
-
-    public void ModifyCredibility(PlayerTypes owner, int value, PlayerTypes target)
-    {
-        int from = _state.GetCredibility(target);
-        _state.UpdateCredibility(target, value);
-        int to = _state.GetCredibility(target);
-
-        EmitSignal("CredibilityChange", target, from, to);
     }
 }

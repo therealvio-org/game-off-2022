@@ -29,6 +29,10 @@ public class CardLibrary : Node
         {
             _database.Add(card.Id, card);
             GD.Print($"Card Library loaded {card.Name}");
+            foreach (var kvp in card.Effects)
+            {
+                GD.Print($"Effects: {(CardEffects)kvp.Key}");
+            }
         }
     }
 

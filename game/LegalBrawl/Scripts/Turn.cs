@@ -1,15 +1,28 @@
 using Godot;
 using System;
 
-public class Turn
+public class Turn : Godot.Object
 {
-    public int Id { get; private set; }
-    public BaseCard Card { get => CardLibrary.Get(Id); }
+    public int CardId { get; private set; }
+    public BaseCard Card { get => CardLibrary.Get(CardId); }
     public PlayerTypes Owner { get; private set; }
+    public BoardState StartState { get; private set; }
+    public BoardState EndState { get; private set; }
+    public int Round { get; private set; }
+    public bool IsComplete { get; private set; }
 
-    public Turn(int id, PlayerTypes owner)
+    public Turn(int id, PlayerTypes owner, int round)
     {
-        Id = id;
+        CardId = id;
         Owner = owner;
+        Round = round;
+        IsComplete = false;
+    }
+
+    public BoardState Perform(BoardState state)
+    {
+        StartState = state;
+        EndState = CardLogic.Apply(Card, state, Owner);
+        return EndState;
     }
 }

@@ -3,7 +3,7 @@ using System;
 
 public class BattleView : View
 {
-    [Signal] public delegate void NextCard();
+    [Signal] public delegate void NextTurn();
     [Signal] public delegate void FinishBattle();
     [Signal] public delegate void PlayAgain();
     [Signal] public delegate void Menu();
@@ -48,7 +48,7 @@ public class BattleView : View
 
     public void OnNextPressed()
     {
-        EmitSignal("NextCard");
+        EmitSignal("NextTurn");
     }
     public void OnAgainPressed()
     {
@@ -60,17 +60,21 @@ public class BattleView : View
         EmitSignal("Menu");
     }
 
-    public void OnPlayCard(int cardId, PlayerTypes character, Battle battle)
+    public void OnPlayTurn(Turn turn)
     {
-        GetLawyer(character).Play(cardId, battle);
+        // Gives a card to display
+        // Makes effects and shit happen
+        CardDisplay cardDisplay = GetLawyer(turn.Owner).PlayCard(turn.CardId);
+        cardDisplay.Connect("Reveal", this, "OnCardReveal", new Godot.Collections.Array() { turn });
     }
 
-    public void OnCredibilityChange(PlayerTypes character, int from, int to)
+    public void OnCardReveal(Turn turn)
     {
-        GetLawyer(character).UpdateCredibility(from, to);
+        _player.UpdateCredibility(turn.StartState[(int)PlayerTypes.Player].Credibility, turn.EndState[(int)PlayerTypes.Player].Credibility);
+        _opponent.UpdateCredibility(turn.StartState[(int)PlayerTypes.Opponent].Credibility, turn.EndState[(int)PlayerTypes.Opponent].Credibility);
     }
 
-    public void OnLastCard()
+    public void OnLastTurn()
     {
         _nextButton.Hide();
         _animator.Play("Wait");

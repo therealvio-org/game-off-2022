@@ -1,6 +1,6 @@
 [gd_resource type="Resource" load_steps=3 format=2]
 
-[ext_resource path="res://Resources/Definitions/AddCredibility.cs" type="Script" id=1]
+[ext_resource path="res://Resources/BaseCard.cs" type="Script" id=1]
 [ext_resource path="res://Assets/CardArt/watch.png" type="Texture" id=2]
 
 [resource]
@@ -9,4 +9,6 @@ Id = 2
 Name = "Gold Watch"
 Cost = 15
 Art = ExtResource( 2 )
-Value = 8
+Effects = {
+0: 8
+}

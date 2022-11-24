@@ -28,8 +28,8 @@ public class TurnController
 
         for (int i = 0; i < Math.Min(_hands[0].Size(), _hands[1].Size()); i++)
         {
-            _turns.Add(new Turn(_hands[(int)first].GetIds()[i], first));
-            _turns.Add(new Turn(_hands[(int)second].GetIds()[i], second));
+            _turns.Add(new Turn(_hands[(int)first].GetIds()[i], first, i));
+            _turns.Add(new Turn(_hands[(int)second].GetIds()[i], second, i));
         }
     }
 
