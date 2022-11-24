@@ -28,9 +28,28 @@ public struct BoardState
 
 public struct PlayerState
 {
-    public int Credibility { get; set; }
+    public int Credibility { get; private set; }
+    public List<int> Evidence { get; private set; }
+    public List<int> Witnesses { get; private set; }
     public PlayerState(int credibility)
     {
         Credibility = Math.Max(credibility, 0);
+        Evidence = new List<int>();
+        Witnesses = new List<int>();
+    }
+
+    public void AddCredibility(int value)
+    {
+        Credibility = Math.Max(Credibility + value, 0);
+    }
+    public void AddEvidence(int value)
+    {
+        Evidence = new List<int>(Evidence);
+        Evidence.Add(value);
+    }
+    public void AddWitness(int value)
+    {
+        Witnesses = new List<int>(Witnesses);
+        Witnesses.Add(value);
     }
 }

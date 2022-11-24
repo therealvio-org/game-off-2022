@@ -4,9 +4,10 @@
 
 [resource]
 script = ExtResource( 1 )
-Id = 20
-Name = "Call to the Stand"
+Id = 8
+Name = "Surprise Witness"
 Cost = 8
 Effects = {
-4: 5
+2: 6,
+4: 15
 }

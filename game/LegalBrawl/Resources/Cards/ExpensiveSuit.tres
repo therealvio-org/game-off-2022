@@ -7,8 +7,8 @@
 script = ExtResource( 1 )
 Id = 3
 Name = "Expensive Suit"
-Cost = 21
+Cost = 14
 Art = ExtResource( 2 )
 Effects = {
-0: 11
+0: 10
 }

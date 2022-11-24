@@ -12,6 +12,8 @@ public class Lawyer : Control
     private Label _credibility;
     private Label _damageText;
     private Label _lawyerName;
+    private Label _evidenceCount;
+    private Label _witnessCount;
     private AnimationPlayer _animator;
 
     private int _handSize;
@@ -25,6 +27,8 @@ public class Lawyer : Control
         _credibility = FindNode("CredibilityLabel") as Label;
         _damageText = FindNode("DamageLabel") as Label;
         _lawyerName = FindNode("NameLabel") as Label;
+        _evidenceCount = FindNode("EvidenceCount") as Label;
+        _witnessCount = FindNode("WitnessCount") as Label;
         _animator = FindNode("AnimationPlayer") as AnimationPlayer;
 
         foreach (Node n in _handAnchor.GetChildren())
@@ -98,16 +102,24 @@ public class Lawyer : Control
         return PlayerTypes.Player;
     }
 
-    public void UpdateCredibility(int from, int to)
+    public void UpdateState(PlayerState from, PlayerState to)
     {
-        if (from == to)
-            return;
+        if (from.Credibility != to.Credibility)
+        {
+            _credibility.Text = $"{to.Credibility}";
+            if (to.Credibility > from.Credibility)
+            {
+                _damageText.Text = $"+{to.Credibility - from.Credibility}";
+                _animator.Play("CredibilityUp");
+            }
+            else
+            {
+                _damageText.Text = $"{to.Credibility - from.Credibility}";
+                _animator.Play("CredibilityDown");
+            }
+        }
 
-        _credibility.Text = $"{to}";
-        _damageText.Text = $"{to - from}";
-        if (to > from)
-            _animator.Play("CredibilityUp");
-        else
-            _animator.Play("CredibilityDown");
+        _evidenceCount.Text = $"x {to.Evidence.Count}";
+        _witnessCount.Text = $"x {to.Witnesses.Count}";
     }
 }

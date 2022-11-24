@@ -7,8 +7,8 @@
 script = ExtResource( 1 )
 Id = 2
 Name = "Gold Watch"
-Cost = 15
+Cost = 8
 Art = ExtResource( 2 )
 Effects = {
-0: 8
+0: 6
 }
