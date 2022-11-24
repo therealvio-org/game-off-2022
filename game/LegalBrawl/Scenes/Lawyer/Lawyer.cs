@@ -36,7 +36,8 @@ public class Lawyer : Control
         Owner.Connect("Exit", this, "Cleanup");
     }
 
-    public void Play(int id, Battle battle)
+    // Takes in a card, just shows it getting played
+    public CardDisplay PlayCard(int id)
     {
         _cards[--_handSize].Hide();
 
@@ -45,14 +46,13 @@ public class Lawyer : Control
         display.ShowBack();
         display.FlipUp();
         BaseCard resource = CardLibrary.Get(id);
-        resource.Initialise(battle, _representing);
         display.Display(resource);
         _list.Add(card);
 
         card.SetCardPosition(new CardPosition(_cards[0].RectGlobalPosition + (_cards[0].RectSize / 2), 0f));
         card.SetFixedPosition(new CardPosition(_playedAnchor.RectGlobalPosition + Randy.Vector(-5, 5), Randy.Range(-4f, 4f)));
 
-        display.Prime();
+        return display;
     }
 
     public void Setup()
@@ -100,6 +100,9 @@ public class Lawyer : Control
 
     public void UpdateCredibility(int from, int to)
     {
+        if (from == to)
+            return;
+
         _credibility.Text = $"{to}";
         _damageText.Text = $"{to - from}";
         if (to > from)

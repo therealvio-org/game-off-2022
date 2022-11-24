@@ -53,7 +53,7 @@ public class CardDisplay : NinePatchRect
         _nameLabel.Text = resource.Name;
         _costLabel.Text = $"${resource.Cost}k";
         _cardTexture.Texture = resource.Art;
-        _descriptionLabel.Text = resource.GetDescription();
+        _descriptionLabel.Text = CardEffectHelper.GenerateDescription(resource.Effects);
 
         if (active) Unselect();
         else Select();
@@ -132,11 +132,6 @@ public class CardDisplay : NinePatchRect
     public void ResetRotation()
     {
         RectRotation = 0;
-    }
-
-    public void Prime()
-    {
-        Connect("Reveal", _cardResource, "Play");
     }
 
     public void OnHoverStart()

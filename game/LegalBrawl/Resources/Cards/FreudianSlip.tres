@@ -1,6 +1,6 @@
 [gd_resource type="Resource" load_steps=3 format=2]
 
-[ext_resource path="res://Resources/Definitions/DamageCredibility.cs" type="Script" id=1]
+[ext_resource path="res://Resources/BaseCard.cs" type="Script" id=1]
 [ext_resource path="res://Assets/CardArt/slip.png" type="Texture" id=2]
 
 [resource]
@@ -9,4 +9,6 @@ Id = 4
 Name = "Freudian Slip"
 Cost = 9
 Art = ExtResource( 2 )
-Value = 7
+Effects = {
+1: -7
+}

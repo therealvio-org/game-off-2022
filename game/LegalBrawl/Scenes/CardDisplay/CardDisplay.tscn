@@ -257,6 +257,7 @@ custom_fonts/font = ExtResource( 5 )
 text = "Stuff"
 align = 1
 valign = 1
+autowrap = true
 
 [node name="Animator" type="AnimationPlayer" parent="."]
 anims/FlipDown = SubResource( 2 )

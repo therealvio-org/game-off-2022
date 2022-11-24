@@ -2,27 +2,17 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-public class BoardState
+public struct BoardState
 {
     private PlayerState[] _players;
+    public PlayerState this[int index] { get => _players[index]; set => _players[index] = value; }
 
-    public BoardState()
+    public BoardState(PlayerState player, PlayerState opponent)
     {
         _players = new PlayerState[Enum.GetNames(typeof(PlayerTypes)).Length];
 
-        _players[(int)PlayerTypes.Player] = new PlayerState();
-        _players[(int)PlayerTypes.Opponent] = new PlayerState();
-    }
-
-
-    public int GetCredibility(PlayerTypes character)
-    {
-        return _players[(int)character].Credibility;
-    }
-
-    public void UpdateCredibility(PlayerTypes character, int value)
-    {
-        _players[(int)character].UpdateCredibility(value);
+        _players[(int)PlayerTypes.Player] = player;
+        _players[(int)PlayerTypes.Opponent] = opponent;
     }
 
     public Battle.Outcomes GetOutcome()
@@ -36,12 +26,11 @@ public class BoardState
     }
 }
 
-public class PlayerState
+public struct PlayerState
 {
-    public int Credibility { get; private set; } = Main.CREDIBILITY;
-
-    public void UpdateCredibility(int value)
+    public int Credibility { get; set; }
+    public PlayerState(int credibility)
     {
-        Credibility = Math.Max(Credibility + value, 0);
+        Credibility = Math.Max(credibility, 0);
     }
 }
