@@ -92,73 +92,6 @@ func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 	return response, nil
 }
 
-// Parse the body of request (in JSON) into usable structs
-func parseBody(b string) (*body, error) {
-	var body body
-	err := json.Unmarshal([]byte(b), &body)
-	if err != nil {
-		return nil, err
-	}
-
-	return &body, nil
-}
-
-func parseParameters(p map[string]string) (playerHandCompositeKey, error) {
-	input := make(map[string]interface{})
-
-	for k, v := range p {
-		input[k] = v
-	}
-
-	var result playerHandCompositeKey
-	err := mapstructure.Decode(input, &result)
-	if err != nil {
-		return playerHandCompositeKey{}, fmt.Errorf("unable to decode get request parameters: %v", err)
-	}
-
-	result.Version = env.PlayerHandVersion //Adds the balance version to the struct. Not supplied in GET request
-
-	return result, nil
-}
-
-func validateBody(b body) error {
-	_, err := uuid.Parse(b.HandInfo.PlayerId)
-	if err != nil {
-		return fmt.Errorf("playerId is not a valid UUID format: %v", err)
-	}
-
-	err = validateSubmittedVersion(b.HandInfo.Version, env.PlayerHandVersion)
-	if err != nil {
-		return fmt.Errorf("submitted version did not pass validation: %v", err)
-	}
-
-	return nil
-}
-
-func validateParameters(pg playerHandCompositeKey) error {
-	err := validatePlayerId(pg.PlayerId)
-	if err != nil {
-		return fmt.Errorf("playerId is not a valid UUID format: %v", err)
-	}
-	return nil
-}
-
-func validatePlayerId(pId string) error {
-	_, err := uuid.Parse(pId)
-	if err != nil {
-		return fmt.Errorf("playerId is not a valid UUID format: %v", err)
-	}
-	return nil
-}
-
-// Checks if submitted version matches current balance version
-func validateSubmittedVersion(sv string, av string) error {
-	if sv != av {
-		return fmt.Errorf("submitted version (%v) in request, does not match actual balance version %v", sv, av)
-	}
-	return nil
-}
-
 func handlePost(hmi httpMethodInput) (events.APIGatewayProxyResponse, error) {
 
 	parsedBody, err := parseBody(hmi.request.Body)
@@ -397,4 +330,71 @@ func handleOptions(headers map[string]string) (events.APIGatewayProxyResponse, e
 		Body:       "Options Method invoked successfully!",
 		StatusCode: 200,
 	}, nil
+}
+
+// Parse the body of request (in JSON) into usable structs
+func parseBody(b string) (*body, error) {
+	var body body
+	err := json.Unmarshal([]byte(b), &body)
+	if err != nil {
+		return nil, err
+	}
+
+	return &body, nil
+}
+
+func parseParameters(p map[string]string) (playerHandCompositeKey, error) {
+	input := make(map[string]interface{})
+
+	for k, v := range p {
+		input[k] = v
+	}
+
+	var result playerHandCompositeKey
+	err := mapstructure.Decode(input, &result)
+	if err != nil {
+		return playerHandCompositeKey{}, fmt.Errorf("unable to decode get request parameters: %v", err)
+	}
+
+	result.Version = env.PlayerHandVersion //Adds the balance version to the struct. Not supplied in GET request
+
+	return result, nil
+}
+
+func validateBody(b body) error {
+	_, err := uuid.Parse(b.HandInfo.PlayerId)
+	if err != nil {
+		return fmt.Errorf("playerId is not a valid UUID format: %v", err)
+	}
+
+	err = validateSubmittedVersion(b.HandInfo.Version, env.PlayerHandVersion)
+	if err != nil {
+		return fmt.Errorf("submitted version did not pass validation: %v", err)
+	}
+
+	return nil
+}
+
+func validateParameters(pg playerHandCompositeKey) error {
+	err := validatePlayerId(pg.PlayerId)
+	if err != nil {
+		return fmt.Errorf("playerId is not a valid UUID format: %v", err)
+	}
+	return nil
+}
+
+func validatePlayerId(pId string) error {
+	_, err := uuid.Parse(pId)
+	if err != nil {
+		return fmt.Errorf("playerId is not a valid UUID format: %v", err)
+	}
+	return nil
+}
+
+// Checks if submitted version matches current balance version
+func validateSubmittedVersion(sv string, av string) error {
+	if sv != av {
+		return fmt.Errorf("submitted version (%v) in request, does not match actual balance version %v", sv, av)
+	}
+	return nil
 }
