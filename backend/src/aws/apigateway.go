@@ -325,7 +325,6 @@ func handlePut(ctx context.Context, hmi httpMethodInput) (events.APIGatewayProxy
 func handleOptions(headers map[string]string) (events.APIGatewayProxyResponse, error) {
 	return events.APIGatewayProxyResponse{
 		Headers:    headers,
-		Body:       "Options Method invoked successfully!",
 		StatusCode: 200,
 	}, nil
 }
