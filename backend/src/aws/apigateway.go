@@ -103,6 +103,8 @@ func handlePost(ctx context.Context, hmi httpMethodInput) (events.APIGatewayProx
 		}, fmt.Errorf("request body failed parsing: %w", err)
 	}
 
+	log.Printf("POST Request handInfo: %v", parsedBody.HandInfo)
+
 	err = validateBody(*parsedBody)
 	if err != nil {
 		return events.APIGatewayProxyResponse{
@@ -174,6 +176,8 @@ func handleGet(ctx context.Context, hmi httpMethodInput) (events.APIGatewayProxy
 			fmt.Errorf("unable to parse parameters %w", err)
 	}
 
+	log.Printf("GET Request parameters: %v", parsedParameters)
+
 	err = validateParameters(parsedParameters)
 	if err != nil {
 		return events.APIGatewayProxyResponse{
@@ -243,6 +247,8 @@ func handlePut(ctx context.Context, hmi httpMethodInput) (events.APIGatewayProxy
 			StatusCode: 500,
 		}, fmt.Errorf("request body failed parsing: %w", err)
 	}
+
+	log.Printf("PUT Request handInfo: %v", parsedBody.HandInfo)
 
 	err = validateBody(*parsedBody)
 	if err != nil {
