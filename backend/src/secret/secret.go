@@ -3,36 +3,38 @@ package secret
 import (
 	"context"
 	"encoding/json"
-	"log"
+	"fmt"
 	"strings"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-secretsmanager-caching-go/secretcache"
 )
 
-var (
-	secretCache, _ = secretcache.New()
-)
-
 type LegalBrawlSecret struct {
 	ApiToken string `json:"apiToken"`
 }
 
-func RetrieveSecrets(ctx context.Context, sc *secretcache.Cache, sn string) LegalBrawlSecret {
+func RetrieveSecrets(ctx context.Context, sc *secretcache.Cache, sn string) (LegalBrawlSecret, error) {
 
-	result, _ := sc.GetSecretString(sn)
-
-	var secret LegalBrawlSecret
-	err := json.Unmarshal([]byte(result), &secret)
+	result, err := sc.GetSecretString(sn)
 	if err != nil {
-		log.Fatal(err.Error())
+		return LegalBrawlSecret{}, fmt.Errorf("unable to retrieve secret string: %w", err)
 	}
 
-	return secret
+	var secret LegalBrawlSecret
+	err = json.Unmarshal([]byte(result), &secret)
+	if err != nil {
+		return LegalBrawlSecret{}, fmt.Errorf("unable to unmarshal result: %w", err)
+	}
+
+	return secret, nil
 }
 
-// In case the token is somehow included in the request, let's scrub it.
+// Token is in the request, scrub it from the reply so it isn't logged
 func ScrubRequest(request *events.APIGatewayProxyRequest, s LegalBrawlSecret) {
-	scrubbed := strings.ReplaceAll(request.Body, s.ApiToken, "********")
-	request.Body = scrubbed
+	body := strings.ReplaceAll(request.Body, s.ApiToken, "********")
+	apiKeyHeader := strings.ReplaceAll(request.Headers["x-api-key"], s.ApiToken, "********")
+
+	request.Body = body
+	request.Headers["x-api-key"] = apiKeyHeader
 }

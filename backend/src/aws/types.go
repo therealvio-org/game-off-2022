@@ -1,12 +1,21 @@
 package lbapiaws
 
 import (
+	"context"
+
+	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 )
 
 type body struct {
 	HandInfo handInfo `json:"handinfo"`
+}
+
+type httpMethodInput struct {
+	ctx     context.Context
+	request events.APIGatewayProxyRequest
+	headers map[string]string
 }
 
 // `Version` refers to the balance version of cards. Functions concerning live service should be
