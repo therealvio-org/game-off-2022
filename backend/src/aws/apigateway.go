@@ -80,10 +80,9 @@ func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 
 		default:
 			return events.APIGatewayProxyResponse{
-					Body:       "invalid method returned",
-					StatusCode: 501,
-				},
-				fmt.Errorf("invalid method used: %v", request.HTTPMethod)
+				Body:       "invalid method used",
+				StatusCode: 501,
+			}, nil
 		}
 	}
 
@@ -294,11 +293,10 @@ func handleGet(hmi httpMethodInput) (events.APIGatewayProxyResponse, error) {
 		}, nil
 	} else {
 		return events.APIGatewayProxyResponse{
-				Headers:    hmi.headers,
-				Body:       "playerId does not exist",
-				StatusCode: 404,
-			},
-			fmt.Errorf("playderId %v does not exist", parsedParameters.PlayerId)
+			Headers:    hmi.headers,
+			Body:       "playerId does not exist",
+			StatusCode: 404,
+		}, nil
 	}
 }
 func handlePut(hmi httpMethodInput) (events.APIGatewayProxyResponse, error) {
@@ -358,12 +356,11 @@ func handlePut(hmi httpMethodInput) (events.APIGatewayProxyResponse, error) {
 			}, fmt.Errorf("failed to check for duplicate player: %v", err)
 		}
 		if isDupe { //The card configuration needs to be different
-			log.Printf("specified cards for playerId %v already exists", parsedBody.HandInfo.PlayerId)
 			return events.APIGatewayProxyResponse{
 				Headers:    hmi.headers,
 				Body:       "specified card configuration for playerId already exists",
 				StatusCode: 403,
-			}, fmt.Errorf("specified cards for playerId %v already exists", parsedBody.HandInfo.PlayerId)
+			}, nil
 		} else {
 			err = dynamoHandler.updatePlayerHand(parsedBody.HandInfo)
 			if err != nil {
@@ -388,7 +385,7 @@ func handlePut(hmi httpMethodInput) (events.APIGatewayProxyResponse, error) {
 			Headers:    hmi.headers,
 			Body:       "playerId does not exist",
 			StatusCode: 404,
-		}, fmt.Errorf("playerId %v does not exist", parsedBody.HandInfo.PlayerId)
+		}, nil
 	}
 }
 func handleOptions(headers map[string]string) (events.APIGatewayProxyResponse, error) {
