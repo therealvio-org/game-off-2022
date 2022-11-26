@@ -139,7 +139,7 @@ func handlePost(ctx context.Context, hmi httpMethodInput) (events.APIGatewayProx
 		}, fmt.Errorf("failed to check for duplicate playerId %v in playerHand table: %w", parsedBody.HandInfo.PlayerId, err)
 	}
 	if playerExist { //Player exists, use PUT request to update player instead
-		log.Printf("specified playerId %v already exists", parsedBody.HandInfo.PlayerId)
+		log.Printf("specified playerId %v in PUT request already exists", parsedBody.HandInfo.PlayerId)
 		return events.APIGatewayProxyResponse{
 			Headers:    hmi.headers,
 			Body:       "playerId already exists",
@@ -219,7 +219,6 @@ func handleGet(ctx context.Context, hmi httpMethodInput) (events.APIGatewayProxy
 				StatusCode: 500,
 			}, fmt.Errorf("error marshalling selectedHand to json: %w", err)
 		}
-
 		log.Printf("matchmaking: requesting playerId %v is matched up again playerId %v", parsedParameters.PlayerId, selectedHand.PlayerId)
 		return events.APIGatewayProxyResponse{
 			Headers:    hmi.headers,
@@ -227,6 +226,7 @@ func handleGet(ctx context.Context, hmi httpMethodInput) (events.APIGatewayProxy
 			StatusCode: 200,
 		}, nil
 	} else {
+		log.Printf("matchmaking: submitted playerId %v initiating request does not exist", parsedParameters.PlayerId)
 		return events.APIGatewayProxyResponse{
 			Headers:    hmi.headers,
 			Body:       "playerId does not exist",
@@ -287,9 +287,10 @@ func handlePut(ctx context.Context, hmi httpMethodInput) (events.APIGatewayProxy
 				Headers:    hmi.headers,
 				Body:       "error checking for duplicate player",
 				StatusCode: 500,
-			}, fmt.Errorf("failed to check for duplicate player: %w", err)
+			}, fmt.Errorf("failed to check for duplicate playerId %v: %w", parsedBody.HandInfo.PlayerId, err)
 		}
 		if isDupe { //The card configuration needs to be different
+			log.Printf("specified card configuration for playerId %v aleady exists", parsedBody.HandInfo.PlayerId)
 			return events.APIGatewayProxyResponse{
 				Headers:    hmi.headers,
 				Body:       "specified card configuration for playerId already exists",
@@ -307,7 +308,7 @@ func handlePut(ctx context.Context, hmi httpMethodInput) (events.APIGatewayProxy
 				log.Printf("updated playerHand for playerId %v", parsedBody.HandInfo.PlayerId)
 				return events.APIGatewayProxyResponse{
 					Headers:    hmi.headers,
-					Body:       "card configuration for playerId successfully updated",
+					Body:       "card configuration for player successfully updated",
 					StatusCode: 200,
 				}, nil
 			}
@@ -361,7 +362,7 @@ func parseParameters(p map[string]string) (playerHandCompositeKey, error) {
 func validateBody(b body) error {
 	_, err := uuid.Parse(b.HandInfo.PlayerId)
 	if err != nil {
-		return fmt.Errorf("playerId is not a valid UUID format: %w", err)
+		return fmt.Errorf("playerId %v is not a valid UUID format: %w", b.HandInfo.PlayerId, err)
 	}
 
 	err = validateSubmittedVersion(b.HandInfo.Version, env.PlayerHandVersion)
@@ -375,7 +376,7 @@ func validateBody(b body) error {
 func validateParameters(pg playerHandCompositeKey) error {
 	err := validatePlayerId(pg.PlayerId)
 	if err != nil {
-		return fmt.Errorf("playerId is not a valid UUID format: %w", err)
+		return fmt.Errorf("playerId %v is not a valid UUID format: %w", pg.PlayerId, err)
 	}
 	return nil
 }
@@ -383,7 +384,7 @@ func validateParameters(pg playerHandCompositeKey) error {
 func validatePlayerId(pId string) error {
 	_, err := uuid.Parse(pId)
 	if err != nil {
-		return fmt.Errorf("playerId is not a valid UUID format: %w", err)
+		return fmt.Errorf("playerId %v is not a valid UUID format: %w", pId, err)
 	}
 	return nil
 }
