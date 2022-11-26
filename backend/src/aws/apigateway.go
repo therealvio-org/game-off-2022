@@ -36,7 +36,10 @@ func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 
 	fmt.Printf("Processing request data for request %s.\n", request.RequestContext.RequestID)
 
-	apiSecret := secret.RetrieveSecrets(ctx, secretCache, env.LegalBrawlSecretName)
+	apiSecret, err := secret.RetrieveSecrets(ctx, secretCache, env.LegalBrawlSecretName)
+	if err != nil {
+		return events.APIGatewayProxyResponse{}, fmt.Errorf("error retrieving api secrets: %v", err)
+	}
 	secret.ScrubRequest(&request, apiSecret)
 	fmt.Printf("Body size = %d.\n", len(request.Body))
 
