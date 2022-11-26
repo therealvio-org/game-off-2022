@@ -30,8 +30,11 @@ func RetrieveSecrets(ctx context.Context, sc *secretcache.Cache, sn string) (Leg
 	return secret, nil
 }
 
-// In case the token is somehow included in the request, let's scrub it.
+// Token is in the request, scrub it from the reply so it isn't logged
 func ScrubRequest(request *events.APIGatewayProxyRequest, s LegalBrawlSecret) {
-	scrubbed := strings.ReplaceAll(request.Body, s.ApiToken, "********")
-	request.Body = scrubbed
+	body := strings.ReplaceAll(request.Body, s.ApiToken, "********")
+	apiKeyHeader := strings.ReplaceAll(request.Headers["x-api-key"], s.ApiToken, "********")
+
+	request.Body = body
+	request.Headers["x-api-key"] = apiKeyHeader
 }
