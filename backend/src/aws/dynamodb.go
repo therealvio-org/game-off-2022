@@ -19,26 +19,6 @@ var (
 	timeoutWindow = 3 * time.Second
 )
 
-// Adds the player's submitted hand from the client to the Database.
-//
-// BUG: Need to check that types match, and contents are not null before marshalling.
-func (ddbh dDBHandler) doAddHand(h handInfo) error {
-	item, err := attributevalue.MarshalMap(h)
-	if err != nil {
-		log.Panicf("unable to marshal submitted hand: %v", err)
-	}
-
-	_, err = ddbh.DynamoDbClient.PutItem(context.TODO(), &dynamodb.PutItemInput{
-		TableName: aws.String(ddbh.TableName),
-		Item:      item,
-	})
-	if err != nil {
-		log.Printf("couldn't add item to table: %v\n", err)
-	}
-
-	return err
-}
-
 func (ddbh dDBHandler) addHand(h handInfo) error {
 	err := make(chan error, 1)
 
@@ -57,85 +37,27 @@ func (ddbh dDBHandler) addHand(h handInfo) error {
 	}
 }
 
-func (ddbh dDBHandler) doQueryHands(version string) queryHandsResult {
-	var availableHands []handInfo
-	var response *dynamodb.QueryOutput
+// Checks if the submitted playerHand item already exists. This is done by checking if the submitted
+// hand is a 1:1 match with a pre-existing record. If it is, return true, else return false.
+// The intention here is that it can be used to determine whether a POST request needs to in fact be
+// a PUT request, and if an isolated PUT request isn't necessary.
+//
+// This method should be used for `PUT` requests, where a check needs to be made for every single
+// attribute for a given item.
+func (ddbh dDBHandler) checkForDuplicate(h handInfo, item map[string]types.AttributeValue) (bool, error) {
+	var dbHand handInfo
 
-	keyEx := expression.Key("version").Equal(expression.Value(version))
-	expr, err := expression.NewBuilder().WithKeyCondition(keyEx).Build()
+	err := attributevalue.UnmarshalMap(item, &dbHand)
 	if err != nil {
-		return queryHandsResult{
-			nil,
-			fmt.Errorf("could not build expression to query available hands. error: %v", err),
-		}
+		return false, fmt.Errorf("failed to unmarshal response:  %v", err)
+	}
+
+	isDupe := cmp.Equal(h, dbHand)
+	if isDupe {
+		return true, nil
 	} else {
-		response, err = ddbh.DynamoDbClient.Query(context.TODO(), &dynamodb.QueryInput{
-			TableName:                 aws.String(ddbh.TableName),
-			ExpressionAttributeNames:  expr.Names(),
-			ExpressionAttributeValues: expr.Values(),
-			KeyConditionExpression:    expr.KeyCondition(),
-		})
-		if err != nil {
-			return queryHandsResult{
-				nil,
-				fmt.Errorf("could not query for playerHands in v%v. error: %v", version, err),
-			}
-		} else {
-			err = attributevalue.UnmarshalListOfMaps(response.Items, &availableHands)
-			if err != nil {
-				return queryHandsResult{
-					availableHands,
-					fmt.Errorf("couldn't unmarshal query response. error: %v", err),
-				}
-			}
-		}
+		return false, nil
 	}
-
-	return queryHandsResult{availableHands, nil}
-}
-
-// Queries *all* entries in the database by version number.
-//
-// NOTE: This operation is gonna be expensive for a Lambda later on, so this result will eventually
-// need to be cached later.
-func (ddbh dDBHandler) queryHands(version string) ([]handInfo, error) {
-	result := make(chan queryHandsResult, 1)
-
-	go func() {
-		result <- ddbh.doQueryHands(version)
-	}()
-	select {
-	case <-time.After(timeoutWindow):
-		return nil, fmt.Errorf("timeout - could not query for playerHands in allotted window")
-
-	case result := <-result:
-		return result.HandInfoSlice, nil
-	}
-
-}
-
-// Creates the composite key for the playerHand dynamodb Table
-//
-// Use this function if you need to specifically target a player in the database
-func (h handInfo) GetKey() (map[string]types.AttributeValue, error) {
-	version, err := attributevalue.Marshal(h.Version)
-	if err != nil {
-		return nil, fmt.Errorf("unable to marshal attribute 'version' with value %v, error: %v", h.Version, err)
-	}
-	playerId, err := attributevalue.Marshal(h.PlayerId)
-	if err != nil {
-		return nil, fmt.Errorf("unable to marshal attribute 'playerId' with value %v, error: %v", h.PlayerId, err)
-	}
-	return map[string]types.AttributeValue{"version": version, "playerId": playerId}, nil
-}
-
-// Selects a random entry in []handInfo
-//
-// It ain't matchmaking, but it's honest work
-func (ddbh dDBHandler) chooseHand(h []handInfo) handInfo {
-	rand.Seed(time.Now().Unix())
-	selectedHand := h[rand.Intn(len(h))]
-	return selectedHand
 }
 
 // Checks if the player by specified playerId and version exists. If it does, return true, else
@@ -161,6 +83,35 @@ func (ddbh dDBHandler) checkIfPlayerHandExists(p playerHandCompositeKey) (bool, 
 	}
 }
 
+// Selects a random entry in []handInfo
+//
+// It ain't matchmaking, but it's honest work
+func (ddbh dDBHandler) chooseHand(h []handInfo) handInfo {
+	rand.Seed(time.Now().Unix())
+	selectedHand := h[rand.Intn(len(h))]
+	return selectedHand
+}
+
+// Adds the player's submitted hand from the client to the Database.
+//
+// BUG: Need to check that types match, and contents are not null before marshalling.
+func (ddbh dDBHandler) doAddHand(h handInfo) error {
+	item, err := attributevalue.MarshalMap(h)
+	if err != nil {
+		log.Panicf("unable to marshal submitted hand: %v", err)
+	}
+
+	_, err = ddbh.DynamoDbClient.PutItem(context.TODO(), &dynamodb.PutItemInput{
+		TableName: aws.String(ddbh.TableName),
+		Item:      item,
+	})
+	if err != nil {
+		log.Printf("couldn't add item to table: %v\n", err)
+	}
+
+	return err
+}
+
 func (ddbh dDBHandler) doCheckIfPlayerHandExist(p playerHandCompositeKey) checkPlayerHandExistsResult {
 	playerInRequest := handInfo{
 		PlayerId: p.PlayerId,
@@ -169,7 +120,7 @@ func (ddbh dDBHandler) doCheckIfPlayerHandExist(p playerHandCompositeKey) checkP
 
 	var result handInfo
 
-	dbKey, err := playerInRequest.GetKey()
+	dbKey, err := playerInRequest.getKey()
 	if err != nil {
 		return checkPlayerHandExistsResult{
 			PlayerExists: false,
@@ -222,52 +173,48 @@ func (ddbh dDBHandler) doCheckIfPlayerHandExist(p playerHandCompositeKey) checkP
 	}
 }
 
-// Checks if the submitted playerHand item already exists. This is done by checking if the submitted
-// hand is a 1:1 match with a pre-existing record. If it is, return true, else return false.
-// The intention here is that it can be used to determine whether a POST request needs to in fact be
-// a PUT request, and if an isolated PUT request isn't necessary.
-//
-// This method should be used for `PUT` requests, where a check needs to be made for every single
-// attribute for a given item.
-func (ddbh dDBHandler) checkForDuplicate(h handInfo, item map[string]types.AttributeValue) (bool, error) {
-	var dbHand handInfo
+func (ddbh dDBHandler) doQueryHands(version string) queryHandsResult {
+	var availableHands []handInfo
+	var response *dynamodb.QueryOutput
 
-	err := attributevalue.UnmarshalMap(item, &dbHand)
+	keyEx := expression.Key("version").Equal(expression.Value(version))
+	expr, err := expression.NewBuilder().WithKeyCondition(keyEx).Build()
 	if err != nil {
-		return false, fmt.Errorf("failed to unmarshal response:  %v", err)
-	}
-
-	isDupe := cmp.Equal(h, dbHand)
-	if isDupe {
-		return true, nil
-	} else {
-		return false, nil
-	}
-}
-
-func (ddbh dDBHandler) updatePlayerHand(h handInfo) error {
-	err := make(chan error, 1)
-
-	go func() {
-		err <- ddbh.doUpdatePlayerHand(h)
-	}()
-	select {
-	case <-time.After(timeoutWindow):
-		return fmt.Errorf("timeout - could not update playerHand in allotted window")
-
-	case err := <-err:
-		if err != nil {
-			return fmt.Errorf("updatePlayerHand execution failed. error: %v", err)
+		return queryHandsResult{
+			nil,
+			fmt.Errorf("could not build expression to query available hands. error: %v", err),
 		}
-		return nil
+	} else {
+		response, err = ddbh.DynamoDbClient.Query(context.TODO(), &dynamodb.QueryInput{
+			TableName:                 aws.String(ddbh.TableName),
+			ExpressionAttributeNames:  expr.Names(),
+			ExpressionAttributeValues: expr.Values(),
+			KeyConditionExpression:    expr.KeyCondition(),
+		})
+		if err != nil {
+			return queryHandsResult{
+				nil,
+				fmt.Errorf("could not query for playerHands in v%v. error: %v", version, err),
+			}
+		} else {
+			err = attributevalue.UnmarshalListOfMaps(response.Items, &availableHands)
+			if err != nil {
+				return queryHandsResult{
+					availableHands,
+					fmt.Errorf("couldn't unmarshal query response. error: %v", err),
+				}
+			}
+		}
 	}
+
+	return queryHandsResult{availableHands, nil}
 }
 
 func (ddbh dDBHandler) doUpdatePlayerHand(h handInfo) error {
 
 	var attributeMap map[string]map[string]interface{}
 
-	dbKey, err := h.GetKey()
+	dbKey, err := h.getKey()
 	if err != nil {
 		return fmt.Errorf("failed to generate dbkey: %v", err)
 	}
@@ -293,6 +240,59 @@ func (ddbh dDBHandler) doUpdatePlayerHand(h handInfo) error {
 			return fmt.Errorf("failed to unmarshal response:  %v", err)
 		}
 
+		return nil
+	}
+}
+
+// Creates the composite key for the playerHand dynamodb Table
+//
+// Use this function if you need to specifically target a player in the database
+func (h handInfo) getKey() (map[string]types.AttributeValue, error) {
+	version, err := attributevalue.Marshal(h.Version)
+	if err != nil {
+		return nil, fmt.Errorf("unable to marshal attribute 'version' with value %v, error: %v", h.Version, err)
+	}
+	playerId, err := attributevalue.Marshal(h.PlayerId)
+	if err != nil {
+		return nil, fmt.Errorf("unable to marshal attribute 'playerId' with value %v, error: %v", h.PlayerId, err)
+	}
+	return map[string]types.AttributeValue{"version": version, "playerId": playerId}, nil
+}
+
+// Queries *all* entries in the database by version number.
+//
+// NOTE: This operation is gonna be expensive for a Lambda later on, so this result will eventually
+// need to be cached later.
+func (ddbh dDBHandler) queryHands(version string) ([]handInfo, error) {
+	result := make(chan queryHandsResult, 1)
+
+	go func() {
+		result <- ddbh.doQueryHands(version)
+	}()
+	select {
+	case <-time.After(timeoutWindow):
+		return nil, fmt.Errorf("timeout - could not query for playerHands in allotted window")
+
+	case result := <-result:
+		return result.HandInfoSlice, nil
+	}
+
+}
+
+func (ddbh dDBHandler) updatePlayerHand(h handInfo) error {
+	err := make(chan error, 1)
+
+	go func() {
+		err <- ddbh.doUpdatePlayerHand(h)
+	}()
+	select {
+	case <-time.After(timeoutWindow):
+		return fmt.Errorf("timeout - could not update playerHand in allotted window")
+
+	case err := <-err:
+		if err != nil {
+			return fmt.Errorf("updatePlayerHand execution failed. error: %v", err)
+		}
 		return nil
 	}
 }
