@@ -10,10 +10,6 @@ import (
 	"github.com/aws/aws-secretsmanager-caching-go/secretcache"
 )
 
-var (
-	secretCache, _ = secretcache.New()
-)
-
 type LegalBrawlSecret struct {
 	ApiToken string `json:"apiToken"`
 }
