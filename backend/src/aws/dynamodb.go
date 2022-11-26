@@ -19,11 +19,11 @@ var (
 	timeoutWindow = 3 * time.Second
 )
 
-func (ddbh dDBHandler) addHand(h handInfo) error {
+func (ddbh dDBHandler) addHand(ctx context.Context, h handInfo) error {
 	err := make(chan error, 1)
 
 	go func() {
-		err <- ddbh.doAddHand(h)
+		err <- ddbh.doAddHand(ctx, h)
 	}()
 	select {
 	case <-time.After(timeoutWindow):
@@ -68,11 +68,11 @@ func (ddbh dDBHandler) checkForDuplicate(h handInfo, item map[string]types.Attri
 // is in the DB. It does not check if every attribute is a match.
 // TODO: `checkForDuplicate` and `checkIfPlayerHandExists` could be made as a single method achieving
 // the same thing
-func (ddbh dDBHandler) checkIfPlayerHandExists(p playerHandCompositeKey) (bool, map[string]types.AttributeValue, error) {
+func (ddbh dDBHandler) checkIfPlayerHandExists(ctx context.Context, p playerHandCompositeKey) (bool, map[string]types.AttributeValue, error) {
 	result := make(chan checkPlayerHandExistsResult, 1)
 
 	go func() {
-		result <- ddbh.doCheckIfPlayerHandExist(p)
+		result <- ddbh.doCheckIfPlayerHandExist(ctx, p)
 	}()
 	select {
 	case <-time.After(timeoutWindow):
@@ -95,13 +95,13 @@ func (ddbh dDBHandler) chooseHand(h []handInfo) handInfo {
 // Adds the player's submitted hand from the client to the Database.
 //
 // BUG: Need to check that types match, and contents are not null before marshalling.
-func (ddbh dDBHandler) doAddHand(h handInfo) error {
+func (ddbh dDBHandler) doAddHand(ctx context.Context, h handInfo) error {
 	item, err := attributevalue.MarshalMap(h)
 	if err != nil {
 		log.Panicf("unable to marshal submitted hand: %v", err)
 	}
 
-	_, err = ddbh.DynamoDbClient.PutItem(context.TODO(), &dynamodb.PutItemInput{
+	_, err = ddbh.DynamoDbClient.PutItem(ctx, &dynamodb.PutItemInput{
 		TableName: aws.String(ddbh.TableName),
 		Item:      item,
 	})
@@ -112,7 +112,7 @@ func (ddbh dDBHandler) doAddHand(h handInfo) error {
 	return err
 }
 
-func (ddbh dDBHandler) doCheckIfPlayerHandExist(p playerHandCompositeKey) checkPlayerHandExistsResult {
+func (ddbh dDBHandler) doCheckIfPlayerHandExist(ctx context.Context, p playerHandCompositeKey) checkPlayerHandExistsResult {
 	playerInRequest := handInfo{
 		PlayerId: p.PlayerId,
 		Version:  p.Version, //Incoming request should always be the *latest* playerHand version when checking
@@ -129,7 +129,7 @@ func (ddbh dDBHandler) doCheckIfPlayerHandExist(p playerHandCompositeKey) checkP
 		}
 	}
 
-	response, err := ddbh.DynamoDbClient.GetItem(context.TODO(), &dynamodb.GetItemInput{
+	response, err := ddbh.DynamoDbClient.GetItem(ctx, &dynamodb.GetItemInput{
 		Key:       dbKey,
 		TableName: aws.String(ddbh.TableName),
 	})
@@ -173,7 +173,7 @@ func (ddbh dDBHandler) doCheckIfPlayerHandExist(p playerHandCompositeKey) checkP
 	}
 }
 
-func (ddbh dDBHandler) doQueryHands(version string) queryHandsResult {
+func (ddbh dDBHandler) doQueryHands(ctx context.Context, version string) queryHandsResult {
 	var availableHands []handInfo
 	var response *dynamodb.QueryOutput
 
@@ -185,7 +185,7 @@ func (ddbh dDBHandler) doQueryHands(version string) queryHandsResult {
 			fmt.Errorf("could not build expression to query available hands. error: %v", err),
 		}
 	} else {
-		response, err = ddbh.DynamoDbClient.Query(context.TODO(), &dynamodb.QueryInput{
+		response, err = ddbh.DynamoDbClient.Query(ctx, &dynamodb.QueryInput{
 			TableName:                 aws.String(ddbh.TableName),
 			ExpressionAttributeNames:  expr.Names(),
 			ExpressionAttributeValues: expr.Values(),
@@ -210,7 +210,7 @@ func (ddbh dDBHandler) doQueryHands(version string) queryHandsResult {
 	return queryHandsResult{availableHands, nil}
 }
 
-func (ddbh dDBHandler) doUpdatePlayerHand(h handInfo) error {
+func (ddbh dDBHandler) doUpdatePlayerHand(ctx context.Context, h handInfo) error {
 
 	var attributeMap map[string]map[string]interface{}
 
@@ -225,7 +225,7 @@ func (ddbh dDBHandler) doUpdatePlayerHand(h handInfo) error {
 		return fmt.Errorf("could not build expression for updating playerHand (%v) record. error: %v", h.PlayerId, err)
 	}
 
-	response, err := ddbh.DynamoDbClient.UpdateItem(context.TODO(), &dynamodb.UpdateItemInput{
+	response, err := ddbh.DynamoDbClient.UpdateItem(ctx, &dynamodb.UpdateItemInput{
 		Key:                       dbKey,
 		TableName:                 &env.PlayerHandTableName,
 		ExpressionAttributeNames:  expr.Names(),
@@ -263,11 +263,11 @@ func (h handInfo) getKey() (map[string]types.AttributeValue, error) {
 //
 // NOTE: This operation is gonna be expensive for a Lambda later on, so this result will eventually
 // need to be cached later.
-func (ddbh dDBHandler) queryHands(version string) ([]handInfo, error) {
+func (ddbh dDBHandler) queryHands(ctx context.Context, version string) ([]handInfo, error) {
 	result := make(chan queryHandsResult, 1)
 
 	go func() {
-		result <- ddbh.doQueryHands(version)
+		result <- ddbh.doQueryHands(ctx, version)
 	}()
 	select {
 	case <-time.After(timeoutWindow):
@@ -279,11 +279,11 @@ func (ddbh dDBHandler) queryHands(version string) ([]handInfo, error) {
 
 }
 
-func (ddbh dDBHandler) updatePlayerHand(h handInfo) error {
+func (ddbh dDBHandler) updatePlayerHand(ctx context.Context, h handInfo) error {
 	err := make(chan error, 1)
 
 	go func() {
-		err <- ddbh.doUpdatePlayerHand(h)
+		err <- ddbh.doUpdatePlayerHand(ctx, h)
 	}()
 	select {
 	case <-time.After(timeoutWindow):

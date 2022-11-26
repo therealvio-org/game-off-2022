@@ -61,21 +61,21 @@ func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 			return result, nil
 
 		case "POST":
-			result, err := handlePost(httpMethodInput)
+			result, err := handlePost(ctx, httpMethodInput)
 			if err != nil {
 				return result, fmt.Errorf("%v", err)
 			}
 			return result, nil
 
 		case "GET":
-			result, err := handleGet(httpMethodInput)
+			result, err := handleGet(ctx, httpMethodInput)
 			if err != nil {
 				return result, fmt.Errorf("%v", err)
 			}
 			return result, nil
 
 		case "PUT":
-			result, err := handlePut(httpMethodInput)
+			result, err := handlePut(ctx, httpMethodInput)
 			if err != nil {
 				return result, fmt.Errorf("%v", err)
 			}
@@ -92,7 +92,7 @@ func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 	return response, nil
 }
 
-func handlePost(hmi httpMethodInput) (events.APIGatewayProxyResponse, error) {
+func handlePost(ctx context.Context, hmi httpMethodInput) (events.APIGatewayProxyResponse, error) {
 
 	parsedBody, err := parseBody(hmi.request.Body)
 	if err != nil {
@@ -131,7 +131,7 @@ func handlePost(hmi httpMethodInput) (events.APIGatewayProxyResponse, error) {
 		PlayerId: parsedBody.HandInfo.PlayerId,
 		Version:  env.PlayerHandVersion,
 	}
-	playerExist, _, err := dynamoHandler.checkIfPlayerHandExists(playerHandParams)
+	playerExist, _, err := dynamoHandler.checkIfPlayerHandExists(ctx, playerHandParams)
 	if err != nil {
 		return events.APIGatewayProxyResponse{
 			Headers:    hmi.headers,
@@ -147,7 +147,7 @@ func handlePost(hmi httpMethodInput) (events.APIGatewayProxyResponse, error) {
 			StatusCode: 400,
 		}, nil
 	} else { //Add player hand to the DB
-		err = dDBHandler.addHand(dynamoHandler, parsedBody.HandInfo)
+		err = dynamoHandler.addHand(ctx, parsedBody.HandInfo)
 		if err != nil {
 			log.Fatalf("error adding playerId %v to playerHand table: %v", parsedBody.HandInfo.PlayerId, err)
 			return events.APIGatewayProxyResponse{
@@ -164,7 +164,7 @@ func handlePost(hmi httpMethodInput) (events.APIGatewayProxyResponse, error) {
 		}, nil
 	}
 }
-func handleGet(hmi httpMethodInput) (events.APIGatewayProxyResponse, error) {
+func handleGet(ctx context.Context, hmi httpMethodInput) (events.APIGatewayProxyResponse, error) {
 	parsedParameters, err := parseParameters(hmi.request.QueryStringParameters)
 	if err != nil {
 		return events.APIGatewayProxyResponse{
@@ -199,12 +199,12 @@ func handleGet(hmi httpMethodInput) (events.APIGatewayProxyResponse, error) {
 		TableName:      env.PlayerHandTableName,
 	}
 
-	playerExists, _, err := dynamoHandler.checkIfPlayerHandExists(parsedParameters)
+	playerExists, _, err := dynamoHandler.checkIfPlayerHandExists(ctx, parsedParameters)
 	if err != nil {
 		log.Fatalf("failed to determine if player exists on playerHand table: %v", err)
 	}
 	if playerExists {
-		hands, err := dynamoHandler.queryHands(env.PlayerHandVersion)
+		hands, err := dynamoHandler.queryHands(ctx, env.PlayerHandVersion)
 		if err != nil {
 			log.Fatalf("error querying playerHands table: %v", err)
 		}
@@ -235,7 +235,7 @@ func handleGet(hmi httpMethodInput) (events.APIGatewayProxyResponse, error) {
 		}, nil
 	}
 }
-func handlePut(hmi httpMethodInput) (events.APIGatewayProxyResponse, error) {
+func handlePut(ctx context.Context, hmi httpMethodInput) (events.APIGatewayProxyResponse, error) {
 	parsedBody, err := parseBody(hmi.request.Body)
 	if err != nil {
 		return events.APIGatewayProxyResponse{
@@ -274,7 +274,7 @@ func handlePut(hmi httpMethodInput) (events.APIGatewayProxyResponse, error) {
 		Version:  env.PlayerHandVersion,
 	}
 
-	playerExist, playerEntry, err := dynamoHandler.checkIfPlayerHandExists(playerHandParams)
+	playerExist, playerEntry, err := dynamoHandler.checkIfPlayerHandExists(ctx, playerHandParams)
 	if err != nil {
 		return events.APIGatewayProxyResponse{
 			Headers:    hmi.headers,
@@ -298,7 +298,7 @@ func handlePut(hmi httpMethodInput) (events.APIGatewayProxyResponse, error) {
 				StatusCode: 403,
 			}, nil
 		} else {
-			err = dynamoHandler.updatePlayerHand(parsedBody.HandInfo)
+			err = dynamoHandler.updatePlayerHand(ctx, parsedBody.HandInfo)
 			if err != nil {
 				return events.APIGatewayProxyResponse{
 					Headers:    hmi.headers,
