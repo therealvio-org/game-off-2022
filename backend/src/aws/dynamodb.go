@@ -44,19 +44,19 @@ func (ddbh dDBHandler) addHand(ctx context.Context, h handInfo) error {
 //
 // This method should be used for `PUT` requests, where a check needs to be made for every single
 // attribute for a given item.
-func (ddbh dDBHandler) checkForDuplicate(h handInfo, item map[string]types.AttributeValue) (bool, error) {
+func (ddbh dDBHandler) checkForDuplicate(h handInfo, item map[string]types.AttributeValue) (bool, handInfo, error) {
 	var dbHand handInfo
 
 	err := attributevalue.UnmarshalMap(item, &dbHand)
 	if err != nil {
-		return false, fmt.Errorf("failed to unmarshal response:  %w", err)
+		return false, handInfo{}, fmt.Errorf("failed to unmarshal response:  %w", err)
 	}
 
 	isDupe := cmp.Equal(h, dbHand)
 	if isDupe {
-		return true, nil
+		return true, handInfo{}, nil
 	} else {
-		return false, nil
+		return false, dbHand, nil
 	}
 }
 

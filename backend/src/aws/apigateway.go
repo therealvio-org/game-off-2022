@@ -287,7 +287,7 @@ func handlePut(ctx context.Context, hmi httpMethodInput) (events.APIGatewayProxy
 		}, fmt.Errorf("failed to check for duplicate player in playerHand table: %w", err)
 	}
 	if playerExist { //Check PUT request
-		isDupe, err := dynamoHandler.checkForDuplicate(parsedBody.HandInfo, playerEntry)
+		isDupe, dbHand, err := dynamoHandler.checkForDuplicate(parsedBody.HandInfo, playerEntry)
 		if err != nil {
 			return events.APIGatewayProxyResponse{
 				Headers:    hmi.headers,
@@ -311,7 +311,7 @@ func handlePut(ctx context.Context, hmi httpMethodInput) (events.APIGatewayProxy
 					StatusCode: 500,
 				}, fmt.Errorf("failed to update card configuration for playerId %v: %w", parsedBody.HandInfo.PlayerId, err)
 			} else {
-				log.Printf("updated playerHand for playerId %v", parsedBody.HandInfo.PlayerId)
+				log.Printf("updated playerHand for playerId %v. Was: %v Now: %v", parsedBody.HandInfo.PlayerId, dbHand.Cards, parsedBody.HandInfo.Cards) //TODO: Add old value
 				return events.APIGatewayProxyResponse{
 					Headers:    hmi.headers,
 					Body:       "card configuration for player successfully updated",
