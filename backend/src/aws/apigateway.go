@@ -38,7 +38,7 @@ func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 
 	apiSecret, err := secret.RetrieveSecrets(ctx, secretCache, env.LegalBrawlSecretName)
 	if err != nil {
-		return events.APIGatewayProxyResponse{}, fmt.Errorf("error retrieving api secrets: %v", err)
+		return events.APIGatewayProxyResponse{}, fmt.Errorf("error retrieving api secrets: %w", err)
 	}
 	secret.ScrubRequest(&request, apiSecret)
 	fmt.Printf("Body size = %d.\n", len(request.Body))
@@ -56,28 +56,28 @@ func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 		case "OPTIONS":
 			result, err := handleOptions(httpMethodInput.headers)
 			if err != nil {
-				return result, fmt.Errorf("%v", err)
+				return result, fmt.Errorf("%w", err)
 			}
 			return result, nil
 
 		case "POST":
 			result, err := handlePost(ctx, httpMethodInput)
 			if err != nil {
-				return result, fmt.Errorf("%v", err)
+				return result, fmt.Errorf("%w", err)
 			}
 			return result, nil
 
 		case "GET":
 			result, err := handleGet(ctx, httpMethodInput)
 			if err != nil {
-				return result, fmt.Errorf("%v", err)
+				return result, fmt.Errorf("%w", err)
 			}
 			return result, nil
 
 		case "PUT":
 			result, err := handlePut(ctx, httpMethodInput)
 			if err != nil {
-				return result, fmt.Errorf("%v", err)
+				return result, fmt.Errorf("%w", err)
 			}
 			return result, nil
 
@@ -97,11 +97,10 @@ func handlePost(ctx context.Context, hmi httpMethodInput) (events.APIGatewayProx
 	parsedBody, err := parseBody(hmi.request.Body)
 	if err != nil {
 		return events.APIGatewayProxyResponse{
-				Headers:    hmi.headers,
-				Body:       "internal error parsing request",
-				StatusCode: 500,
-			},
-			fmt.Errorf("request body failed parsing: %v", err)
+			Headers:    hmi.headers,
+			Body:       "internal error parsing request",
+			StatusCode: 500,
+		}, fmt.Errorf("request body failed parsing: %w", err)
 	}
 
 	err = validateBody(*parsedBody)
@@ -110,7 +109,7 @@ func handlePost(ctx context.Context, hmi httpMethodInput) (events.APIGatewayProx
 			Headers:    hmi.headers,
 			Body:       "parameters in request failed validation",
 			StatusCode: 500,
-		}, fmt.Errorf("body contents failed validation: %v", err)
+		}, fmt.Errorf("body contents failed validation: %w", err)
 	}
 
 	cfg, err := config.LoadDefaultConfig(hmi.ctx)
@@ -119,7 +118,7 @@ func handlePost(ctx context.Context, hmi httpMethodInput) (events.APIGatewayProx
 			Headers:    hmi.headers,
 			Body:       "internal error",
 			StatusCode: 500,
-		}, fmt.Errorf("error loading sdk config: %v", err)
+		}, fmt.Errorf("error loading sdk config: %w", err)
 	}
 
 	dynamoHandler := dDBHandler{
@@ -137,7 +136,7 @@ func handlePost(ctx context.Context, hmi httpMethodInput) (events.APIGatewayProx
 			Headers:    hmi.headers,
 			Body:       "error checking for duplicate player",
 			StatusCode: 500,
-		}, fmt.Errorf("failed to check for duplicate playerId %v in playerHand table: %v", parsedBody.HandInfo.PlayerId, err)
+		}, fmt.Errorf("failed to check for duplicate playerId %v in playerHand table: %w", parsedBody.HandInfo.PlayerId, err)
 	}
 	if playerExist { //Player exists, use PUT request to update player instead
 		log.Printf("specified playerId %v already exists", parsedBody.HandInfo.PlayerId)
@@ -154,7 +153,7 @@ func handlePost(ctx context.Context, hmi httpMethodInput) (events.APIGatewayProx
 				Headers:    hmi.headers,
 				Body:       "error adding item",
 				StatusCode: 500,
-			}, fmt.Errorf("failed to add playerId %v to playerHand table: %v", parsedBody.HandInfo.PlayerId, err)
+			}, fmt.Errorf("failed to add playerId %v to playerHand table: %w", parsedBody.HandInfo.PlayerId, err)
 		}
 		log.Printf("playerId %v added to playerHand table", parsedBody.HandInfo.PlayerId)
 		return events.APIGatewayProxyResponse{
@@ -172,7 +171,7 @@ func handleGet(ctx context.Context, hmi httpMethodInput) (events.APIGatewayProxy
 				Body:       "internal error parsing request",
 				StatusCode: 500,
 			},
-			fmt.Errorf("unable to parse parameters %v", err)
+			fmt.Errorf("unable to parse parameters %w", err)
 	}
 
 	err = validateParameters(parsedParameters)
@@ -182,7 +181,7 @@ func handleGet(ctx context.Context, hmi httpMethodInput) (events.APIGatewayProxy
 				Body:       "parameters in request failed validation",
 				StatusCode: 500,
 			},
-			fmt.Errorf("parameters failed validation: %v", err)
+			fmt.Errorf("parameters failed validation: %w", err)
 	}
 
 	cfg, err := config.LoadDefaultConfig(hmi.ctx)
@@ -191,7 +190,7 @@ func handleGet(ctx context.Context, hmi httpMethodInput) (events.APIGatewayProxy
 			Headers:    hmi.headers,
 			Body:       "internal error",
 			StatusCode: 500,
-		}, fmt.Errorf("error loading sdk config: %v", err)
+		}, fmt.Errorf("error loading sdk config: %w", err)
 	}
 
 	dynamoHandler := dDBHandler{
@@ -218,7 +217,7 @@ func handleGet(ctx context.Context, hmi httpMethodInput) (events.APIGatewayProxy
 				Headers:    hmi.headers,
 				Body:       "internal error",
 				StatusCode: 500,
-			}, fmt.Errorf("error marshalling selectedHand to json: %v", err)
+			}, fmt.Errorf("error marshalling selectedHand to json: %w", err)
 		}
 
 		log.Printf("matchmaking: requesting playerId %v is matched up again playerId %v", parsedParameters.PlayerId, selectedHand.PlayerId)
@@ -239,11 +238,10 @@ func handlePut(ctx context.Context, hmi httpMethodInput) (events.APIGatewayProxy
 	parsedBody, err := parseBody(hmi.request.Body)
 	if err != nil {
 		return events.APIGatewayProxyResponse{
-				Headers:    hmi.headers,
-				Body:       "internal error parsing request",
-				StatusCode: 500,
-			},
-			fmt.Errorf("error: %v", err)
+			Headers:    hmi.headers,
+			Body:       "internal error parsing request",
+			StatusCode: 500,
+		}, fmt.Errorf("request body failed parsing: %w", err)
 	}
 
 	err = validateBody(*parsedBody)
@@ -252,7 +250,7 @@ func handlePut(ctx context.Context, hmi httpMethodInput) (events.APIGatewayProxy
 			Headers:    hmi.headers,
 			Body:       "parameters in request failed validation",
 			StatusCode: 500,
-		}, fmt.Errorf("body contents failed validation: %v", err)
+		}, fmt.Errorf("body contents failed validation: %w", err)
 	}
 
 	cfg, err := config.LoadDefaultConfig(hmi.ctx)
@@ -261,7 +259,7 @@ func handlePut(ctx context.Context, hmi httpMethodInput) (events.APIGatewayProxy
 			Headers:    hmi.headers,
 			Body:       "internal error",
 			StatusCode: 500,
-		}, fmt.Errorf("error loading sdk config: %v", err)
+		}, fmt.Errorf("error loading sdk config: %w", err)
 	}
 
 	dynamoHandler := dDBHandler{
@@ -280,7 +278,7 @@ func handlePut(ctx context.Context, hmi httpMethodInput) (events.APIGatewayProxy
 			Headers:    hmi.headers,
 			Body:       "error checking for duplicate player",
 			StatusCode: 500,
-		}, fmt.Errorf("failed to check for duplicate player in playerHand table: %v", err)
+		}, fmt.Errorf("failed to check for duplicate player in playerHand table: %w", err)
 	}
 	if playerExist { //Check PUT request
 		isDupe, err := dynamoHandler.checkForDuplicate(parsedBody.HandInfo, playerEntry)
@@ -289,7 +287,7 @@ func handlePut(ctx context.Context, hmi httpMethodInput) (events.APIGatewayProxy
 				Headers:    hmi.headers,
 				Body:       "error checking for duplicate player",
 				StatusCode: 500,
-			}, fmt.Errorf("failed to check for duplicate player: %v", err)
+			}, fmt.Errorf("failed to check for duplicate player: %w", err)
 		}
 		if isDupe { //The card configuration needs to be different
 			return events.APIGatewayProxyResponse{
@@ -304,7 +302,7 @@ func handlePut(ctx context.Context, hmi httpMethodInput) (events.APIGatewayProxy
 					Headers:    hmi.headers,
 					Body:       "error updating playerHand",
 					StatusCode: 500,
-				}, fmt.Errorf("failed to update card configuration for playerId %v: %v", parsedBody.HandInfo.PlayerId, err)
+				}, fmt.Errorf("failed to update card configuration for playerId %v: %w", parsedBody.HandInfo.PlayerId, err)
 			} else {
 				log.Printf("updated playerHand for playerId %v", parsedBody.HandInfo.PlayerId)
 				return events.APIGatewayProxyResponse{
@@ -337,7 +335,7 @@ func parseBody(b string) (*body, error) {
 	var body body
 	err := json.Unmarshal([]byte(b), &body)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to unmarshal body:  %w", err)
 	}
 
 	return &body, nil
@@ -364,12 +362,12 @@ func parseParameters(p map[string]string) (playerHandCompositeKey, error) {
 func validateBody(b body) error {
 	_, err := uuid.Parse(b.HandInfo.PlayerId)
 	if err != nil {
-		return fmt.Errorf("playerId is not a valid UUID format: %v", err)
+		return fmt.Errorf("playerId is not a valid UUID format: %w", err)
 	}
 
 	err = validateSubmittedVersion(b.HandInfo.Version, env.PlayerHandVersion)
 	if err != nil {
-		return fmt.Errorf("submitted version did not pass validation: %v", err)
+		return fmt.Errorf("submitted version did not pass validation: %w", err)
 	}
 
 	return nil
@@ -378,7 +376,7 @@ func validateBody(b body) error {
 func validateParameters(pg playerHandCompositeKey) error {
 	err := validatePlayerId(pg.PlayerId)
 	if err != nil {
-		return fmt.Errorf("playerId is not a valid UUID format: %v", err)
+		return fmt.Errorf("playerId is not a valid UUID format: %w", err)
 	}
 	return nil
 }
@@ -386,7 +384,7 @@ func validateParameters(pg playerHandCompositeKey) error {
 func validatePlayerId(pId string) error {
 	_, err := uuid.Parse(pId)
 	if err != nil {
-		return fmt.Errorf("playerId is not a valid UUID format: %v", err)
+		return fmt.Errorf("playerId is not a valid UUID format: %w", err)
 	}
 	return nil
 }
@@ -394,7 +392,7 @@ func validatePlayerId(pId string) error {
 // Checks if submitted version matches current balance version
 func validateSubmittedVersion(sv string, av string) error {
 	if sv != av {
-		return fmt.Errorf("submitted version (%v) in request, does not match actual balance version %v", sv, av)
+		return fmt.Errorf("submitted version %v in request, does not match actual balance version %v", sv, av)
 	}
 	return nil
 }

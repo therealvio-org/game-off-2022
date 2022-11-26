@@ -31,7 +31,7 @@ func (ddbh dDBHandler) addHand(ctx context.Context, h handInfo) error {
 
 	case err := <-err:
 		if err != nil {
-			return fmt.Errorf("addHand execution failed. error: %v", err)
+			return fmt.Errorf("addHand execution failed: %w", err)
 		}
 		return nil
 	}
@@ -49,7 +49,7 @@ func (ddbh dDBHandler) checkForDuplicate(h handInfo, item map[string]types.Attri
 
 	err := attributevalue.UnmarshalMap(item, &dbHand)
 	if err != nil {
-		return false, fmt.Errorf("failed to unmarshal response:  %v", err)
+		return false, fmt.Errorf("failed to unmarshal response:  %w", err)
 	}
 
 	isDupe := cmp.Equal(h, dbHand)
@@ -125,7 +125,7 @@ func (ddbh dDBHandler) doCheckIfPlayerHandExist(ctx context.Context, p playerHan
 		return checkPlayerHandExistsResult{
 			PlayerExists: false,
 			PlayerItem:   nil,
-			Error:        fmt.Errorf("failed to generate dbkey: %v", err),
+			Error:        fmt.Errorf("failed to generate dbkey: %w", err),
 		}
 	}
 
@@ -137,7 +137,7 @@ func (ddbh dDBHandler) doCheckIfPlayerHandExist(ctx context.Context, p playerHan
 		return checkPlayerHandExistsResult{
 			PlayerExists: false,
 			PlayerItem:   nil,
-			Error:        fmt.Errorf("failed to query player: %v", err),
+			Error:        fmt.Errorf("failed to query player: %w", err),
 		}
 	} else {
 		err = attributevalue.UnmarshalMap(response.Item, &result)
@@ -145,7 +145,7 @@ func (ddbh dDBHandler) doCheckIfPlayerHandExist(ctx context.Context, p playerHan
 			return checkPlayerHandExistsResult{
 				PlayerExists: false,
 				PlayerItem:   nil,
-				Error:        fmt.Errorf("failed to unmarshal response:  %v", err),
+				Error:        fmt.Errorf("failed to unmarshal response:  %w", err),
 			}
 		}
 	}
@@ -182,7 +182,7 @@ func (ddbh dDBHandler) doQueryHands(ctx context.Context, version string) queryHa
 	if err != nil {
 		return queryHandsResult{
 			nil,
-			fmt.Errorf("could not build expression to query available hands. error: %v", err),
+			fmt.Errorf("could not build expression to query available hands: %w", err),
 		}
 	} else {
 		response, err = ddbh.DynamoDbClient.Query(ctx, &dynamodb.QueryInput{
@@ -194,14 +194,14 @@ func (ddbh dDBHandler) doQueryHands(ctx context.Context, version string) queryHa
 		if err != nil {
 			return queryHandsResult{
 				nil,
-				fmt.Errorf("could not query for playerHands in v%v. error: %v", version, err),
+				fmt.Errorf("could not query for playerHands in v%v: %w", version, err),
 			}
 		} else {
 			err = attributevalue.UnmarshalListOfMaps(response.Items, &availableHands)
 			if err != nil {
 				return queryHandsResult{
 					availableHands,
-					fmt.Errorf("couldn't unmarshal query response. error: %v", err),
+					fmt.Errorf("couldn't unmarshal query response: %w", err),
 				}
 			}
 		}
@@ -222,7 +222,7 @@ func (ddbh dDBHandler) doUpdatePlayerHand(ctx context.Context, h handInfo) error
 	update := expression.Set(expression.Name("cards"), expression.Value(h.Cards))
 	expr, err := expression.NewBuilder().WithUpdate(update).Build()
 	if err != nil {
-		return fmt.Errorf("could not build expression for updating playerHand (%v) record. error: %v", h.PlayerId, err)
+		return fmt.Errorf("could not build expression for updating playerHand %v record: %v", h.PlayerId, err)
 	}
 
 	response, err := ddbh.DynamoDbClient.UpdateItem(ctx, &dynamodb.UpdateItemInput{
@@ -237,7 +237,7 @@ func (ddbh dDBHandler) doUpdatePlayerHand(ctx context.Context, h handInfo) error
 	} else {
 		err = attributevalue.UnmarshalMap(response.Attributes, &attributeMap)
 		if err != nil {
-			return fmt.Errorf("failed to unmarshal response:  %v", err)
+			return fmt.Errorf("failed to unmarshal response:  %w", err)
 		}
 
 		return nil
@@ -250,11 +250,11 @@ func (ddbh dDBHandler) doUpdatePlayerHand(ctx context.Context, h handInfo) error
 func (h handInfo) getKey() (map[string]types.AttributeValue, error) {
 	version, err := attributevalue.Marshal(h.Version)
 	if err != nil {
-		return nil, fmt.Errorf("unable to marshal attribute 'version' with value %v, error: %v", h.Version, err)
+		return nil, fmt.Errorf("unable to marshal attribute 'version' with value %v: %w", h.Version, err)
 	}
 	playerId, err := attributevalue.Marshal(h.PlayerId)
 	if err != nil {
-		return nil, fmt.Errorf("unable to marshal attribute 'playerId' with value %v, error: %v", h.PlayerId, err)
+		return nil, fmt.Errorf("unable to marshal attribute 'playerId' with value %v: %w", h.PlayerId, err)
 	}
 	return map[string]types.AttributeValue{"version": version, "playerId": playerId}, nil
 }
@@ -291,7 +291,7 @@ func (ddbh dDBHandler) updatePlayerHand(ctx context.Context, h handInfo) error {
 
 	case err := <-err:
 		if err != nil {
-			return fmt.Errorf("updatePlayerHand execution failed. error: %v", err)
+			return fmt.Errorf("updatePlayerHand execution failed: %w", err)
 		}
 		return nil
 	}

@@ -18,13 +18,13 @@ func RetrieveSecrets(ctx context.Context, sc *secretcache.Cache, sn string) (Leg
 
 	result, err := sc.GetSecretString(sn)
 	if err != nil {
-		return LegalBrawlSecret{}, fmt.Errorf("unable to retrieve secret string: %v", err)
+		return LegalBrawlSecret{}, fmt.Errorf("unable to retrieve secret string: %w", err)
 	}
 
 	var secret LegalBrawlSecret
 	err = json.Unmarshal([]byte(result), &secret)
 	if err != nil {
-		return LegalBrawlSecret{}, fmt.Errorf("unable to unmarshal result: %v", err)
+		return LegalBrawlSecret{}, fmt.Errorf("unable to unmarshal result: %w", err)
 	}
 
 	return secret, nil
