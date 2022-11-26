@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=14 format=2]
 
 [ext_resource path="res://Scenes/AudioManager/AudioManager.cs" type="Script" id=1]
 [ext_resource path="res://Assets/SFX/Minimalist13.wav" type="AudioStream" id=2]
@@ -7,6 +7,53 @@
 [ext_resource path="res://Assets/SFX/Flip.mp3" type="AudioStream" id=5]
 [ext_resource path="res://Assets/SFX/Slide.mp3" type="AudioStream" id=6]
 [ext_resource path="res://Assets/SFX/Draw.mp3" type="AudioStream" id=7]
+[ext_resource path="res://Scenes/AudioManager/Music.cs" type="Script" id=8]
+[ext_resource path="res://Assets/Music/Menu.mp3" type="AudioStream" id=9]
+[ext_resource path="res://Assets/Music/Battle_Intro.mp3" type="AudioStream" id=10]
+[ext_resource path="res://Assets/Music/Discovery.mp3" type="AudioStream" id=11]
+[ext_resource path="res://Assets/Music/Battle.mp3" type="AudioStream" id=12]
+
+[sub_resource type="Animation" id=1]
+resource_name = "Fade"
+length = 1.5
+tracks/0/type = "value"
+tracks/0/path = NodePath("MusicMainPlayer:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 1.5 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ Vector2( 0, 2000 ), Vector2( 0, 0 ) ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("MusicFadePlayer:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0, 1.5 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ Vector2( 0, 0 ), Vector2( 0, 2000 ) ]
+}
+tracks/2/type = "method"
+tracks/2/path = NodePath("MusicFadePlayer")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"times": PoolRealArray( 1.5 ),
+"transitions": PoolRealArray( 1 ),
+"values": [ {
+"args": [  ],
+"method": "stop"
+} ]
+}
 
 [node name="AudioManager" type="Node"]
 script = ExtResource( 1 )
@@ -28,3 +75,21 @@ stream = ExtResource( 7 )
 
 [node name="Slide" type="AudioStreamPlayer" parent="."]
 stream = ExtResource( 6 )
+
+[node name="Music" type="Node" parent="."]
+script = ExtResource( 8 )
+Menu = ExtResource( 9 )
+Discovery = ExtResource( 11 )
+BattleIntro = ExtResource( 10 )
+Battle = ExtResource( 12 )
+
+[node name="MusicMainPlayer" type="AudioStreamPlayer2D" parent="Music"]
+stream = ExtResource( 9 )
+max_distance = 1900.0
+
+[node name="MusicFadePlayer" type="AudioStreamPlayer2D" parent="Music"]
+stream = ExtResource( 11 )
+max_distance = 1900.0
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Music"]
+anims/Fade = SubResource( 1 )
