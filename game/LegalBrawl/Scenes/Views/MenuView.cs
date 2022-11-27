@@ -5,11 +5,13 @@ public class MenuView : View
 {
     [Signal] public delegate void Play();
     [Signal] public delegate void Tutorial();
+    [Signal] public delegate void DataDeleted();
     private Button _playButton;
     private Button _leaderboardButton;
     private Button _helpButton;
     private Button _settingsButton;
     private Popup _playerNamePopup;
+    private Popup _settingsPopup;
     private Label _playerName;
     private Label _playerWins;
     private Label _playerLosses;
@@ -28,14 +30,18 @@ public class MenuView : View
         _helpButton.Connect("pressed", this, "OnHelpClicked");
 
         _settingsButton = FindNode("SettingsButton") as Button;
-        _settingsButton.Disabled = true;
+        _settingsButton.Connect("pressed", this, "OnSettingsClicked");
 
         _playerNamePopup = FindNode("PlayerNamePopup") as Popup;
         _playerNamePopup.Connect("Finished", this, "UpdatePlayerName");
 
+        _settingsPopup = FindNode("SettingsPopup") as Popup;
+
         _playerName = FindNode("PlayerName") as Label;
         _playerWins = FindNode("PlayerWins") as Label;
         _playerLosses = FindNode("PlayerLosses") as Label;
+
+        Connect("DataDeleted", this, "OnDataDeleted");
     }
 
     public override void Setup()
@@ -64,12 +70,23 @@ public class MenuView : View
         EmitSignal("Tutorial");
     }
 
+    public void OnSettingsClicked()
+    {
+        _settingsPopup.Popup_();
+    }
+
     public void OnGetPlayerName(bool queueSelection = false)
     {
         _queueSelection = queueSelection;
         _playerNamePopup.Popup_();
     }
 
+    public void OnDataDeleted()
+    {
+        _playerName.Text = "";
+        _playerWins.Text = "";
+        _playerLosses.Text = "";
+    }
 
     public void UpdatePlayerName(string name)
     {
@@ -78,5 +95,4 @@ public class MenuView : View
         if (_queueSelection)
             EmitSignal("Play");
     }
-
 }

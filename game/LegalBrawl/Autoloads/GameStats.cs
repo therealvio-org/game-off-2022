@@ -8,6 +8,7 @@ public class GameStats : Node
     private static GameStats _instance;
 
     public static PlayerStats Player { get => _instance._player; }
+    public static GameSettings Settings { get => _instance._settings; }
 
     public override void _Ready()
     {
@@ -26,8 +27,9 @@ public class GameStats : Node
             ResourceSaver.Save(PlayerStats.LOCATION, player);
         }
 
-        _settings = GD.Load<GameSettings>(GameSettings.LOCATION);
         _player = GD.Load<PlayerStats>(PlayerStats.LOCATION);
+        _settings = GD.Load<GameSettings>(GameSettings.LOCATION);
+        _settings.Init();
     }
 
     public static bool HasPlayerName() => _instance._player.PlayerName != "";

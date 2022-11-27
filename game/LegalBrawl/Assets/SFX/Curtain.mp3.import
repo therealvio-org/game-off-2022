@@ -1,0 +1,15 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+path="res://.import/Curtain.mp3-b1b7a34b684eda6490afb3f77608b729.mp3str"
+
+[deps]
+
+source_file="res://Assets/SFX/Curtain.mp3"
+dest_files=[ "res://.import/Curtain.mp3-b1b7a34b684eda6490afb3f77608b729.mp3str" ]
+
+[params]
+
+loop=false
+loop_offset=0

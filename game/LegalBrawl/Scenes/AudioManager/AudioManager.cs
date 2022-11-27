@@ -3,10 +3,6 @@ using System.Collections.Generic;
 
 public class AudioManager : Node
 {
-    public const float MIN_VOLUME = -60;
-
-    [Signal] public delegate void SetVolume(float volume);
-    [Signal] public delegate void SetVolumeDelta(float delta);
     private static AudioManager _instance;
     private Dictionary<string, AudioStreamPlayer> _players;
     private Music _music;
@@ -16,11 +12,6 @@ public class AudioManager : Node
         _instance = this;
         _players = new Dictionary<string, AudioStreamPlayer>();
         _music = GetNode<Music>("Music");
-
-        Connect("SetVolumeDelta", this, "OnSetVolumeDelta");
-
-        Connect("SetVolume", this, "OnSetVolume");
-        _music.Connect("SetVolume", this, "OnSetVolume");
 
         foreach (Node n in GetChildren())
         {
@@ -41,17 +32,14 @@ public class AudioManager : Node
         _instance._music.SwitchTo(track);
     }
 
-    public void OnSetVolumeDelta(float delta)
+    public static void SetVolumeLevel(string channel, int interval)
     {
-        float volume = Mathf.Lerp(MIN_VOLUME, 0, Mathf.Clamp(delta, 0, 1));
-        EmitSignal("SetVolume", volume);
+        float[] volumeLevels = { -60, -12, -6, -3, 0 };
+        SetChannelVolume(channel, volumeLevels[interval]);
     }
 
-    public void OnSetVolume(float volume)
+    public static void SetChannelVolume(string channel, float volume)
     {
-        foreach (var kvp in _players)
-        {
-            kvp.Value.VolumeDb = volume;
-        }
+        AudioServer.SetBusVolumeDb(AudioServer.GetBusIndex(channel), volume);
     }
 }

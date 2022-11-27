@@ -32,6 +32,7 @@ public class Main : Control
 
     public void GoToMenu()
     {
+        AudioManager.PlayMusic("Menu");
         EmitSignal("PhaseChange", new Menu());
     }
 
@@ -42,16 +43,19 @@ public class Main : Control
 
     public void GoToSelection()
     {
+        AudioManager.PlayMusic("Selection");
         EmitSignal("PhaseChange", new Selection());
     }
 
     public void GoToNetworking()
     {
+        AudioManager.PlayMusic("Battle");
         EmitSignal("PhaseChange", new Networking());
     }
 
     public void GoToBattle()
     {
+        //AudioManager.PlayMusic("BattleIntro");
         EmitSignal("PhaseChange", new Battle());
     }
 

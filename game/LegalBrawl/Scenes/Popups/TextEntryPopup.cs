@@ -34,9 +34,9 @@ public class TextEntryPopup : PopupPanel
             return;
         }
 
-        if (text.Length < 4)
+        if (text.Length < 4 && text.Length <= 18)
         {
-            EmitSignal("InvalidInput", "Must have 4+ alphabet characters");
+            EmitSignal("InvalidInput", "Must be 4-18 alphabet characters");
             return;
         }
 
