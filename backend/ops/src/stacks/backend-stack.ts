@@ -1,13 +1,12 @@
 import * as cdk from "aws-cdk-lib"
 import * as path from "path"
 import { Construct } from "constructs"
-import { aws_apigateway as apigateway, Duration } from "aws-cdk-lib"
+import { Duration, aws_apigateway as apigateway } from "aws-cdk-lib"
 import { aws_dynamodb as dynamodb } from "aws-cdk-lib"
 import { aws_iam as iam } from "aws-cdk-lib"
 import { aws_lambda as lambda } from "aws-cdk-lib"
 import { aws_secretsmanager as secretsmanager } from "aws-cdk-lib"
 import { aws_ssm as ssm } from "aws-cdk-lib"
-import { time } from "console"
 
 export class BackendStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -161,7 +160,7 @@ export class BackendStack extends cdk.Stack {
       },
       requestValidator: playerHandPutValidator,
     })
-    const playerHandOption = playerHand.addMethod("OPTIONS", apiIntegration, {
+    playerHand.addMethod("OPTIONS", apiIntegration, {
       apiKeyRequired: false,
     })
 

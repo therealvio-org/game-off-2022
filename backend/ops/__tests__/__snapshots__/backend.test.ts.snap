@@ -1,0 +1,916 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`legalBrawlBackendStack it synths and snapshots 1`] = `
+{
+  "Outputs": {
+    "legalBrawlApiEndpointB4ABD9BC": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "https://",
+            {
+              "Ref": "legalBrawlApi8028C5C2",
+            },
+            ".execute-api.foo-bar-1.",
+            {
+              "Ref": "AWS::URLSuffix",
+            },
+            "/",
+            {
+              "Ref": "legalBrawlApiDeploymentStageprodCC9B1353",
+            },
+            "/",
+          ],
+        ],
+      },
+    },
+  },
+  "Parameters": {
+    "BootstrapVersion": {
+      "Default": "/cdk-bootstrap/hnb659fds/version",
+      "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]",
+      "Type": "AWS::SSM::Parameter::Value<String>",
+    },
+    "SsmParameterValuelegalBrawlsecretarnsuffixC96584B6F00A464EAD1953AFF4B05118Parameter": {
+      "Default": "/legalBrawl/secret/arn/suffix",
+      "Type": "AWS::SSM::Parameter::Value<String>",
+    },
+  },
+  "Resources": {
+    "legalBrawlApi8028C5C2": {
+      "Properties": {
+        "Name": "legalBrawlApi",
+      },
+      "Type": "AWS::ApiGateway::RestApi",
+    },
+    "legalBrawlApiAccountACD462D5": {
+      "DeletionPolicy": "Retain",
+      "DependsOn": [
+        "legalBrawlApi8028C5C2",
+      ],
+      "Properties": {
+        "CloudWatchRoleArn": {
+          "Fn::GetAtt": [
+            "legalBrawlApiCloudWatchRole2B383439",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "AWS::ApiGateway::Account",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "legalBrawlApiApiKeyC815487C": {
+      "Properties": {
+        "Enabled": true,
+        "Name": "ApiKey",
+        "StageKeys": [
+          {
+            "RestApiId": {
+              "Ref": "legalBrawlApi8028C5C2",
+            },
+            "StageName": {
+              "Ref": "legalBrawlApiDeploymentStageprodCC9B1353",
+            },
+          },
+        ],
+      },
+      "Type": "AWS::ApiGateway::ApiKey",
+    },
+    "legalBrawlApiCloudWatchRole2B383439": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "apigateway.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "legalBrawlApiDeployment6A3D973F28e4e98894dafd5acb8c9d893028d7be": {
+      "DependsOn": [
+        "legalBrawlApiv1playerHandGET594571B0",
+        "legalBrawlApiv1playerHandOPTIONSF20D875F",
+        "legalBrawlApiv1playerHandPOSTD022D9A2",
+        "legalBrawlApiv1playerHandPUT832919B8",
+        "legalBrawlApiv1playerHand0087B2CC",
+        "legalBrawlApiv1636206F9",
+        "legalBrawlApiplayerHandD4078A52",
+        "playerHandGetValidatorBEB5920C",
+        "playerHandPostValidator45B88011",
+        "playerHandPutValidator35C29BBD",
+      ],
+      "Properties": {
+        "Description": "Automatically created by the RestApi construct",
+        "RestApiId": {
+          "Ref": "legalBrawlApi8028C5C2",
+        },
+      },
+      "Type": "AWS::ApiGateway::Deployment",
+    },
+    "legalBrawlApiDeploymentStageprodCC9B1353": {
+      "DependsOn": [
+        "legalBrawlApiAccountACD462D5",
+      ],
+      "Properties": {
+        "DeploymentId": {
+          "Ref": "legalBrawlApiDeployment6A3D973F28e4e98894dafd5acb8c9d893028d7be",
+        },
+        "RestApiId": {
+          "Ref": "legalBrawlApi8028C5C2",
+        },
+        "StageName": "prod",
+      },
+      "Type": "AWS::ApiGateway::Stage",
+    },
+    "legalBrawlApiHandler400461F9": {
+      "DependsOn": [
+        "legalBrawlApiHandlerServiceRoleDefaultPolicy2E3DB7E6",
+        "legalBrawlApiHandlerServiceRole701F3610",
+      ],
+      "Properties": {
+        "Architectures": [
+          "arm64",
+        ],
+        "Code": {
+          "S3Bucket": "cdk-hnb659fds-assets-12345678901234-foo-bar-1",
+          "S3Key": "dbd7959e3abb97721dfe7f2ae14a4fc2849228b919d3cfdfbfc529026a06d193.zip",
+        },
+        "Environment": {
+          "Variables": {
+            "LEGAL_BRAWL_SECRET_NAME": "legalBrawl/prod/api/v1/",
+            "PLAYER_HAND_TABLE_NAME": {
+              "Ref": "playerHandsTable470492D8",
+            },
+            "PLAYER_HAND_VERSION": "1.0",
+          },
+        },
+        "Handler": "bootstrap",
+        "Role": {
+          "Fn::GetAtt": [
+            "legalBrawlApiHandlerServiceRole701F3610",
+            "Arn",
+          ],
+        },
+        "Runtime": "provided.al2",
+        "Timeout": 20,
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "legalBrawlApiHandlerServiceRole701F3610": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "legalBrawlApiHandlerServiceRoleDefaultPolicy2E3DB7E6": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "secretsmanager:GetSecretValue",
+                "secretsmanager:DescribeSecret",
+                "dynamodb:GetItem",
+                "dynamodb:PutItem",
+                "dynamodb:Query",
+                "dynamodb:UpdateItem",
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":secretsmanager:foo-bar-1:12345678901234:secret:legalBrawl/prod/api/v1/-",
+                      {
+                        "Ref": "SsmParameterValuelegalBrawlsecretarnsuffixC96584B6F00A464EAD1953AFF4B05118Parameter",
+                      },
+                    ],
+                  ],
+                },
+                {
+                  "Fn::GetAtt": [
+                    "playerHandsTable470492D8",
+                    "Arn",
+                  ],
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "legalBrawlApiHandlerServiceRoleDefaultPolicy2E3DB7E6",
+        "Roles": [
+          {
+            "Ref": "legalBrawlApiHandlerServiceRole701F3610",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "legalBrawlApilegalBrawlUsagePlanCB7A3015": {
+      "Properties": {
+        "ApiStages": [
+          {
+            "ApiId": {
+              "Ref": "legalBrawlApi8028C5C2",
+            },
+            "Stage": {
+              "Ref": "legalBrawlApiDeploymentStageprodCC9B1353",
+            },
+            "Throttle": {
+              "/v1/playerHand/GET": {
+                "BurstLimit": 10,
+                "RateLimit": 50,
+              },
+              "/v1/playerHand/POST": {
+                "BurstLimit": 10,
+                "RateLimit": 50,
+              },
+              "/v1/playerHand/PUT": {
+                "BurstLimit": 10,
+                "RateLimit": 50,
+              },
+            },
+          },
+        ],
+        "Throttle": {
+          "BurstLimit": 10,
+          "RateLimit": 50,
+        },
+      },
+      "Type": "AWS::ApiGateway::UsagePlan",
+    },
+    "legalBrawlApilegalBrawlUsagePlanUsagePlanKeyResourcelegalBrawlBackendStacklegalBrawlApiApiKey02A5DEE62E1C7E0D": {
+      "Properties": {
+        "KeyId": {
+          "Ref": "legalBrawlApiApiKeyC815487C",
+        },
+        "KeyType": "API_KEY",
+        "UsagePlanId": {
+          "Ref": "legalBrawlApilegalBrawlUsagePlanCB7A3015",
+        },
+      },
+      "Type": "AWS::ApiGateway::UsagePlanKey",
+    },
+    "legalBrawlApiplayerHandD4078A52": {
+      "Properties": {
+        "ContentType": "application/json",
+        "Name": "playerHandv1",
+        "RestApiId": {
+          "Ref": "legalBrawlApi8028C5C2",
+        },
+        "Schema": {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "properties": {
+            "handInfo": {
+              "properties": {
+                "cards": {
+                  "items": {
+                    "type": "integer",
+                  },
+                  "type": "array",
+                },
+                "playerId": {
+                  "type": "string",
+                },
+                "playerName": {
+                  "type": "string",
+                },
+                "version": {
+                  "type": "string",
+                },
+              },
+              "type": "object",
+            },
+          },
+          "required": [
+            "handInfo",
+          ],
+          "title": "PlayerHand",
+          "type": "object",
+        },
+      },
+      "Type": "AWS::ApiGateway::Model",
+    },
+    "legalBrawlApiv1636206F9": {
+      "Properties": {
+        "ParentId": {
+          "Fn::GetAtt": [
+            "legalBrawlApi8028C5C2",
+            "RootResourceId",
+          ],
+        },
+        "PathPart": "v1",
+        "RestApiId": {
+          "Ref": "legalBrawlApi8028C5C2",
+        },
+      },
+      "Type": "AWS::ApiGateway::Resource",
+    },
+    "legalBrawlApiv1playerHand0087B2CC": {
+      "Properties": {
+        "ParentId": {
+          "Ref": "legalBrawlApiv1636206F9",
+        },
+        "PathPart": "playerHand",
+        "RestApiId": {
+          "Ref": "legalBrawlApi8028C5C2",
+        },
+      },
+      "Type": "AWS::ApiGateway::Resource",
+    },
+    "legalBrawlApiv1playerHandGET594571B0": {
+      "Properties": {
+        "ApiKeyRequired": true,
+        "AuthorizationType": "NONE",
+        "HttpMethod": "GET",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":apigateway:foo-bar-1:lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "legalBrawlApiHandler400461F9",
+                    "Arn",
+                  ],
+                },
+                "/invocations",
+              ],
+            ],
+          },
+        },
+        "RequestParameters": {
+          "method.request.querystring.playerId": true,
+        },
+        "RequestValidatorId": {
+          "Ref": "playerHandGetValidatorBEB5920C",
+        },
+        "ResourceId": {
+          "Ref": "legalBrawlApiv1playerHand0087B2CC",
+        },
+        "RestApiId": {
+          "Ref": "legalBrawlApi8028C5C2",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "legalBrawlApiv1playerHandGETApiPermissionTestlegalBrawlBackendStacklegalBrawlApiC6B22CF8GETv1playerHand1F510B70": {
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "legalBrawlApiHandler400461F9",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition",
+              },
+              ":execute-api:foo-bar-1:12345678901234:",
+              {
+                "Ref": "legalBrawlApi8028C5C2",
+              },
+              "/test-invoke-stage/GET/v1/playerHand",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "legalBrawlApiv1playerHandGETApiPermissionlegalBrawlBackendStacklegalBrawlApiC6B22CF8GETv1playerHand510660A8": {
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "legalBrawlApiHandler400461F9",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition",
+              },
+              ":execute-api:foo-bar-1:12345678901234:",
+              {
+                "Ref": "legalBrawlApi8028C5C2",
+              },
+              "/",
+              {
+                "Ref": "legalBrawlApiDeploymentStageprodCC9B1353",
+              },
+              "/GET/v1/playerHand",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "legalBrawlApiv1playerHandOPTIONSApiPermissionTestlegalBrawlBackendStacklegalBrawlApiC6B22CF8OPTIONSv1playerHand05ABCCCC": {
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "legalBrawlApiHandler400461F9",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition",
+              },
+              ":execute-api:foo-bar-1:12345678901234:",
+              {
+                "Ref": "legalBrawlApi8028C5C2",
+              },
+              "/test-invoke-stage/OPTIONS/v1/playerHand",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "legalBrawlApiv1playerHandOPTIONSApiPermissionlegalBrawlBackendStacklegalBrawlApiC6B22CF8OPTIONSv1playerHandF49EC160": {
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "legalBrawlApiHandler400461F9",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition",
+              },
+              ":execute-api:foo-bar-1:12345678901234:",
+              {
+                "Ref": "legalBrawlApi8028C5C2",
+              },
+              "/",
+              {
+                "Ref": "legalBrawlApiDeploymentStageprodCC9B1353",
+              },
+              "/OPTIONS/v1/playerHand",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "legalBrawlApiv1playerHandOPTIONSF20D875F": {
+      "Properties": {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "OPTIONS",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":apigateway:foo-bar-1:lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "legalBrawlApiHandler400461F9",
+                    "Arn",
+                  ],
+                },
+                "/invocations",
+              ],
+            ],
+          },
+        },
+        "ResourceId": {
+          "Ref": "legalBrawlApiv1playerHand0087B2CC",
+        },
+        "RestApiId": {
+          "Ref": "legalBrawlApi8028C5C2",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "legalBrawlApiv1playerHandPOSTApiPermissionTestlegalBrawlBackendStacklegalBrawlApiC6B22CF8POSTv1playerHandEF90BB1E": {
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "legalBrawlApiHandler400461F9",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition",
+              },
+              ":execute-api:foo-bar-1:12345678901234:",
+              {
+                "Ref": "legalBrawlApi8028C5C2",
+              },
+              "/test-invoke-stage/POST/v1/playerHand",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "legalBrawlApiv1playerHandPOSTApiPermissionlegalBrawlBackendStacklegalBrawlApiC6B22CF8POSTv1playerHandA1B58F4C": {
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "legalBrawlApiHandler400461F9",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition",
+              },
+              ":execute-api:foo-bar-1:12345678901234:",
+              {
+                "Ref": "legalBrawlApi8028C5C2",
+              },
+              "/",
+              {
+                "Ref": "legalBrawlApiDeploymentStageprodCC9B1353",
+              },
+              "/POST/v1/playerHand",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "legalBrawlApiv1playerHandPOSTD022D9A2": {
+      "Properties": {
+        "ApiKeyRequired": true,
+        "AuthorizationType": "NONE",
+        "HttpMethod": "POST",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":apigateway:foo-bar-1:lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "legalBrawlApiHandler400461F9",
+                    "Arn",
+                  ],
+                },
+                "/invocations",
+              ],
+            ],
+          },
+        },
+        "RequestModels": {
+          "application/json": {
+            "Ref": "legalBrawlApiplayerHandD4078A52",
+          },
+        },
+        "RequestValidatorId": {
+          "Ref": "playerHandPostValidator45B88011",
+        },
+        "ResourceId": {
+          "Ref": "legalBrawlApiv1playerHand0087B2CC",
+        },
+        "RestApiId": {
+          "Ref": "legalBrawlApi8028C5C2",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "legalBrawlApiv1playerHandPUT832919B8": {
+      "Properties": {
+        "ApiKeyRequired": true,
+        "AuthorizationType": "NONE",
+        "HttpMethod": "PUT",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":apigateway:foo-bar-1:lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "legalBrawlApiHandler400461F9",
+                    "Arn",
+                  ],
+                },
+                "/invocations",
+              ],
+            ],
+          },
+        },
+        "RequestModels": {
+          "application/json": {
+            "Ref": "legalBrawlApiplayerHandD4078A52",
+          },
+        },
+        "RequestValidatorId": {
+          "Ref": "playerHandPutValidator35C29BBD",
+        },
+        "ResourceId": {
+          "Ref": "legalBrawlApiv1playerHand0087B2CC",
+        },
+        "RestApiId": {
+          "Ref": "legalBrawlApi8028C5C2",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "legalBrawlApiv1playerHandPUTApiPermissionTestlegalBrawlBackendStacklegalBrawlApiC6B22CF8PUTv1playerHand03F1813B": {
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "legalBrawlApiHandler400461F9",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition",
+              },
+              ":execute-api:foo-bar-1:12345678901234:",
+              {
+                "Ref": "legalBrawlApi8028C5C2",
+              },
+              "/test-invoke-stage/PUT/v1/playerHand",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "legalBrawlApiv1playerHandPUTApiPermissionlegalBrawlBackendStacklegalBrawlApiC6B22CF8PUTv1playerHand37287369": {
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "legalBrawlApiHandler400461F9",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition",
+              },
+              ":execute-api:foo-bar-1:12345678901234:",
+              {
+                "Ref": "legalBrawlApi8028C5C2",
+              },
+              "/",
+              {
+                "Ref": "legalBrawlApiDeploymentStageprodCC9B1353",
+              },
+              "/PUT/v1/playerHand",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "paramLegalBrawlApiUrl44811987": {
+      "Properties": {
+        "Name": "/legalBrawl/api/url",
+        "Type": "String",
+        "Value": {
+          "Fn::Join": [
+            "",
+            [
+              "https://",
+              {
+                "Ref": "legalBrawlApi8028C5C2",
+              },
+              ".execute-api.foo-bar-1.",
+              {
+                "Ref": "AWS::URLSuffix",
+              },
+              "/",
+              {
+                "Ref": "legalBrawlApiDeploymentStageprodCC9B1353",
+              },
+              "/",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::SSM::Parameter",
+    },
+    "playerHandGetValidatorBEB5920C": {
+      "Properties": {
+        "Name": "playerHandGetValidator",
+        "RestApiId": {
+          "Ref": "legalBrawlApi8028C5C2",
+        },
+        "ValidateRequestParameters": true,
+      },
+      "Type": "AWS::ApiGateway::RequestValidator",
+    },
+    "playerHandPostValidator45B88011": {
+      "Properties": {
+        "Name": "playerHandPostValidator",
+        "RestApiId": {
+          "Ref": "legalBrawlApi8028C5C2",
+        },
+        "ValidateRequestBody": true,
+        "ValidateRequestParameters": false,
+      },
+      "Type": "AWS::ApiGateway::RequestValidator",
+    },
+    "playerHandPutValidator35C29BBD": {
+      "Properties": {
+        "Name": "playerHandPutValidator",
+        "RestApiId": {
+          "Ref": "legalBrawlApi8028C5C2",
+        },
+        "ValidateRequestBody": true,
+        "ValidateRequestParameters": false,
+      },
+      "Type": "AWS::ApiGateway::RequestValidator",
+    },
+    "playerHandsTable470492D8": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "version",
+            "AttributeType": "S",
+          },
+          {
+            "AttributeName": "playerId",
+            "AttributeType": "S",
+          },
+        ],
+        "KeySchema": [
+          {
+            "AttributeName": "version",
+            "KeyType": "HASH",
+          },
+          {
+            "AttributeName": "playerId",
+            "KeyType": "RANGE",
+          },
+        ],
+        "PointInTimeRecoverySpecification": {
+          "PointInTimeRecoveryEnabled": false,
+        },
+        "ProvisionedThroughput": {
+          "ReadCapacityUnits": 5,
+          "WriteCapacityUnits": 5,
+        },
+        "TableName": "playerHands",
+      },
+      "Type": "AWS::DynamoDB::Table",
+      "UpdateReplacePolicy": "Delete",
+    },
+  },
+  "Rules": {
+    "CheckBootstrapVersion": {
+      "Assertions": [
+        {
+          "Assert": {
+            "Fn::Not": [
+              {
+                "Fn::Contains": [
+                  [
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5",
+                  ],
+                  {
+                    "Ref": "BootstrapVersion",
+                  },
+                ],
+              },
+            ],
+          },
+          "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI.",
+        },
+      ],
+    },
+  },
+}
+`;
