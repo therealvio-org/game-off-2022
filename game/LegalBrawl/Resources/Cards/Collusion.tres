@@ -1,14 +1,16 @@
 [gd_resource type="Resource" load_steps=3 format=2]
 
 [ext_resource path="res://Resources/BaseCard.cs" type="Script" id=1]
-[ext_resource path="res://Assets/CardArt/messy.png" type="Texture" id=2]
+[ext_resource path="res://Assets/CardArt/collusion.png" type="Texture" id=2]
 
 [resource]
 script = ExtResource( 1 )
-Id = 5
-Name = "Court-Appointed Lawyer"
-Cost = 16
+Id = 13
+Name = "Collusion"
+Cost = -4
 Art = ExtResource( 2 )
 Effects = {
-1: -10
+3: 1,
+5: -4,
+10: 1
 }

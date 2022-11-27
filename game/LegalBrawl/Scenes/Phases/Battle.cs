@@ -32,6 +32,7 @@ public class Battle : Phase
     public void OnNextTurn()
     {
         Turn currentTurn = _turnController.Current();
+
         _state = currentTurn.Perform(_state);
 
         EmitSignal("PlayTurn", currentTurn);

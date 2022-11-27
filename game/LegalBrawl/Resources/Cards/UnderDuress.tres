@@ -1,14 +1,16 @@
 [gd_resource type="Resource" load_steps=3 format=2]
 
 [ext_resource path="res://Resources/BaseCard.cs" type="Script" id=1]
-[ext_resource path="res://Assets/CardArt/spy.png" type="Texture" id=2]
+[ext_resource path="res://Assets/CardArt/duress.png" type="Texture" id=2]
 
 [resource]
 script = ExtResource( 1 )
-Id = 38
-Name = "Private Investigator"
-Cost = 20
+Id = 44
+Name = "Under Duress"
+Cost = 19
 Art = ExtResource( 2 )
 Effects = {
-3: 3
+0: 14,
+6: 2,
+8: 2
 }

@@ -7,9 +7,9 @@
 script = ExtResource( 1 )
 Id = 4
 Name = "Freudian Slip"
-Cost = -10
+Cost = -9
 Art = ExtResource( 2 )
 Effects = {
-0: -4,
-5: 10
+0: -5,
+5: 9
 }
