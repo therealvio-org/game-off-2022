@@ -27,4 +27,13 @@ public class PlayerStats : Resource
         Losses++;
         ResourceSaver.Save(LOCATION, this);
     }
+
+    public void Reset()
+    {
+        PlayerId = Guid.NewGuid().ToString();
+        PlayerName = "";
+        Wins = 0;
+        Losses = 0;
+        ResourceSaver.Save(LOCATION, this);
+    }
 }

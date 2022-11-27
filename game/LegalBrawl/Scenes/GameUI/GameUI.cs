@@ -26,6 +26,7 @@ public class GameUI : Node
     {
         _queuedPhase = phase;
         _animationPlayer.Play(transitionName);
+        AudioManager.Play("Curtain");
     }
 
     public void SwapPhases()
