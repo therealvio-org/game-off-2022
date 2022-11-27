@@ -7,8 +7,8 @@
 script = ExtResource( 1 )
 Id = 6
 Name = "Trick Question"
-Cost = 22
+Cost = 13
 Art = ExtResource( 2 )
 Effects = {
-1: -13
+1: -10
 }

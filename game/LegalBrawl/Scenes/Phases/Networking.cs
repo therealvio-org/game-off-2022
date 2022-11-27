@@ -24,6 +24,12 @@ public class Networking : Phase
 
     public void OnViewActivate()
     {
+        if (Debugger.IsDebugMode)
+        {
+            HandCache.Store(Debugger.GetDebugHand(), PlayerTypes.Opponent);
+            EmitSignal("BattleReady");
+            return;
+        }
         EmitSignal("SendPlayerData");
     }
 

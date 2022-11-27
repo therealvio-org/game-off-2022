@@ -26,10 +26,11 @@ public class TurnController
         PlayerTypes second = first == PlayerTypes.Player ? PlayerTypes.Opponent : PlayerTypes.Player;
         _turns = new List<Turn>();
 
+        int count = 0;
         for (int i = 0; i < Math.Min(_hands[0].Size(), _hands[1].Size()); i++)
         {
-            _turns.Add(new Turn(_hands[(int)first].GetIds()[i], first, i));
-            _turns.Add(new Turn(_hands[(int)second].GetIds()[i], second, i));
+            _turns.Add(new Turn(this, _hands[(int)first].GetIds()[i], first, i, count++));
+            _turns.Add(new Turn(this, _hands[(int)second].GetIds()[i], second, i, count++));
         }
     }
 
@@ -47,5 +48,7 @@ public class TurnController
     public void Advance() => _counter++;
 
     public bool IsLast() => _counter == _turns.Count - 1;
+
+    public Turn GetTurn(int index) => _turns[index];
 
 }

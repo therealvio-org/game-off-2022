@@ -42,14 +42,22 @@ public struct PlayerState
     {
         Credibility = Math.Max(Credibility + value, 0);
     }
+
     public void AddEvidence(int value)
     {
         Evidence = new List<int>(Evidence);
         Evidence.Add(value);
     }
+
     public void AddWitness(int value)
     {
         Witnesses = new List<int>(Witnesses);
         Witnesses.Add(value);
+    }
+
+    public void RemoveWitness()
+    {
+        if (Witnesses.Count > 0)
+            Witnesses.RemoveAt(0);
     }
 }
