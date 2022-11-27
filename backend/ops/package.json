@@ -9,7 +9,7 @@
     "watch": "tsc -w",
     "mock-dist-package": "mkdir -p ../src/dist 2> /dev/null && touch ../src/dist/bootstrap",
     "package": "pushd ../src/ && GOARCH=arm64 GOOS=linux CGO_ENABLED=0 go build -v -o ./dist/bootstrap . && popd",
-    "test": "jest",
+    "test": "yarn mock-dist-package && jest",
     "cdk": "cdk",
     "clean": "yarn build --build --clean",
     "eslint": "eslint . --ext .ts --ignore-pattern '*.d.ts'",
