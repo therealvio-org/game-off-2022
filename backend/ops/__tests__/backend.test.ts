@@ -1,6 +1,6 @@
 import * as cdk from "aws-cdk-lib"
-import { Template } from "aws-cdk-lib/assertions"
 import { BackendStack } from "../src/stacks/backend-stack"
+import { Template } from "aws-cdk-lib/assertions"
 
 describe("legalBrawlBackendStack", () => {
   const app = new cdk.App()
