@@ -16,7 +16,6 @@ script = ExtResource( 3 )
 layer = 50
 
 [node name="Debugger" parent="CanvasLayer" instance=ExtResource( 1 )]
-EnableDebug = true
-DebugHand = PoolIntArray( 1, 20, 3, 4, 3, 6, 2 )
+visible = false
 
 [node name="AudioManager" parent="." instance=ExtResource( 2 )]
