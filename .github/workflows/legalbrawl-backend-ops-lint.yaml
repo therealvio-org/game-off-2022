@@ -1,0 +1,32 @@
+name: Legal Brawl Backend Infra Linting & Testing
+on:
+  push:
+    paths:
+      - "backend/ops/**"
+      - ".github/workflows/legalbrawl-backend-ops-lint.yaml"
+
+jobs:
+  cdk-test:
+    strategy:
+      fail-fast: true
+      matrix:
+        task: [prettier, eslint, tsc, test]
+    defaults:
+      run:
+        working-directory: ./backend/ops/
+    name: legalbrawl-cdk-stack-test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - uses: bahmutov/npm-install@v1
+        with:
+          working-directory: "backend/ops/"
+          useLockFile: false
+
+      - run: |
+          yarn run ${{ matrix.task }}
