@@ -1,0 +1,126 @@
+[gd_scene load_steps=9 format=2]
+
+[ext_resource path="res://Assets/Backgrounds/court-background.jpg" type="Texture" id=1]
+[ext_resource path="res://Themes/MainTheme.tres" type="Theme" id=2]
+[ext_resource path="res://Scenes/Views/MenuView.cs" type="Script" id=3]
+[ext_resource path="res://Assets/Fonts/MediumFont.tres" type="DynamicFont" id=4]
+[ext_resource path="res://Assets/Fonts/SmallFont.tres" type="DynamicFont" id=5]
+[ext_resource path="res://Themes/RedButton.tres" type="StyleBox" id=6]
+[ext_resource path="res://Scenes/Popups/PlayerNamePopup.tscn" type="PackedScene" id=7]
+[ext_resource path="res://Scenes/Popups/SettingsPopup.tscn" type="PackedScene" id=8]
+
+[node name="MenuView" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme = ExtResource( 2 )
+script = ExtResource( 3 )
+
+[node name="Background" type="TextureRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+texture = ExtResource( 1 )
+expand = true
+stretch_mode = 7
+
+[node name="Heading" type="Label" parent="."]
+anchor_left = 0.5
+anchor_top = 0.3
+anchor_right = 0.5
+anchor_bottom = 0.3
+margin_left = -640.0
+margin_top = -78.5
+margin_right = 640.0
+margin_bottom = 78.5
+theme = ExtResource( 2 )
+text = "Combat
+By Trial"
+align = 1
+valign = 1
+
+[node name="Buttons" type="VBoxContainer" parent="."]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+
+[node name="PlayButton" type="Button" parent="Buttons"]
+margin_right = 108.0
+margin_bottom = 59.0
+focus_mode = 0
+custom_colors/font_color = Color( 1, 1, 1, 1 )
+custom_fonts/font = ExtResource( 4 )
+custom_styles/hover = ExtResource( 6 )
+custom_styles/normal = ExtResource( 6 )
+enabled_focus_mode = 0
+text = "Play"
+
+[node name="LeaderboardButton" type="Button" parent="Buttons"]
+margin_top = 63.0
+margin_right = 108.0
+margin_bottom = 99.0
+custom_fonts/font = ExtResource( 5 )
+disabled = true
+text = "Leaderboard"
+
+[node name="HelpButton" type="Button" parent="Buttons"]
+margin_top = 103.0
+margin_right = 108.0
+margin_bottom = 139.0
+custom_fonts/font = ExtResource( 5 )
+text = "How to play"
+
+[node name="SettingsButton" type="Button" parent="Buttons"]
+margin_top = 143.0
+margin_right = 108.0
+margin_bottom = 179.0
+custom_fonts/font = ExtResource( 5 )
+text = "Settings"
+
+[node name="PlayerNamePopup" parent="." instance=ExtResource( 7 )]
+grow_vertical = 1
+
+[node name="PlayerStats" type="VBoxContainer" parent="."]
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_right = -20.0
+margin_bottom = -20.0
+grow_horizontal = 0
+grow_vertical = 0
+mouse_filter = 2
+
+[node name="PlayerName" type="Label" parent="PlayerStats"]
+margin_right = 249.0
+margin_bottom = 39.0
+custom_fonts/font = ExtResource( 4 )
+text = "Atticus Cromwell"
+align = 2
+
+[node name="PlayerWins" type="Label" parent="PlayerStats"]
+margin_top = 43.0
+margin_right = 249.0
+margin_bottom = 82.0
+custom_fonts/font = ExtResource( 4 )
+text = "0 - Wins"
+align = 2
+
+[node name="PlayerLosses" type="Label" parent="PlayerStats"]
+margin_top = 86.0
+margin_right = 249.0
+margin_bottom = 125.0
+custom_fonts/font = ExtResource( 4 )
+text = "0 - Losses"
+align = 2
+
+[node name="SettingsPopup" parent="." instance=ExtResource( 8 )]
+anchor_left = 0.552
+anchor_top = 0.564
+anchor_right = 0.552
+anchor_bottom = 0.564
+margin_left = -8.0
+margin_top = -8.0
+margin_right = 8.0
+margin_bottom = 8.0

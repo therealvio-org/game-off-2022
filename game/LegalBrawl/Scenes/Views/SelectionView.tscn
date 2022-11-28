@@ -1,0 +1,191 @@
+[gd_scene load_steps=11 format=2]
+
+[ext_resource path="res://Scenes/CardPool/CardPool.tscn" type="PackedScene" id=1]
+[ext_resource path="res://Scenes/CardHand/CardHand.tscn" type="PackedScene" id=2]
+[ext_resource path="res://Scenes/Views/SelectionView.cs" type="Script" id=3]
+[ext_resource path="res://Themes/MainTheme.tres" type="Theme" id=4]
+[ext_resource path="res://Assets/Fonts/SmallFont.tres" type="DynamicFont" id=5]
+[ext_resource path="res://Assets/Fonts/MediumFont.tres" type="DynamicFont" id=6]
+[ext_resource path="res://Assets/UI/selection.png" type="Texture" id=7]
+[ext_resource path="res://Assets/Backgrounds/selection-background.jpg" type="Texture" id=8]
+[ext_resource path="res://Assets/UI/grey_sliderHorizontal.png" type="Texture" id=9]
+[ext_resource path="res://Assets/UI/grey_arrowLeftGrey.png" type="Texture" id=10]
+
+[node name="SelectionView" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+theme = ExtResource( 4 )
+script = ExtResource( 3 )
+
+[node name="Background" type="TextureRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource( 8 )
+expand = true
+stretch_mode = 7
+
+[node name="BottomPanel" type="PanelContainer" parent="."]
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -4.0
+margin_right = 4.0
+margin_bottom = 4.0
+grow_vertical = 0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="BottomPanel"]
+margin_left = 8.0
+margin_top = 8.0
+margin_right = 1280.0
+margin_bottom = 28.0
+alignment = 1
+
+[node name="FirstLabel" type="Label" parent="BottomPanel/HBoxContainer"]
+self_modulate = Color( 0.486275, 0.486275, 0.486275, 1 )
+margin_right = 421.0
+margin_bottom = 20.0
+size_flags_horizontal = 3
+size_flags_vertical = 1
+custom_fonts/font = ExtResource( 5 )
+text = "First"
+align = 2
+
+[node name="Divider" type="TextureRect" parent="BottomPanel/HBoxContainer"]
+margin_left = 425.0
+margin_right = 846.0
+margin_bottom = 20.0
+size_flags_horizontal = 3
+texture = ExtResource( 9 )
+stretch_mode = 4
+
+[node name="LastLabel" type="Label" parent="BottomPanel/HBoxContainer"]
+self_modulate = Color( 0.486275, 0.486275, 0.486275, 1 )
+margin_left = 850.0
+margin_right = 1272.0
+margin_bottom = 20.0
+size_flags_horizontal = 3
+size_flags_vertical = 1
+custom_fonts/font = ExtResource( 5 )
+text = "Last"
+
+[node name="CardPool" parent="." instance=ExtResource( 1 )]
+mouse_filter = 2
+
+[node name="CardHand" parent="." instance=ExtResource( 2 )]
+
+[node name="Help" type="CanvasLayer" parent="."]
+layer = 27
+
+[node name="HelpPanel" type="Panel" parent="Help"]
+visible = false
+self_modulate = Color( 1, 1, 1, 0.454902 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="NinePatchRect" type="NinePatchRect" parent="Help/HelpPanel"]
+margin_left = 140.0
+margin_top = 6.0
+margin_right = 1138.0
+margin_bottom = 558.0
+texture = ExtResource( 7 )
+patch_margin_left = 64
+patch_margin_top = 64
+patch_margin_right = 64
+patch_margin_bottom = 64
+
+[node name="Label" type="Label" parent="Help/HelpPanel"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -630.0
+margin_top = -292.0
+margin_right = -27.0
+margin_bottom = -211.0
+rect_rotation = -13.3
+custom_fonts/font = ExtResource( 6 )
+text = "Mouse over regions
+to learn what they do"
+
+[node name="ControlPanel" type="PanelContainer" parent="."]
+anchor_left = 0.925
+anchor_top = 0.5
+anchor_right = 0.925
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Controls" type="VBoxContainer" parent="ControlPanel"]
+margin_left = 8.0
+margin_top = 8.0
+margin_right = 95.0
+margin_bottom = 170.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="RerollButton" type="Button" parent="ControlPanel/Controls"]
+margin_right = 87.0
+margin_bottom = 36.0
+focus_mode = 0
+theme = ExtResource( 4 )
+custom_fonts/font = ExtResource( 5 )
+text = "Discovery"
+
+[node name="BattleButton" type="Button" parent="ControlPanel/Controls"]
+margin_top = 40.0
+margin_right = 87.0
+margin_bottom = 76.0
+focus_mode = 0
+theme = ExtResource( 4 )
+custom_fonts/font = ExtResource( 5 )
+text = "Fight!"
+
+[node name="FundsLabel" type="Label" parent="ControlPanel/Controls"]
+margin_top = 80.0
+margin_right = 87.0
+margin_bottom = 119.0
+theme = ExtResource( 4 )
+custom_fonts/font = ExtResource( 6 )
+text = "$100k"
+align = 1
+
+[node name="CountLabel" type="Label" parent="ControlPanel/Controls"]
+margin_top = 123.0
+margin_right = 87.0
+margin_bottom = 162.0
+theme = ExtResource( 4 )
+custom_fonts/font = ExtResource( 6 )
+text = "0/7"
+align = 1
+
+[node name="MenuPanel" type="PanelContainer" parent="."]
+visible = false
+anchor_left = 0.075
+anchor_top = 0.5
+anchor_right = 0.075
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Controls" type="VBoxContainer" parent="MenuPanel"]
+visible = false
+margin_left = 8.0
+margin_top = 8.0
+margin_right = 81.0
+margin_bottom = 44.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="MenuButton" type="Button" parent="MenuPanel/Controls"]
+visible = false
+margin_right = 73.0
+margin_bottom = 36.0
+theme = ExtResource( 4 )
+custom_fonts/font = ExtResource( 5 )
+text = " Menu"
+icon = ExtResource( 10 )
