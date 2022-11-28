@@ -371,9 +371,22 @@ func validateBody(b body) error {
 		return fmt.Errorf("playerId %v is not a valid UUID format: %w", b.HandInfo.PlayerId, err)
 	}
 
+	err = validateCards(b.HandInfo.Cards)
+	if err != nil {
+		return fmt.Errorf("submitted cards did not pass validation: %w", err)
+	}
+
 	err = validateSubmittedVersion(b.HandInfo.Version, env.PlayerHandVersion)
 	if err != nil {
 		return fmt.Errorf("submitted version did not pass validation: %w", err)
+	}
+
+	return nil
+}
+
+func validateCards(c []int16) error {
+	if len(c) != 7 {
+		return fmt.Errorf("card count %v is not equal to 7. Submitted Cards:%v", len(c), c)
 	}
 
 	return nil
