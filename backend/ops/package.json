@@ -17,7 +17,7 @@
     "lint": "yarn -s eslint && yarn -s prettier",
     "lint:fix": "tsc && yarn -s eslint --fix && yarn -s prettier --write",
     "deploy": "yarn package && cdk deploy '*' --require-approval never",
-    "ci-deploy": "cdk deploy '*' --require-approval never --progress events"
+    "ci-deploy": "yarn package && cdk deploy '*' --require-approval never --progress events"
   },
   "devDependencies": {
     "@types/jest": "29.2.0",
