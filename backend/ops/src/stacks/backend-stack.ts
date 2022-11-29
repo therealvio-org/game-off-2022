@@ -16,9 +16,25 @@ export class BackendStack extends cdk.Stack {
       partitionKey: { name: "version", type: dynamodb.AttributeType.STRING },
       sortKey: { name: "playerId", type: dynamodb.AttributeType.STRING },
       billingMode: dynamodb.BillingMode.PROVISIONED,
-      pointInTimeRecovery: false,
+      pointInTimeRecovery: true,
       removalPolicy: cdk.RemovalPolicy.DESTROY, //Swap this to `retain` when we got something that is shaping up nicely
       tableName: "playerHands",
+    })
+
+    const readScaling = playerHandsTable.autoScaleReadCapacity({
+      minCapacity: 5,
+      maxCapacity: 20,
+    })
+    readScaling.scaleOnUtilization({
+      targetUtilizationPercent: 50,
+    })
+
+    const writeScaling = playerHandsTable.autoScaleWriteCapacity({
+      minCapacity: 5,
+      maxCapacity: 20,
+    })
+    writeScaling.scaleOnUtilization({
+      targetUtilizationPercent: 50,
     })
 
     //The Lambda to handle requests coming through the API Gateway

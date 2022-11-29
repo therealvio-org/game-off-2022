@@ -873,7 +873,7 @@ exports[`legalBrawlBackendStack it synths and snapshots 1`] = `
           },
         ],
         "PointInTimeRecoverySpecification": {
-          "PointInTimeRecoveryEnabled": false,
+          "PointInTimeRecoveryEnabled": true,
         },
         "ProvisionedThroughput": {
           "ReadCapacityUnits": 5,
@@ -883,6 +883,102 @@ exports[`legalBrawlBackendStack it synths and snapshots 1`] = `
       },
       "Type": "AWS::DynamoDB::Table",
       "UpdateReplacePolicy": "Delete",
+    },
+    "playerHandsTableReadScalingTarget3AFD5EE0": {
+      "Properties": {
+        "MaxCapacity": 20,
+        "MinCapacity": 5,
+        "ResourceId": {
+          "Fn::Join": [
+            "",
+            [
+              "table/",
+              {
+                "Ref": "playerHandsTable470492D8",
+              },
+            ],
+          ],
+        },
+        "RoleARN": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition",
+              },
+              ":iam::12345678901234:role/aws-service-role/dynamodb.application-autoscaling.amazonaws.com/AWSServiceRoleForApplicationAutoScaling_DynamoDBTable",
+            ],
+          ],
+        },
+        "ScalableDimension": "dynamodb:table:ReadCapacityUnits",
+        "ServiceNamespace": "dynamodb",
+      },
+      "Type": "AWS::ApplicationAutoScaling::ScalableTarget",
+    },
+    "playerHandsTableReadScalingTargetTracking4B0D5B8F": {
+      "Properties": {
+        "PolicyName": "legalBrawlBackendStackplayerHandsTableReadScalingTargetTracking52D5952C",
+        "PolicyType": "TargetTrackingScaling",
+        "ScalingTargetId": {
+          "Ref": "playerHandsTableReadScalingTarget3AFD5EE0",
+        },
+        "TargetTrackingScalingPolicyConfiguration": {
+          "PredefinedMetricSpecification": {
+            "PredefinedMetricType": "DynamoDBReadCapacityUtilization",
+          },
+          "TargetValue": 50,
+        },
+      },
+      "Type": "AWS::ApplicationAutoScaling::ScalingPolicy",
+    },
+    "playerHandsTableWriteScalingTarget21D3890C": {
+      "Properties": {
+        "MaxCapacity": 20,
+        "MinCapacity": 5,
+        "ResourceId": {
+          "Fn::Join": [
+            "",
+            [
+              "table/",
+              {
+                "Ref": "playerHandsTable470492D8",
+              },
+            ],
+          ],
+        },
+        "RoleARN": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition",
+              },
+              ":iam::12345678901234:role/aws-service-role/dynamodb.application-autoscaling.amazonaws.com/AWSServiceRoleForApplicationAutoScaling_DynamoDBTable",
+            ],
+          ],
+        },
+        "ScalableDimension": "dynamodb:table:WriteCapacityUnits",
+        "ServiceNamespace": "dynamodb",
+      },
+      "Type": "AWS::ApplicationAutoScaling::ScalableTarget",
+    },
+    "playerHandsTableWriteScalingTargetTrackingF7FD4BF1": {
+      "Properties": {
+        "PolicyName": "legalBrawlBackendStackplayerHandsTableWriteScalingTargetTracking16F69568",
+        "PolicyType": "TargetTrackingScaling",
+        "ScalingTargetId": {
+          "Ref": "playerHandsTableWriteScalingTarget21D3890C",
+        },
+        "TargetTrackingScalingPolicyConfiguration": {
+          "PredefinedMetricSpecification": {
+            "PredefinedMetricType": "DynamoDBWriteCapacityUtilization",
+          },
+          "TargetValue": 50,
+        },
+      },
+      "Type": "AWS::ApplicationAutoScaling::ScalingPolicy",
     },
   },
   "Rules": {
