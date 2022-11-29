@@ -79,7 +79,7 @@ public class Selection : Phase
 
     public void AddToHand(int id)
     {
-        GD.Print("Adding ", CardLibrary.Get(id).Name);
+        // GD.Print("Adding ", CardLibrary.Get(id).Name);
         _handCards.Add(id);
         EmitSignal("UpdateHand", _handCards.Count, CheckHand);
         _funds = CalculateFunds();
@@ -87,7 +87,7 @@ public class Selection : Phase
 
     public void RemoveFromHand(int id)
     {
-        GD.Print("Removing ", CardLibrary.Get(id).Name);
+        // GD.Print("Removing ", CardLibrary.Get(id).Name);
         _handCards.Remove(id);
         EmitSignal("UpdateHand", _handCards.Count, CheckHand);
         _funds = CalculateFunds();

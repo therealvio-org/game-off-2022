@@ -44,24 +44,22 @@ public class NetworkingManager : Node
         string message = Encoding.UTF8.GetString(body);
         if (response_code == 200)
         {
-            GD.Print("Put success");
             EmitSignal("SentPlayerEntitySuccess");
             return;
         }
         switch (response_code)
         {
             case 404:
-                GD.Print("404: ", message, " attempting post");
+                // GD.Print("404: ", message, " attempting post");
                 EmitSignal("AttemptPostEntity");
                 break;
 
             case 403:
-                GD.Print("403: ", message);
+                // GD.Print("403: ", message);
                 EmitSignal("SentPlayerEntitySuccess");
                 break;
 
             default:
-                GD.Print("Put Failed");
                 EmitSignal("RequestFailed", response_code, message);
                 break;
         }
@@ -99,7 +97,6 @@ public class NetworkingManager : Node
         HTTPRequest request = CreateRequest();
         string query = Endpoints.PlayerIdQuery(GameStats.GetId());
         string url = Endpoints.PlayerHand(query);
-        GD.Print(url);
         request.Request(url, new string[] { $"x-api-key: {DebugKeys.API_KEY}" });
         request.Connect("request_completed", this, "OnGetPlayerEntityComplete");
 
@@ -114,14 +111,12 @@ public class NetworkingManager : Node
 
         if (response_code == 200)
         {
-            GD.Print(message);
             JSONParseResult json = JSON.Parse(message);
             PlayerEntity playerEntity = new PlayerEntity((Dictionary)json.Result);
             EmitSignal("PlayerEntityAvailable", playerEntity);
             return;
         }
 
-        GD.Print(result);
         EmitSignal("RequestFailed", response_code, message);
     }
 

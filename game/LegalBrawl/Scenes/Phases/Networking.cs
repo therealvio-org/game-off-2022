@@ -47,13 +47,12 @@ public class Networking : Phase
 
     public void OnSendSuccess()
     {
-        GD.Print("Success");
         EmitSignal("GetOpponentData");
     }
 
     public void OnSendFailure(int responseCode, string reason)
     {
-        GD.Print("Failed", responseCode, reason);
+        //GD.Print("Failed", responseCode, reason);
         //EmitSignal("PromptSendingRetry");
     }
 
@@ -70,7 +69,7 @@ public class Networking : Phase
 
     public void OnGetFailure(int responseCode, string reason)
     {
-        GD.Print("Getting failed", responseCode, reason);
+        //GD.Print("Getting failed", responseCode, reason);
         //EmitSignal("PromptGettingRetry");
     }
 

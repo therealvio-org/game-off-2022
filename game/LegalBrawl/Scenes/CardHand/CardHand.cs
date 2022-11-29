@@ -128,14 +128,12 @@ public class CardHand : Control
 
     public void OnCardHeld(int id)
     {
-        GD.Print("Holding " + CardLibrary.NameOf(id));
         Owner.EmitSignal("CardHeld", id);
         _dragTip.Show();
     }
 
     public void OnCardDropped(int id, Vector2 location)
     {
-        GD.Print("Dropped " + CardLibrary.NameOf(id));
         Owner.EmitSignal("CardDropped", id, location);
         _dragTip.Hide();
     }

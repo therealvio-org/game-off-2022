@@ -36,7 +36,6 @@ public class TurnController
 
     public PlayerTypes GetFirstPlayer()
     {
-        GD.Print(_hands[1]);
         if (_hands[(int)PlayerTypes.Player].FirstCard().Cost >
             _hands[(int)PlayerTypes.Opponent].FirstCard().Cost)
             return PlayerTypes.Player;
