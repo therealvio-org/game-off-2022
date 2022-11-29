@@ -16,7 +16,7 @@ export class BackendStack extends cdk.Stack {
       partitionKey: { name: "version", type: dynamodb.AttributeType.STRING },
       sortKey: { name: "playerId", type: dynamodb.AttributeType.STRING },
       billingMode: dynamodb.BillingMode.PROVISIONED,
-      pointInTimeRecovery: false,
+      pointInTimeRecovery: true,
       removalPolicy: cdk.RemovalPolicy.DESTROY, //Swap this to `retain` when we got something that is shaping up nicely
       tableName: "playerHands",
     })
