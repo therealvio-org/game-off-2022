@@ -26,6 +26,7 @@ public class Selection : Phase
         _view = view;
         view.Connect("Reroll", this, "OnReroll");
         view.Connect("Battle", this, "OnBattle");
+        view.Connect("Return", this, "OnReturn");
         view.Connect("AddCard", this, "AddToHand");
         view.Connect("RemoveCard", this, "RemoveFromHand");
         Connect("UpdateFunds", view, "OnUpdateFunds");
@@ -49,6 +50,11 @@ public class Selection : Phase
             HandCache.Store(new Hand(GetHand(), GameStats.Player.PlayerName));
             EmitSignal("NextPhase", PhaseTypes.Networking);
         }
+    }
+
+    public void OnReturn()
+    {
+        EmitSignal("NextPhase", PhaseTypes.Menu);
     }
 
     public void RollCards()

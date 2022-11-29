@@ -162,7 +162,6 @@ text = "0/7"
 align = 1
 
 [node name="MenuPanel" type="PanelContainer" parent="."]
-visible = false
 anchor_left = 0.075
 anchor_top = 0.5
 anchor_right = 0.075
@@ -171,7 +170,6 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="Controls" type="VBoxContainer" parent="MenuPanel"]
-visible = false
 margin_left = 8.0
 margin_top = 8.0
 margin_right = 81.0
@@ -181,8 +179,15 @@ grow_vertical = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="MenuButton" type="Button" parent="MenuPanel/Controls"]
+[node name="HelpButton" type="Button" parent="MenuPanel/Controls"]
 visible = false
+margin_right = 73.0
+margin_bottom = 36.0
+theme = ExtResource( 4 )
+custom_fonts/font = ExtResource( 5 )
+text = "Help"
+
+[node name="MenuButton" type="Button" parent="MenuPanel/Controls"]
 margin_right = 73.0
 margin_bottom = 36.0
 theme = ExtResource( 4 )

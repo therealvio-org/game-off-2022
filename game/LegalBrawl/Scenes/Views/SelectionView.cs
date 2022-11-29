@@ -8,6 +8,7 @@ public class SelectionView : View
     [Signal] public delegate void RemoveCard(int id);
     [Signal] public delegate void Reroll();
     [Signal] public delegate void Battle();
+    [Signal] public delegate void Return();
     [Signal] public delegate void ShowTips();
     [Signal] public delegate void HideTips();
     [Signal] public delegate void CardHeld(int id);
@@ -15,6 +16,8 @@ public class SelectionView : View
 
     private Button _rerollButton;
     private Button _battleButton;
+    private Button _helpButton;
+    private Button _menuButton;
     private Label _fundsLabel;
     private Label _countLabel;
     private int fundsValue;
@@ -30,6 +33,10 @@ public class SelectionView : View
         _rerollButton.Connect("pressed", this, "OnRerollClicked");
         _battleButton = FindNode("BattleButton") as Button;
         _battleButton.Connect("pressed", this, "OnBattleClicked");
+        _helpButton = FindNode("HelpButton") as Button;
+        _helpButton.Connect("pressed", this, "OnHelpClicked");
+        _menuButton = FindNode("MenuButton") as Button;
+        _menuButton.Connect("pressed", this, "OnMenuClicked");
 
         Connect("Activate", this, "OnRerollClicked");
     }
@@ -67,6 +74,16 @@ public class SelectionView : View
     public void OnBattleClicked()
     {
         EmitSignal("Battle");
+    }
+
+    public void OnMenuClicked()
+    {
+        EmitSignal("Return");
+    }
+
+    public void OnhelpClicked()
+    {
+
     }
 
     public void OnUpdateHand(int size, bool check)

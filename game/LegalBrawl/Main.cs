@@ -26,13 +26,14 @@ public class Main : Control
     public void Intro()
     {
         Phase menu = new Menu();
+        AudioManager.PlayMusic("Title");
         SetPhase(menu);
         _ui.Enter(menu);
     }
 
     public void GoToMenu()
     {
-        AudioManager.PlayMusic("Menu");
+        AudioManager.PlayMusic("Title");
         EmitSignal("PhaseChange", new Menu());
     }
 
@@ -43,7 +44,7 @@ public class Main : Control
 
     public void GoToSelection()
     {
-        AudioManager.PlayMusic("Selection");
+        AudioManager.PlayMusic("Discovery");
         EmitSignal("PhaseChange", new Selection());
     }
 
