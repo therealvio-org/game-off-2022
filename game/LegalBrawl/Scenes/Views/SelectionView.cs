@@ -20,8 +20,10 @@ public class SelectionView : View
     private Button _menuButton;
     private Label _fundsLabel;
     private Label _countLabel;
-    private int fundsValue;
-    private int realFundsValue;
+    private Button _helpPanel;
+    private int _fundsValue;
+    private int _realFundsValue;
+    private int _helpMode;
 
     public override void _Ready()
     {
@@ -37,31 +39,35 @@ public class SelectionView : View
         _helpButton.Connect("pressed", this, "OnHelpClicked");
         _menuButton = FindNode("MenuButton") as Button;
         _menuButton.Connect("pressed", this, "OnMenuClicked");
+        _helpPanel = FindNode("HelpPanel") as Button;
+        _helpPanel.Connect("pressed", this, "OnHelpPanelClicked");
+        _helpPanel.Hide();
 
         Connect("Activate", this, "OnRerollClicked");
     }
 
     public override void Setup()
     {
-        fundsValue = realFundsValue = Main.STARTING_FUNDS;
-        _fundsLabel.Text = FormatFunds(fundsValue);
+        _fundsValue = _realFundsValue = Main.STARTING_FUNDS;
+        _fundsLabel.Text = FormatFunds(_fundsValue);
         _countLabel.Text = FormatCount(0);
         EmitSignal("Reroll");
+        if (GameStats.Player.FirstTime) ShowHelpMode();
     }
 
     public override void _Process(float delta)
     {
-        if (fundsValue > realFundsValue)
-            fundsValue -= 1;
-        if (fundsValue < realFundsValue)
-            fundsValue += 1;
+        if (_fundsValue > _realFundsValue)
+            _fundsValue -= 1;
+        if (_fundsValue < _realFundsValue)
+            _fundsValue += 1;
 
-        _fundsLabel.Text = FormatFunds(fundsValue);
+        _fundsLabel.Text = FormatFunds(_fundsValue);
     }
 
     public void OnUpdateFunds(int previous, int current, bool check)
     {
-        realFundsValue = current;
+        _realFundsValue = current;
         _fundsLabel.SelfModulate = check ? Colors.White : Colors.Red;
 
     }
@@ -81,9 +87,38 @@ public class SelectionView : View
         EmitSignal("Return");
     }
 
-    public void OnhelpClicked()
+    public void OnHelpClicked()
     {
+        ShowHelpMode();
+    }
 
+    public void ShowHelpMode()
+    {
+        _helpMode = 0;
+        _helpPanel.Show();
+        foreach (Node n in _helpPanel.GetChildren())
+        {
+            if (n is Control c)
+                c.Hide();
+        }
+
+        if (_helpPanel.GetChildren()[_helpMode] is Label l)
+            l.Show();
+    }
+
+    public void OnHelpPanelClicked()
+    {
+        if (_helpPanel.GetChildren()[_helpMode] is Label l)
+            l.Hide();
+
+        if (++_helpMode >= _helpPanel.GetChildren().Count)
+        {
+            _helpPanel.Hide();
+            return;
+        }
+
+        if (_helpPanel.GetChildren()[_helpMode] is Label l2)
+            l2.Show();
     }
 
     public void OnUpdateHand(int size, bool check)

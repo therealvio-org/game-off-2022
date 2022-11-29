@@ -9,6 +9,7 @@ public class PlayerStats : Resource
     [Export] public string PlayerName = "";
     [Export] public int Wins = 0;
     [Export] public int Losses = 0;
+    [Export] public bool FirstTime = true;
 
     public void UpdateName(string name)
     {
@@ -20,12 +21,14 @@ public class PlayerStats : Resource
     {
         Wins++;
         ResourceSaver.Save(LOCATION, this);
+        FirstTime = false;
     }
 
     public void AddLoss()
     {
         Losses++;
         ResourceSaver.Save(LOCATION, this);
+        FirstTime = false;
     }
 
     public void Reset()
@@ -34,6 +37,7 @@ public class PlayerStats : Resource
         PlayerName = "";
         Wins = 0;
         Losses = 0;
+        FirstTime = true;
         ResourceSaver.Save(LOCATION, this);
     }
 }
