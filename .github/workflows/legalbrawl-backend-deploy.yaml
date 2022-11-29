@@ -1,0 +1,40 @@
+name: Legal Brawl Backend Deploy
+on:
+  workflow_run:
+    workflows:
+      - Legal Brawl Backend Infra Linting & Testing
+      - Legal Brawl Backend API Linting & Testing
+    branches:
+      - main
+    types:
+      - completed
+
+jobs:
+  deploy:
+    environment: production
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./backend/ops/
+    name: legalbrawl-backend-deploy
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - uses: bahmutov/npm-install@v1
+        with:
+          working-directory: "backend/ops/"
+          useLockFile: true
+
+      - name: "Configure AWS Credentials"
+        uses: aws-actions/configure-aws-credentials@v1-node16
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - run: |
+          yarn run ci-deploy
