@@ -21,6 +21,22 @@ export class BackendStack extends cdk.Stack {
       tableName: "playerHands",
     })
 
+    const readScaling = playerHandsTable.autoScaleReadCapacity({
+      minCapacity: 5,
+      maxCapacity: 20,
+    })
+    readScaling.scaleOnUtilization({
+      targetUtilizationPercent: 50,
+    })
+
+    const writeScaling = playerHandsTable.autoScaleWriteCapacity({
+      minCapacity: 5,
+      maxCapacity: 20,
+    })
+    writeScaling.scaleOnUtilization({
+      targetUtilizationPercent: 50,
+    })
+
     //The Lambda to handle requests coming through the API Gateway
     //Lambda would be written in golang
     const lambdaFn = new lambda.Function(this, "legalBrawlApiHandler", {
